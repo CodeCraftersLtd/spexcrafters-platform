@@ -13,7 +13,10 @@ RUN mvn -f apps/api/pom.xml -B -DskipTests package
 # Alpine variant: the Ubuntu-based -jre image ships /usr/bin/pebble (Go binary)
 # which carries HIGH CVEs unrelated to this application (first Trivy scan).
 FROM eclipse-temurin:25-jre-alpine AS runtime
-RUN adduser -S -u 10001 spexcrafters
+# Base images lag Alpine security updates between rebuilds; pull the patched
+# OS packages at build time (first Trivy scan: libexpat et al. HIGH, fixed).
+RUN apk upgrade --no-cache \
+ && adduser -S -u 10001 spexcrafters
 USER 10001
 WORKDIR /app
 COPY --from=build /workspace/apps/api/application/target/*.jar app.jar
