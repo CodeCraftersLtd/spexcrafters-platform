@@ -58,7 +58,7 @@ CI mirrors these in [.github/workflows](.github/workflows) (`ci-web`, `ci-api`, 
 
 ## Ground rules
 
-- OpticLeague is a **competitor benchmark only** — no competitor code, content, branding, or datasets exist in this repository.
+- OpticLeague is a **reference benchmark only** — no competitor code, content, branding, or datasets exist in this repository.
 - Styling is tokens-only (`--sc-*`); no Tailwind; no raw hex/px in component CSS.
 - The database schema changes **only** via Flyway migrations; JPA `ddl-auto=validate`.
 - The API contract ([packages/api-client/spec/openapi.json](packages/api-client/spec/openapi.json)) is the boundary of record; frontend types are generated, never hand-duplicated.
