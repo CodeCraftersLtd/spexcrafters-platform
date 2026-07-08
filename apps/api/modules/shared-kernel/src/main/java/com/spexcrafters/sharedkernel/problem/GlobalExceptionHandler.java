@@ -18,9 +18,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * Maps exceptions to RFC 9457 {@code application/problem+json} responses matching the
@@ -102,6 +108,25 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = baseProblem(HttpStatus.FORBIDDEN, ProblemTypes.FORBIDDEN,
                 "Access denied", "You do not have permission to perform this action.", request);
         return respond(HttpStatus.FORBIDDEN, problem, new HttpHeaders());
+    }
+
+    /**
+     * Framework-raised request errors (unknown path, wrong method, unsupported media type,
+     * missing parameter). Handled explicitly so the {@link Exception} catch-all below does
+     * not inflate them to 500s; the status comes from the exception itself.
+     */
+    @ExceptionHandler({
+            NoResourceFoundException.class,
+            HttpRequestMethodNotSupportedException.class,
+            HttpMediaTypeNotSupportedException.class,
+            HttpMediaTypeNotAcceptableException.class,
+            MissingServletRequestParameterException.class
+    })
+    public ResponseEntity<ProblemDetail> handleFrameworkWebErrors(Exception ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.valueOf(((ErrorResponse) ex).getStatusCode().value());
+        ProblemDetail problem = baseProblem(status, URI.create("about:blank"),
+                status.getReasonPhrase(), "The request could not be processed.", request);
+        return respond(status, problem, new HttpHeaders());
     }
 
     @ExceptionHandler(Exception.class)

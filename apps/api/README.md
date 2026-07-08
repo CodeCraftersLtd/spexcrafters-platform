@@ -17,6 +17,8 @@ mvn spring-boot:run -pl application
 
 Flyway migrates the schema on startup (`ddl-auto=validate` — Hibernate never writes DDL). API at `http://localhost:8080/api/v1`, OpenAPI at `/v3/api-docs`, health at `/actuator/health/{liveness,readiness}`, Prometheus at `/actuator/prometheus`. Verification emails land in Mailpit (`http://localhost:8025`).
 
+> The `V1` migration runs `CREATE EXTENSION IF NOT EXISTS citext;`, which needs extension-creation privileges. The Compose and Testcontainers databases connect as a superuser, so this only matters for custom environments.
+
 ## Configuration (env vars)
 
 | Variable | Default | Purpose |
@@ -45,7 +47,10 @@ Cross-module access is legal **only** via a module's `…api` package — enforc
 ## Tests
 
 ```bash
-mvn verify            # unit + Testcontainers integration + ArchUnit
+mvn verify                                        # unit + Testcontainers integration + ArchUnit
+mvn -pl modules/identity test                     # identity unit tests only
+mvn -pl application test -Dtest=*MigrationTest*   # Flyway-from-empty check (mirrors the CI step)
+mvn -pl architecture-tests test                   # ArchUnit module rules only
 ```
 
 Integration tests (`application/src/test`) run the full register → verify → login → `/me` journey, refresh-token rotation with family-revocation-on-reuse, problem+json shape checks, and Flyway migration from an empty PostgreSQL 17 container. They require Docker.

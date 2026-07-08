@@ -35,9 +35,10 @@
     <maven.compiler.release>25</maven.compiler.release>
 
     <!-- Third-party versions not managed by the Spring Boot BOM -->
-    <archunit.version>1.3.0</archunit.version>
+    <!-- ArchUnit >= 1.4.1 required: adds support for Java 25 class files (major version 69). -->
+    <archunit.version>1.4.1</archunit.version>
     <bouncycastle.version>1.78.1</bouncycastle.version>
-    <springdoc.version>2.8.5</springdoc.version>
+    <springdoc.version>2.8.13</springdoc.version>
     <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
 
     <!-- Plugin versions -->

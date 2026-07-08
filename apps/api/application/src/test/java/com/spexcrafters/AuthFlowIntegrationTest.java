@@ -64,7 +64,9 @@ class AuthFlowIntegrationTest extends AbstractIntegrationTest {
         ResponseEntity<String> response = rest.getForEntity("/api/v1/me", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getHeaders().getContentType()).hasToString("application/problem+json");
+        // Written by the security entry point, which appends a charset parameter.
+        assertThat(response.getHeaders().getContentType()).isNotNull();
+        assertThat(response.getHeaders().getContentType().toString()).startsWith("application/problem+json");
         JsonNode problem = json(response);
         assertThat(problem.get("type").asText()).endsWith("/problems/authentication-failed");
         assertThat(problem.get("status").asInt()).isEqualTo(401);
