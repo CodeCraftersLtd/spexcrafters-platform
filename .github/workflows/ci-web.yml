@@ -1,6 +1,7 @@
 name: ci-web
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths: ["apps/web/**", "packages/**", "pnpm-workspace.yaml", "package.json", ".github/workflows/ci-web.yml"]

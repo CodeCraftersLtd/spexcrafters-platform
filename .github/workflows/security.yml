@@ -1,6 +1,7 @@
 name: security
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
@@ -42,7 +43,7 @@ jobs:
       - name: Build API image
         run: docker build -f infrastructure/docker/api.Dockerfile -t spexcrafters/api:scan .
       - name: Trivy scan (API image)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.36.0
         with:
           image-ref: spexcrafters/api:scan
           severity: HIGH,CRITICAL
