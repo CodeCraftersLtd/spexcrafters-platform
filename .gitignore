@@ -9,7 +9,10 @@ build/
 out/
 storybook-static/
 target/
-packages/design-tokens/build/
+*.tsbuildinfo
+# packages/design-tokens/build is COMMITTED by policy (see its README): generated
+# outputs ship with the package; CI regenerates and diff-checks for drift.
+!packages/design-tokens/build/
 
 # Environment & secrets — never commit real values
 .env
