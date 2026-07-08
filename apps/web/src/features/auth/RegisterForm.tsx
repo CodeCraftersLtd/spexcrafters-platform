@@ -126,7 +126,7 @@ export function RegisterForm({
   }
 
   return (
-    <form className={styles.form} onSubmit={onSubmit} noValidate>
+    <form className={styles.form} method="post" onSubmit={onSubmit} noValidate>
       {formError ? <Alert tone="danger">{formError}</Alert> : null}
 
       <FormField

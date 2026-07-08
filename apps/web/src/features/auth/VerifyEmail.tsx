@@ -152,7 +152,7 @@ function ResendForm({ copy, validation, serverErrors }: ResendFormProps) {
   }
 
   return (
-    <form className={styles.form} onSubmit={onSubmit} noValidate aria-label={copy.resendTitle}>
+    <form className={styles.form} method="post" onSubmit={onSubmit} noValidate aria-label={copy.resendTitle}>
       <h2>{copy.resendTitle}</h2>
       {outcome === 'failed' ? <Alert tone="danger">{serverErrors.unexpected}</Alert> : null}
       <FormField

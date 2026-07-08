@@ -16,7 +16,7 @@ import styles from './auth-forms.module.css';
 interface LoginFormProps {
   locale: Locale;
   /** Sanitized internal path to navigate to after sign-in (defaults to the buyer dashboard). */
-  returnTo?: string;
+  returnTo?: string | undefined;
   copy: Dictionary['auth']['login'];
   validation: Dictionary['auth']['validation'];
   serverErrors: Dictionary['auth']['serverErrors'];
@@ -81,7 +81,7 @@ export function LoginForm({
   });
 
   return (
-    <form className={styles.form} onSubmit={onSubmit} noValidate>
+    <form className={styles.form} method="post" onSubmit={onSubmit} noValidate>
       {formError ? <Alert tone="danger">{formError}</Alert> : null}
 
       <FormField label={copy.emailLabel} htmlFor="login-email" error={errors.email?.message}>

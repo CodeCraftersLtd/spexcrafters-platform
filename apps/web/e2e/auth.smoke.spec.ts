@@ -86,11 +86,16 @@ test.describe('auth vertical slice', () => {
     request,
   }) => {
     const uniqueEmail = `e2e.smoke.${Date.now()}.${Math.floor(Math.random() * 1e6)}@spexcrafters.test`;
-    const password = 'correct-horse-battery-staple';
+    // Must satisfy the platform password policy (≥12 chars incl. a digit).
+    const password = 'correct-horse-battery-staple-9';
     const displayName = 'Smoke Test Buyer';
 
-    // 1. Register.
+    // 1. Register. Wait for hydration before interacting: a pre-hydration
+    // click would trigger a native (non-RHF) submit instead of the client
+    // handler. Real users hit this window too — the forms carry
+    // method="post" so a native submit can never leak fields into the URL.
     await page.goto('/en/auth/register');
+    await page.waitForLoadState('networkidle');
     await expect(
       page.getByRole('heading', { name: en.auth.register.title }),
     ).toBeVisible();
@@ -117,6 +122,7 @@ test.describe('auth vertical slice', () => {
       .getByRole('link', { name: en.auth.verifyEmail.goToLogin })
       .click();
     await expect(page).toHaveURL(/\/en\/auth\/login/);
+    await page.waitForLoadState('networkidle');
 
     // 4. Log in.
     await page.getByLabel(en.auth.login.emailLabel).fill(uniqueEmail);
