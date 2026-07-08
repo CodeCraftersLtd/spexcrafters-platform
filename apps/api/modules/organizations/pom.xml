@@ -13,12 +13,53 @@
 
   <artifactId>spexcrafters-organizations</artifactId>
   <name>SpexCrafters :: organizations</name>
-  <description>Organizations bounded context (Sprint-1 stub; fleshed out in Sprint 2)</description>
+  <description>Organizations bounded context: organizations, memberships, invitations, capability-based authorization</description>
 
   <dependencies>
     <dependency>
       <groupId>com.spexcrafters</groupId>
       <artifactId>spexcrafters-shared-kernel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-audit</artifactId>
+    </dependency>
+    <!-- Cross-module access strictly via com.spexcrafters.identity.api (ArchUnit-enforced) -->
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-identity</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+    <!-- Jwt principal type used by the web layer -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

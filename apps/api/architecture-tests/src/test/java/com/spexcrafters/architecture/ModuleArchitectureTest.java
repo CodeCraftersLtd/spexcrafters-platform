@@ -52,6 +52,28 @@ class ModuleArchitectureTest {
                     "com.spexcrafters.organizations.infrastructure..",
                     "com.spexcrafters.organizations.web..");
 
+    // ---------------------------------------------- identity ↔ organizations interaction
+
+    /**
+     * Organizations consumes identity strictly through {@code identity.api}
+     * (UserDirectory/UserSummaryDto) — never its domain model, repositories or web layer.
+     * Subsumed by the internals rules above, but pinned explicitly for the module pair
+     * that actually interacts.
+     */
+    @ArchTest
+    static final ArchRule organizations_uses_identity_only_via_its_api = noClasses()
+            .that().resideInAPackage("com.spexcrafters.organizations..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.identity.domain..",
+                    "com.spexcrafters.identity.infrastructure..",
+                    "com.spexcrafters.identity.web..");
+
+    /** The dependency is one-directional: identity never knows about organizations. */
+    @ArchTest
+    static final ArchRule identity_never_depends_on_organizations = noClasses()
+            .that().resideInAPackage("com.spexcrafters.identity..")
+            .should().dependOnClassesThat().resideInAPackage("com.spexcrafters.organizations..");
+
     // -------------------------------------------------------------- shared-kernel is a leaf
 
     @ArchTest

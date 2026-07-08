@@ -51,5 +51,7 @@ spexcrafters:
     access-token-ttl: 10m
     refresh-token-ttl: 14d
     verification-token-ttl: 24h
+    # Organization invitation tokens (organizations module).
+    invitation-ttl: 7d
   mail:
     from: ${SPEXCRAFTERS_MAIL_FROM:no-reply@spexcrafters.com}
