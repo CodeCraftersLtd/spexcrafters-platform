@@ -1,0 +1,17 @@
+# Normalize all text files to LF in the repository; checkout as-is on all
+# platforms (consistent hashing, no CRLF diffs between Windows/macOS/Linux).
+* text=auto eol=lf
+
+# Windows scripts stay CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.jar binary
