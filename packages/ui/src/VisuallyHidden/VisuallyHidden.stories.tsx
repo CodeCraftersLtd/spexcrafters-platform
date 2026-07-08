@@ -14,19 +14,21 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => (
+  args: { children: " — and this suffix is announced but not shown" },
+  render: (args) => (
     <p>
       Visible text
-      <VisuallyHidden> — and this suffix is announced but not shown</VisuallyHidden>
+      <VisuallyHidden {...args} />
     </p>
   ),
 };
 
 /** Typical usage: giving a terse visual control an explicit accessible name. */
 export const AccessibleName: Story = {
-  render: () => (
+  args: { children: "Remove filter: CR-39" },
+  render: (args) => (
     <button type="button">
-      ×<VisuallyHidden>Remove filter: CR-39</VisuallyHidden>
+      ×<VisuallyHidden {...args} />
     </button>
   ),
 };

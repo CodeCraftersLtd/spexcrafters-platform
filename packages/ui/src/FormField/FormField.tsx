@@ -10,9 +10,9 @@ export interface FormFieldProps {
   /** Id of the control; the label's `for`, hint id (`${htmlFor}-hint`) and
    *  error id (`${htmlFor}-error`) derive from it. */
   htmlFor: string;
-  hint?: string;
+  hint?: string | undefined;
   /** Error message. Rendered with `role="alert"`; persists until corrected. */
-  error?: string;
+  error?: string | undefined;
   children: ReactNode;
 }
 

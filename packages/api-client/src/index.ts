@@ -64,12 +64,9 @@ export function createApiClient(options: ApiClientOptions) {
       const token = getAccessToken?.();
       if (token) headers.Authorization = `Bearer ${token}`;
     }
-    const response = await fetchImpl(`${baseUrl}${path}`, {
-      method,
-      headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
-      cache: 'no-store',
-    });
+    const init: RequestInit = { method, headers, cache: 'no-store' };
+    if (body !== undefined) init.body = JSON.stringify(body);
+    const response = await fetchImpl(`${baseUrl}${path}`, init);
     if (!response.ok) throw new ApiProblemError(await parseProblem(response));
     if (response.status === 204 || response.status === 202) return undefined as T;
     return (await response.json()) as T;

@@ -19,6 +19,7 @@
     "build": "echo \"api-client: consumed from source\""
   },
   "devDependencies": {
+    "@spexcrafters/config": "workspace:*",
     "openapi-typescript": "^7.4.0",
     "typescript": "^5.7.0"
   }
