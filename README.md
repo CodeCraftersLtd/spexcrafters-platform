@@ -42,11 +42,18 @@ Then: register at `http://localhost:3000/en/auth/register`, open the verificatio
 
 ```bash
 pnpm lint && pnpm typecheck && pnpm test   # frontend workspaces
-mvn -f apps/api/pom.xml verify              # backend unit + Testcontainers + ArchUnit
+apps/api/mvnw -f apps/api/pom.xml verify   # backend unit + Testcontainers + ArchUnit (wrapper-pinned Maven)
 pnpm e2e                                    # Playwright smoke (needs full stack up)
 ```
 
 CI mirrors these in [.github/workflows](.github/workflows) (`ci-web`, `ci-api`, `contract`, `security`, `e2e-smoke`).
+
+## Troubleshooting
+
+- **API fails at startup with `Unable to establish loopback connection` / `Invalid argument: connect` (Windows):** JDK 25 creates NIO selector pipes as Unix-domain sockets under `%TEMP%`; a TEMP path longer than ~100 characters breaks it. Point `TEMP`/`TMP` at a short directory (e.g. `C:\dev\tmp`) for the JVM process.
+- **Backend builds use the Maven Wrapper** (`apps/api/mvnw`), pinned to Maven 3.9.9 — do not rely on a globally installed Maven.
+- **`next start` prints a standalone warning:** container images run the standalone server (`node .next/standalone/server.js`, see the web Dockerfile); use `pnpm dev:web` for local development.
+- **First-build validation record:** [docs/validation/sprint-1-validation-log.md](docs/validation/sprint-1-validation-log.md) — verified toolchain versions, defect log, known limitations, technical-debt register.
 
 ## Ground rules
 
