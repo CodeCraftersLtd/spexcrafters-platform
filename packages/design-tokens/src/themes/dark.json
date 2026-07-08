@@ -1,0 +1,51 @@
+{
+  "color": {
+    "$description": "Tier-2 semantic mapping — dark (authenticated dashboards) per design-system.md §2.6: status → 300-series, text-primary #E7E9EC (ink-50-adjacent, 15.88:1 on ink-950), action/link/focus → accent-300.",
+    "bg": {
+      "page": { "$type": "color", "$value": "{color.ink.950}" },
+      "surface": { "$type": "color", "$value": "{color.ink.900}" },
+      "surface-raised": { "$type": "color", "$value": "{color.ink.800}" },
+      "surface-sunken": { "$type": "color", "$value": "{color.ink.950}" },
+      "hover-wash": { "$type": "color", "$value": "{color.ink.800}" },
+      "active-wash": { "$type": "color", "$value": "{color.ink.700}" }
+    },
+    "text": {
+      "primary": { "$type": "color", "$value": "#E7E9EC" },
+      "secondary": { "$type": "color", "$value": "{color.ink.300}" },
+      "muted": { "$type": "color", "$value": "{color.ink.400}" },
+      "disabled": { "$type": "color", "$value": "{color.ink.600}" },
+      "placeholder": { "$type": "color", "$value": "{color.ink.400}" },
+      "inverse": { "$type": "color", "$value": "{color.ink.950}" }
+    },
+    "action": {
+      "primary": { "$type": "color", "$value": "{color.accent.300}" },
+      "primary-hover": { "$type": "color", "$value": "{color.accent.200}" },
+      "primary-active": { "$type": "color", "$value": "{color.accent.100}" },
+      "danger": { "$type": "color", "$value": "{color.danger.600}" },
+      "danger-hover": { "$type": "color", "$value": "{color.danger.700}" },
+      "danger-active": { "$type": "color", "$value": "{color.danger.800}" },
+      "danger-text": { "$type": "color", "$value": "{color.paper.0}" }
+    },
+    "link": { "$type": "color", "$value": "{color.accent.300}" },
+    "border": {
+      "decorative": { "$type": "color", "$value": "{color.ink.700}" },
+      "strong": { "$type": "color", "$value": "{color.ink.400}" },
+      "strong-hover": { "$type": "color", "$value": "{color.ink.300}" }
+    },
+    "focus-ring": { "$type": "color", "$value": "{color.accent.300}" },
+    "status": {
+      "success": { "$type": "color", "$value": "{color.success.300}" },
+      "success-bg": { "$type": "color", "$value": "{color.success.900}" },
+      "success-on-bg": { "$type": "color", "$value": "{color.success.300}" },
+      "warning": { "$type": "color", "$value": "{color.warning.300}" },
+      "warning-bg": { "$type": "color", "$value": "{color.warning.900}" },
+      "warning-on-bg": { "$type": "color", "$value": "{color.warning.300}" },
+      "danger": { "$type": "color", "$value": "{color.danger.300}" },
+      "danger-bg": { "$type": "color", "$value": "{color.danger.900}" },
+      "danger-on-bg": { "$type": "color", "$value": "{color.danger.300}" },
+      "info": { "$type": "color", "$value": "{color.info.300}" },
+      "info-bg": { "$type": "color", "$value": "{color.info.900}" },
+      "info-on-bg": { "$type": "color", "$value": "{color.info.300}" }
+    }
+  }
+}

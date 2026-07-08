@@ -1,0 +1,12 @@
+.title {
+  font-family: var(--sc-font-display);
+  font-size: var(--sc-text-2xl);
+  line-height: var(--sc-leading-snug);
+  margin-block-end: var(--sc-space-1);
+}
+
+.subtitle {
+  font-size: var(--sc-text-sm);
+  color: var(--sc-color-text-secondary);
+  margin-block-end: var(--sc-space-6);
+}

@@ -1,0 +1,148 @@
+/* Button — tokens only (semantic tier). Full §5 state matrix.
+ * RTL-safe: logical properties throughout. */
+
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  /* Transparent border keeps geometry identical across variants. */
+  border: 1px solid transparent;
+  border-radius: var(--sc-radius-sm);
+  font-family: var(--sc-font-ui);
+  font-weight: var(--sc-font-weight-medium);
+  line-height: var(--sc-leading-ui);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--sc-motion-duration-instant) var(--sc-motion-ease-standard),
+    border-color var(--sc-motion-duration-instant) var(--sc-motion-ease-standard),
+    color var(--sc-motion-duration-instant) var(--sc-motion-ease-standard);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sc-space-2);
+}
+
+/* --- Sizes — every target ≥24×24 CSS px (WCAG 2.5.8) ------------------- */
+
+.sm {
+  min-block-size: var(--sc-space-8); /* 32px */
+  /* min-inline-size guards against near-zero-width labels (e.g. icons-to-come);
+   * the loading state itself preserves width via the space-keeping label. */
+  min-inline-size: var(--sc-space-16); /* 64px */
+  padding-block: var(--sc-space-1);
+  padding-inline: var(--sc-space-3);
+  font-size: var(--sc-text-sm);
+}
+
+.md {
+  min-block-size: var(--sc-space-10); /* 40px */
+  min-inline-size: var(--sc-space-20); /* 80px */
+  padding-block: var(--sc-space-2);
+  padding-inline: var(--sc-space-4);
+  font-size: var(--sc-text-md);
+}
+
+/* --- Variants (hover/active shift one ramp step per §5) ----------------- */
+
+.primary {
+  background-color: var(--sc-color-action-primary);
+  color: var(--sc-color-text-inverse);
+}
+
+.primary:hover:not(:disabled):not([data-loading]) {
+  background-color: var(--sc-color-action-primary-hover);
+}
+
+.primary:active:not(:disabled):not([data-loading]) {
+  background-color: var(--sc-color-action-primary-active);
+}
+
+.secondary {
+  background-color: transparent;
+  border-color: var(--sc-color-border-strong);
+  color: var(--sc-color-text-primary);
+}
+
+.secondary:hover:not(:disabled):not([data-loading]) {
+  background-color: var(--sc-color-bg-hover-wash);
+}
+
+.secondary:active:not(:disabled):not([data-loading]) {
+  background-color: var(--sc-color-bg-active-wash);
+}
+
+.quiet {
+  background-color: transparent;
+  color: var(--sc-color-link);
+}
+
+.quiet:hover:not(:disabled):not([data-loading]) {
+  background-color: var(--sc-color-bg-hover-wash);
+}
+
+.quiet:active:not(:disabled):not([data-loading]) {
+  background-color: var(--sc-color-bg-active-wash);
+}
+
+.destructive {
+  background-color: var(--sc-color-action-danger);
+  color: var(--sc-color-action-danger-text);
+}
+
+.destructive:hover:not(:disabled):not([data-loading]) {
+  background-color: var(--sc-color-action-danger-hover);
+}
+
+.destructive:active:not(:disabled):not([data-loading]) {
+  background-color: var(--sc-color-action-danger-active);
+}
+
+/* Optional 1px press feedback — suppressed under reduced motion (§5). */
+.button:active:not(:disabled):not([data-loading]) {
+  translate: 0 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button:active {
+    translate: none;
+  }
+}
+
+/* --- Focus-visible: the one system focus ring (§5) ---------------------- */
+
+.button:focus-visible {
+  outline: 2px solid var(--sc-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* --- Disabled: tokens, never opacity on text (§5) ----------------------- */
+
+.button:disabled {
+  background-color: var(--sc-color-bg-surface-raised);
+  border-color: var(--sc-color-border-decorative);
+  color: var(--sc-color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* --- Loading: spinner overlays the space-keeping (hidden) label (§5) ---- */
+
+.button[data-loading] {
+  cursor: progress;
+}
+
+.button[data-loading] .label {
+  visibility: hidden;
+}
+
+.spinnerOverlay {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

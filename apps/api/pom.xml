@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <!-- 3.5.6 is the first 3.5.x patch built against Spring Framework 6.2.11,
+         which adds official JDK 25 support (ASM level for class-file version 69). -->
+    <version>3.5.6</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.spexcrafters</groupId>
+  <artifactId>spexcrafters-api</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>SpexCrafters API</name>
+  <description>SpexCrafters Global B2B Optical Marketplace — modular monolith backend</description>
+
+  <modules>
+    <module>modules/shared-kernel</module>
+    <module>modules/audit</module>
+    <module>modules/identity</module>
+    <module>modules/organizations</module>
+    <module>application</module>
+    <module>architecture-tests</module>
+  </modules>
+
+  <properties>
+    <java.version>25</java.version>
+    <maven.compiler.release>25</maven.compiler.release>
+
+    <!-- Third-party versions not managed by the Spring Boot BOM -->
+    <archunit.version>1.3.0</archunit.version>
+    <bouncycastle.version>1.78.1</bouncycastle.version>
+    <springdoc.version>2.8.5</springdoc.version>
+    <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
+
+    <!-- Plugin versions -->
+    <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Internal modules -->
+      <dependency>
+        <groupId>com.spexcrafters</groupId>
+        <artifactId>spexcrafters-shared-kernel</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.spexcrafters</groupId>
+        <artifactId>spexcrafters-audit</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.spexcrafters</groupId>
+        <artifactId>spexcrafters-identity</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.spexcrafters</groupId>
+        <artifactId>spexcrafters-organizations</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Third party -->
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk18on</artifactId>
+        <version>${bouncycastle.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+        <version>${springdoc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.logstash.logback</groupId>
+        <artifactId>logstash-logback-encoder</artifactId>
+        <version>${logstash-logback-encoder.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tngtech.archunit</groupId>
+        <artifactId>archunit-junit5</artifactId>
+        <version>${archunit.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>${maven-enforcer-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-build-environment</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[25,26)</version>
+                  <message>SpexCrafters API must be built with JDK 25.</message>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.9,)</version>
+                  <message>Maven 3.9+ is required.</message>
+                </requireMavenVersion>
+                <requireReleaseDeps>
+                  <message>SNAPSHOT dependencies are not allowed (sibling reactor modules excluded).</message>
+                  <excludes>
+                    <exclude>com.spexcrafters:*</exclude>
+                  </excludes>
+                </requireReleaseDeps>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

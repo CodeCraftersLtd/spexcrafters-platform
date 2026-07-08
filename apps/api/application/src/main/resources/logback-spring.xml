@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Structured JSON logging to stdout via logstash-logback-encoder.
+  MDC entries are included by default, so every request-scoped line carries the
+  correlationId set by CorrelationIdFilter (propagated to @Async threads by AsyncConfig).
+-->
+<configuration>
+  <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <customFields>{"service":"spexcrafters-api"}</customFields>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="JSON_CONSOLE"/>
+  </root>
+</configuration>

@@ -1,0 +1,296 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SpexCrafters API",
+    "description": "REST API for the SpexCrafters Global B2B Optical Marketplace and Sourcing Platform. Sprint 1 surface: identity vertical slice (registration, email verification, login, token refresh, logout, current user). This committed spec is the contract of record; the Spring Boot application must produce a compatible document (validated in CI), and the TypeScript client in packages/api-client is generated from it.",
+    "version": "0.1.0",
+    "contact": { "name": "SpexCrafters Engineering" }
+  },
+  "servers": [
+    { "url": "http://localhost:8080/api/v1", "description": "Local development" },
+    { "url": "https://api.spexcrafters.com/api/v1", "description": "Production (working domain, pending OQ-8 confirmation)" }
+  ],
+  "tags": [
+    { "name": "auth", "description": "Registration, email verification, and session tokens" },
+    { "name": "me", "description": "Current authenticated user" }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "operationId": "register",
+        "summary": "Register a new user account",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created; verification email dispatched.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterResponse" } } }
+          },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "tags": ["auth"],
+        "operationId": "verifyEmail",
+        "summary": "Confirm an email address with a single-use token",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/VerifyEmailRequest" } }
+          }
+        },
+        "responses": {
+          "204": { "description": "Email verified. Idempotent for an already-consumed token belonging to a verified user." },
+          "410": { "$ref": "#/components/responses/TokenGone" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
+      }
+    },
+    "/auth/resend-verification": {
+      "post": {
+        "tags": ["auth"],
+        "operationId": "resendVerification",
+        "summary": "Re-send the verification email",
+        "description": "Uniform 202 regardless of account existence or state — no account enumeration.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ResendVerificationRequest" } }
+          }
+        },
+        "responses": {
+          "202": { "description": "Accepted. If a matching unverified account exists, an email is sent." },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "operationId": "login",
+        "summary": "Authenticate with email and password",
+        "description": "Returns a short-lived bearer access token and an opaque rotating refresh token. Consumed exclusively by the web BFF, which holds tokens server-side and issues an HttpOnly session cookie to the browser. Sprint-1 password grant; Authorization Code + PKCE via Spring Authorization Server is the planned Sprint-2 upgrade (ADR-006).",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/EmailNotVerified" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["auth"],
+        "operationId": "refreshTokens",
+        "summary": "Exchange a refresh token for a new token pair",
+        "description": "Refresh tokens are single-use and rotate on every call; reuse of a consumed token revokes the whole family (theft detection).",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RefreshRequest" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New token pair.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["auth"],
+        "operationId": "logout",
+        "summary": "Revoke a refresh-token family",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RefreshRequest" } }
+          }
+        },
+        "responses": {
+          "204": { "description": "Revoked (idempotent)." },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": ["me"],
+        "operationId": "getCurrentUser",
+        "summary": "Return the authenticated user",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Current user.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserSummary" } } }
+          },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    },
+    "schemas": {
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["email", "password", "displayName"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "maxLength": 254 },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128,
+            "description": "Minimum 12 characters; checked against the platform password policy server-side. Paste always permitted (WCAG 3.3.8)."
+          },
+          "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "locale": { "$ref": "#/components/schemas/Locale" }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "required": ["userId"],
+        "properties": {
+          "userId": { "type": "string", "format": "uuid", "description": "UUIDv7" }
+        }
+      },
+      "VerifyEmailRequest": {
+        "type": "object",
+        "required": ["token"],
+        "properties": { "token": { "type": "string", "minLength": 32, "maxLength": 512 } }
+      },
+      "ResendVerificationRequest": {
+        "type": "object",
+        "required": ["email"],
+        "properties": { "email": { "type": "string", "format": "email", "maxLength": 254 } }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "maxLength": 254 },
+          "password": { "type": "string", "minLength": 1, "maxLength": 128 }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "required": ["refreshToken"],
+        "properties": { "refreshToken": { "type": "string", "minLength": 32, "maxLength": 512 } }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "required": ["accessToken", "tokenType", "expiresIn", "refreshToken", "user"],
+        "properties": {
+          "accessToken": { "type": "string", "description": "JWT, ~10 minute lifetime" },
+          "tokenType": { "type": "string", "const": "Bearer" },
+          "expiresIn": { "type": "integer", "description": "Access-token lifetime in seconds" },
+          "refreshToken": { "type": "string", "description": "Opaque, single-use, rotating; stored hashed server-side" },
+          "user": { "$ref": "#/components/schemas/UserSummary" }
+        }
+      },
+      "UserSummary": {
+        "type": "object",
+        "required": ["id", "email", "displayName", "locale", "emailVerified", "createdAt"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email" },
+          "displayName": { "type": "string" },
+          "locale": { "$ref": "#/components/schemas/Locale" },
+          "emailVerified": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Locale": {
+        "type": "string",
+        "enum": ["en", "zh-Hans", "fr", "de"],
+        "default": "en",
+        "description": "Clients must tolerate unknown future values."
+      },
+      "Problem": {
+        "type": "object",
+        "description": "RFC 9457 problem details. Content type application/problem+json.",
+        "required": ["type", "title", "status"],
+        "properties": {
+          "type": { "type": "string", "format": "uri" },
+          "title": { "type": "string" },
+          "status": { "type": "integer" },
+          "detail": { "type": "string" },
+          "instance": { "type": "string" },
+          "correlationId": { "type": "string" },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field", "code", "message"],
+              "properties": {
+                "field": { "type": "string" },
+                "code": { "type": "string" },
+                "message": { "type": "string", "description": "Locale-resolved; code maps to frontend i18n keys" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "ValidationError": {
+        "description": "Request failed validation.",
+        "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } }
+      },
+      "AuthenticationFailed": {
+        "description": "Missing/invalid credentials or token.",
+        "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } }
+      },
+      "EmailNotVerified": {
+        "description": "Credentials valid but email not verified; problem type .../problems/email-not-verified.",
+        "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } }
+      },
+      "Conflict": {
+        "description": "Resource conflict (e.g. email already registered).",
+        "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } }
+      },
+      "TokenGone": {
+        "description": "Token expired or already consumed.",
+        "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } }
+      },
+      "RateLimited": {
+        "description": "Too many requests; Retry-After header set.",
+        "headers": { "Retry-After": { "schema": { "type": "integer" }, "description": "Seconds until retry permitted" } },
+        "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } }
+      }
+    }
+  }
+}

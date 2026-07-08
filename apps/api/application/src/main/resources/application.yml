@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: spexcrafters-api
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/spexcrafters}
+    username: ${SPRING_DATASOURCE_USERNAME:spexcrafters}
+    password: ${SPRING_DATASOURCE_PASSWORD:spexcrafters_dev}
+
+  jpa:
+    # Flyway owns the schema; Hibernate only verifies the mapping against it.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  mail:
+    # Mailpit in local development (infrastructure/docker/compose.yaml).
+    host: ${SPRING_MAIL_HOST:localhost}
+    port: ${SPRING_MAIL_PORT:1025}
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      # Exposes /actuator/health/liveness and /actuator/health/readiness groups.
+      probes:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+spexcrafters:
+  web:
+    # Frontend origin; used to build the email-verification link.
+    base-url: ${SPEXCRAFTERS_WEB_BASE_URL:http://localhost:3000}
+  security:
+    # DEV-ONLY fallback so the app boots locally without setup. Every deployed
+    # environment MUST override SPEXCRAFTERS_JWT_SECRET with a random secret of
+    # at least 32 bytes (enforced at startup).
+    jwt-secret: ${SPEXCRAFTERS_JWT_SECRET:dev-only-jwt-secret-change-me-0123456789abcdef}
+    cors-allowed-origins: ${SPEXCRAFTERS_CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  auth:
+    access-token-ttl: 10m
+    refresh-token-ttl: 14d
+    verification-token-ttl: 24h
+  mail:
+    from: ${SPEXCRAFTERS_MAIL_FROM:no-reply@spexcrafters.com}

@@ -1,0 +1,18 @@
+.skipLink {
+  position: absolute;
+  inset-block-start: var(--sc-space-2);
+  inset-inline-start: var(--sc-space-2);
+  z-index: var(--sc-z-toast);
+  padding: var(--sc-space-2) var(--sc-space-4);
+  background: var(--sc-color-action-primary);
+  color: var(--sc-color-text-inverse);
+  border-radius: var(--sc-radius-sm);
+  font-size: var(--sc-text-sm);
+  font-weight: var(--sc-font-weight-medium);
+  text-decoration: none;
+  transform: translateY(calc(-1 * var(--sc-space-16)));
+}
+
+.skipLink:focus-visible {
+  transform: translateY(0);
+}

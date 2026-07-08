@@ -1,0 +1,43 @@
+# H — Technology Decision Matrix
+
+**Project:** SpexCrafters · **Date:** 2026-07-08
+**Policy anchor:** dependency-longevity rules (master brief §35): LTS-first, lockfiles, pinned versions, deliberate major upgrades, dependency inventory classified Core / Infrastructure / UI / Dev-only. Each row below becomes a full ADR (ADR-001…016) after approval.
+
+| # | Technology | Class | Version strategy | Purpose | Why selected | Alternatives considered | Risks | Replacement strategy | Expected longevity |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | **Java** | Core | 25 LTS; move only LTS→LTS after 1+ yr maturity | Backend language | Mandated; strongest long-lifecycle ecosystem, hiring pool, tooling | Kotlin (JVM churn risk in style, still viable later), Go (weaker ORM/domain modeling), .NET | Verbosity vs. moderns | Language interop on JVM allows gradual Kotlin adoption if ever desired | 10+ yrs |
+| 2 | **Spring Boot / Framework / Security / Data JPA** | Core | Latest GA of current major; upgrade minors quarterly, majors deliberately | App framework, DI, security, persistence | Industry default for modular monoliths; enormous maintenance runway; first-class OIDC/observability | Quarkus, Micronaut (smaller ecosystems), Jakarta EE | Framework magic obscuring behavior — mitigated by ArchUnit + explicit config | Contexts are framework-thin at domain layer; port cost contained | 10+ yrs |
+| 3 | **Hibernate ORM + Flyway** | Core | Track Spring Boot BOM; Flyway-only DDL | Persistence + migrations | Mandated; Flyway gives audited, replayable schema history | jOOQ (add later for complex queries if needed), Liquibase | ORM misuse → N+1; mitigated by query budgets + tests | Repositories abstract persistence; jOOQ can coexist | 10+ yrs |
+| 4 | **PostgreSQL** | Core | Latest stable major − 1 in prod; managed service | System of record, FTS, JSONB specs | Mandated; one database covers relational + search + flexible attributes + jobs/outbox in v1 → minimal ops | MySQL (weaker FTS/JSONB), + separate search engine (deferred) | Single-store concentration | `SearchService`/module ports; read replicas; extract search first | 10+ yrs |
+| 5 | **Next.js (App Router) + React + TypeScript strict** | Core | Pin minor; upgrade majors ≥6 months after GA with codemods | Public SSR site + portals | Mandated; only mainstream option combining SSG/ISR/RSC, metadata API, i18n routing at this maturity | Remix/React Router (smaller content-site story), Astro (weak app story), SvelteKit (ecosystem risk) | Vercel-driven churn (App Router API evolution) | Self-hostable (Node/Docker); UI is CSS-Modules + tokens, portable; API client generated — view layer swappable at page granularity | 5–8 yrs per major generation |
+| 6 | **CSS Modules + Custom Properties + PostCSS** | UI | Native platform features; PostCSS pinned | Styling + design tokens | Mandated; zero-runtime, framework-agnostic, outlives any utility framework | Tailwind (rejected as foundation per brief; allowed selectively with justification), vanilla-extract, styled-components (runtime cost) | More discipline needed than utility CSS | It's the platform — nothing to replace | 10+ yrs |
+| 7 | **Motion for React (+ GSAP, hero-only)** | UI | Pinned; upgrade with visual-regression pass | Selected interactions; exceptional hero storytelling | Mandated split keeps animation debt small; CSS-first policy | CSS-only (default), anime.js | Bundle cost if scope creeps — budget: Motion only in client islands, GSAP lazy-loaded on homepage hero route only | Both removable per-component; reduced-motion path is pure CSS | 5+ yrs |
+| 8 | **TanStack Query / React Hook Form / Zod** | UI | Pinned minors | Client server-state (islands only), complex forms, validation | Mandated; each is the category-defining library with large maintainer bases | SWR, Formik (stale), Valibot | Zod major migrations | Each is per-feature replaceable; Zod schemas colocated | 5+ yrs |
+| 9 | **OpenAPI 3.1 + Springdoc + openapi-typescript / -fetch client generation** | Core | Contract versioned in repo; generator pinned | API contract + generated TS client | Mandated; kills manual type duplication; contract tests hang off it | GraphQL (rejected: caching/complexity for this shape of product), tRPC (couples stacks) | Generator quality — validate in CI | Contract is the asset; generators swappable | 10+ yrs (spec), tooling rotates |
+| 10 | **OIDC / OAuth 2.1 + PKCE via Spring Authorization Server, BFF cookies** | Core | Track Spring Security | AuthN/AuthZ foundation | Standards-based per brief §8; self-hosted avoids per-MAU vendor pricing and lock-in; future SSO/passkeys are protocol features | Keycloak (heavier ops, viable fallback), Auth0/Cognito (lock-in, cost), custom JWT (rejected) | Self-hosted auth = security ownership — mitigated by ASVS checklist, pen-test gate | Protocol-standard means any IdP can replace the server later | 10+ yrs (protocols) |
+| 11 | **Redis** | Infrastructure | Managed; pinned major | Rate limits, locks, short-TTL cache | Mandated boundaries (§6); simplest correct tool | Valkey (drop-in if licensing shifts), PG advisory locks only (insufficient for rate limiting at edge) | License drift → Valkey is API-compatible | Behind small adapters (RateLimiter, LockManager ports) | 10+ yrs (API) |
+| 12 | **S3-compatible object storage (prod: R2 or S3; local: MinIO)** | Infrastructure | S3 API stability | Media, documents, backups | Mandated; ubiquitous API, CDN-friendly | Azure Blob (different API), filesystem (rejected) | Egress cost (R2 mitigates) | S3 API is the abstraction; provider swap is config + data copy | 10+ yrs |
+| 13 | **Docker + Compose / GitHub Actions / Terraform** | Infrastructure | Pinned action SHAs; TF pinned providers | Local env, CI/CD, IaC | Mandated; boring and universal | GitLab CI, Pulumi | GH Actions supply chain — pin by SHA, least-privilege tokens | Standard container images run anywhere | 10+ yrs |
+| 14 | **OpenTelemetry + Prometheus/Grafana stack + Sentry** | Infrastructure | OTel SDK pinned; collector managed | Traces/metrics/logs, error monitoring | Mandated; vendor-neutral telemetry protects against APM lock-in | Datadog/New Relic (cost+lock-in) | OTel Java agent overhead — measure, sample | OTLP is the seam; any backend | 10+ yrs (OTLP) |
+| 15 | **JUnit 5 + Testcontainers + ArchUnit / Playwright + Vitest + Storybook (+ test-runner, axe)** | Dev-only | Track stack versions | Test pyramid + component workshop | Mandated set; Testcontainers gives real-PG integration truth; ArchUnit enforces module rules; Playwright covers the 17 required E2E journeys | Cypress (slower, flakier at scale), Selenium | E2E flake budget — quarantine policy, trace-on-retry | Dev-only: replace freely | 5–10 yrs |
+| 16 | **Maven (backend) / pnpm workspaces (frontend monorepo)** | Dev-only | Wrapper-pinned | Builds & workspace mgmt | Maven: convention + enforcer plugin for module rules; pnpm: efficient workspaces, strict lockfile | Gradle (flexibility we don't need), npm/yarn, Turborepo (add later only if build times demand) | — | Standard formats | 10+ yrs |
+
+## H.2 Explicitly rejected for v1
+
+| Technology | Reason |
+|---|---|
+| Microservices / message broker (Kafka, RabbitMQ) | Operational cost without scale justification; PG outbox + events suffice; seams preserved (ADR-001) |
+| Dedicated search cluster (Elastic/OpenSearch/Meilisearch) | Phase-1 search fits PG FTS + trigram; `SearchService` port keeps migration cheap (ADR-008) |
+| Headless CMS (Contentful, Sanity, Strapi) | Editorial workflow doesn't yet justify the dependency; PG-backed content module with CMS-shaped abstraction (ADR-016) |
+| Tailwind as styling foundation | Brief mandate; token/CSS-Modules system is the durable asset (ADR-012) |
+| WebSockets / realtime infra | Messaging is durable-first; polling → SSE upgrade path (§22) |
+| GraphQL | REST+OpenAPI mandated; caching, CDN, and contract-generation story is simpler |
+| Auth SaaS (Auth0/Clerk/Cognito) | Per-MAU cost + lock-in; standards-based self-hosting chosen; revisit only if ops burden proves out |
+| Prisma/Drizzle on frontend | Frontend never touches the database |
+
+## H.3 Dependency governance (operationalized)
+
+- `docs/dependencies.md` inventory: every production dependency with class, owner, upgrade cadence, bus-factor note, and exit plan (kept current by CI check that fails on unlisted new deps).
+- Renovate (or Dependabot) grouped weekly PRs for patch/minor; majors require a human-authored upgrade note; all gated by full test suite.
+- Node.js LTS only; Java LTS only; PostgreSQL major − 1 policy; lockfiles committed; Maven Enforcer bans SNAPSHOT and duplicate versions.
+- Quarterly dependency-maintenance day on the engineering calendar.

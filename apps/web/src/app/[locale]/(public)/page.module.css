@@ -1,0 +1,69 @@
+.hero {
+  padding-block: var(--sc-space-24) var(--sc-space-32);
+  padding-inline: var(--sc-space-6);
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sc-space-6);
+  max-inline-size: var(--sc-grid-max);
+  margin-inline: auto;
+}
+
+/*
+ * Spectral keyline — HomepageHero is on the restricted-token whitelist
+ * (design system §2.4); ≤4px edge, one instance per viewport.
+ */
+.heroKeyline {
+  display: block;
+  inline-size: var(--sc-space-16);
+  block-size: var(--sc-space-1);
+  background: var(--sc-gradient-spectral);
+  border-radius: var(--sc-radius-xs);
+}
+
+.heroTitle {
+  font-family: var(--sc-font-display);
+  font-size: var(--sc-text-display);
+  font-weight: var(--sc-font-weight-bold);
+  line-height: var(--sc-leading-tight);
+  letter-spacing: var(--sc-tracking-display);
+  max-inline-size: 16ch;
+}
+
+.heroSubtitle {
+  font-size: var(--sc-text-lg);
+  color: var(--sc-color-text-secondary);
+  max-inline-size: 52ch;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sc-space-4);
+  margin-block-start: var(--sc-space-4);
+}
+
+.primaryCta {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--sc-space-10);
+  padding-block: var(--sc-space-2);
+  padding-inline: var(--sc-space-6);
+  background: var(--sc-color-action-primary);
+  color: var(--sc-color-text-inverse);
+  border-radius: var(--sc-radius-sm);
+  font-weight: var(--sc-font-weight-medium);
+  text-decoration: none;
+}
+
+.primaryCta:hover {
+  background: var(--sc-color-action-primary-hover);
+}
+
+.primaryCta:active {
+  background: var(--sc-color-action-primary-active);
+}

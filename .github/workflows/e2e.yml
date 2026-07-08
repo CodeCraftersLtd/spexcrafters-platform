@@ -1,0 +1,87 @@
+name: e2e-smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths: ["apps/**", "packages/**", "infrastructure/docker/**", ".github/workflows/e2e.yml"]
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start infrastructure (PostgreSQL, Redis, MinIO, Mailpit)
+        run: docker compose -f infrastructure/docker/compose.yaml up -d --wait postgres redis mailpit
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Build API
+        run: mvn -f apps/api/pom.xml -B -DskipTests package
+
+      - name: Start API
+        run: |
+          nohup java -jar apps/api/application/target/*.jar > api.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -fsS http://localhost:8080/actuator/health/readiness && break
+            sleep 2
+          done
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/spexcrafters
+          SPRING_DATASOURCE_USERNAME: spexcrafters
+          SPRING_DATASOURCE_PASSWORD: spexcrafters_dev
+          SPEXCRAFTERS_JWT_SECRET: ZTJlLXNtb2tlLW9ubHktbm90LWEtcmVhbC1zZWNyZXQtNDgtYnl0ZXMhIQ==
+          SPRING_MAIL_HOST: localhost
+          SPRING_MAIL_PORT: "1025"
+          SPEXCRAFTERS_WEB_BASE_URL: http://localhost:3000
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build and start web
+        run: |
+          pnpm --filter @spexcrafters/design-tokens build
+          pnpm --filter @spexcrafters/web build
+          nohup pnpm --filter @spexcrafters/web start > web.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://localhost:3000 > /dev/null && break
+            sleep 2
+          done
+        env:
+          SESSION_SECRET: ZTJlLXNtb2tlLW9ubHktMzItYnl0ZS1zZWNyZXQhIQ==
+          API_BASE_URL: http://localhost:8080/api/v1
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @spexcrafters/web exec playwright install --with-deps chromium
+
+      - name: Run smoke E2E (register → verify → login → dashboard)
+        run: pnpm --filter @spexcrafters/web e2e
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+
+      - name: Upload logs and report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: |
+            api.log
+            web.log
+            apps/web/playwright-report/

@@ -1,0 +1,45 @@
+.root {
+  /* Tier-3 component tokens (documented exceptions): the ring tracks the
+   * surrounding font size, and the stroke matches the 2px focus-ring width. */
+  --sc-spinner-size: 1em;
+  --sc-spinner-stroke: 2px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+}
+
+.sm {
+  font-size: var(--sc-text-sm);
+}
+
+.md {
+  font-size: var(--sc-text-md);
+}
+
+.ring {
+  box-sizing: border-box;
+  display: block;
+  inline-size: var(--sc-spinner-size);
+  block-size: var(--sc-spinner-size);
+  border: var(--sc-spinner-stroke) solid currentColor;
+  border-inline-start-color: transparent;
+  border-radius: var(--sc-radius-full);
+  animation: sc-spinner-rotate calc(var(--sc-motion-duration-story) * 2)
+    linear infinite;
+}
+
+@keyframes sc-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reduced motion: autoplaying micro-animation is removed, not shortened
+ * (design-system.md §4.6). The static arc + SR label still convey state. */
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    animation: none;
+  }
+}

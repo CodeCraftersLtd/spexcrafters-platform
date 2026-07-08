@@ -1,0 +1,51 @@
+{
+  "color": {
+    "$description": "Tier-2 semantic mapping — light (default, public web) per design-system.md §2.6. Tokens beyond the §2.6 excerpt (hover-wash, active-wash, placeholder, action-danger*, border-strong-hover, status *-bg/*-on-bg) follow §2.5 verified pairs and the §5 state matrix.",
+    "bg": {
+      "page": { "$type": "color", "$value": "{color.paper.0}" },
+      "surface": { "$type": "color", "$value": "{color.paper.0}" },
+      "surface-raised": { "$type": "color", "$value": "{color.paper.1}" },
+      "surface-sunken": { "$type": "color", "$value": "{color.paper.2}" },
+      "hover-wash": { "$type": "color", "$value": "{color.accent.50}" },
+      "active-wash": { "$type": "color", "$value": "{color.accent.100}" }
+    },
+    "text": {
+      "primary": { "$type": "color", "$value": "{color.ink.900}" },
+      "secondary": { "$type": "color", "$value": "{color.ink.600}" },
+      "muted": { "$type": "color", "$value": "{color.ink.500}" },
+      "disabled": { "$type": "color", "$value": "{color.ink.300}" },
+      "placeholder": { "$type": "color", "$value": "{color.ink.400}" },
+      "inverse": { "$type": "color", "$value": "{color.paper.0}" }
+    },
+    "action": {
+      "primary": { "$type": "color", "$value": "{color.accent.600}" },
+      "primary-hover": { "$type": "color", "$value": "{color.accent.700}" },
+      "primary-active": { "$type": "color", "$value": "{color.accent.800}" },
+      "danger": { "$type": "color", "$value": "{color.danger.600}" },
+      "danger-hover": { "$type": "color", "$value": "{color.danger.700}" },
+      "danger-active": { "$type": "color", "$value": "{color.danger.800}" },
+      "danger-text": { "$type": "color", "$value": "{color.paper.0}" }
+    },
+    "link": { "$type": "color", "$value": "{color.accent.600}" },
+    "border": {
+      "decorative": { "$type": "color", "$value": "{color.ink.200}" },
+      "strong": { "$type": "color", "$value": "{color.ink.400}" },
+      "strong-hover": { "$type": "color", "$value": "{color.ink.500}" }
+    },
+    "focus-ring": { "$type": "color", "$value": "{color.accent.600}" },
+    "status": {
+      "success": { "$type": "color", "$value": "{color.success.700}" },
+      "success-bg": { "$type": "color", "$value": "{color.success.100}" },
+      "success-on-bg": { "$type": "color", "$value": "{color.success.800}" },
+      "warning": { "$type": "color", "$value": "{color.warning.800}" },
+      "warning-bg": { "$type": "color", "$value": "{color.warning.100}" },
+      "warning-on-bg": { "$type": "color", "$value": "{color.warning.900}" },
+      "danger": { "$type": "color", "$value": "{color.danger.600}" },
+      "danger-bg": { "$type": "color", "$value": "{color.danger.100}" },
+      "danger-on-bg": { "$type": "color", "$value": "{color.danger.800}" },
+      "info": { "$type": "color", "$value": "{color.info.700}" },
+      "info-bg": { "$type": "color", "$value": "{color.info.100}" },
+      "info-on-bg": { "$type": "color", "$value": "{color.info.800}" }
+    }
+  }
+}

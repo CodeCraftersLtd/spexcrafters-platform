@@ -1,0 +1,47 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sc-space-4);
+  max-inline-size: var(--sc-grid-max);
+  margin-inline: auto;
+  padding-block: var(--sc-space-24);
+  padding-inline: var(--sc-space-6);
+}
+
+.code {
+  font-family: var(--sc-font-mono);
+  font-size: var(--sc-text-sm);
+  letter-spacing: var(--sc-tracking-caps);
+  text-transform: uppercase;
+  color: var(--sc-color-text-muted);
+}
+
+.title {
+  font-family: var(--sc-font-display);
+  font-size: var(--sc-text-3xl);
+  line-height: var(--sc-leading-snug);
+}
+
+.body {
+  max-inline-size: 60ch;
+  color: var(--sc-color-text-secondary);
+}
+
+.retryButton {
+  padding: var(--sc-space-2) var(--sc-space-5);
+  background: var(--sc-color-action-primary);
+  color: var(--sc-color-text-inverse);
+  border: 0;
+  border-radius: var(--sc-radius-sm);
+  font-weight: var(--sc-font-weight-medium);
+  cursor: pointer;
+}
+
+.retryButton:hover {
+  background: var(--sc-color-action-primary-hover);
+}
+
+.retryButton:active {
+  background: var(--sc-color-action-primary-active);
+}

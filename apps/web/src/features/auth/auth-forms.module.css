@@ -1,0 +1,35 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-5);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-3);
+  margin-block-start: var(--sc-space-2);
+}
+
+.alternate {
+  margin-block-start: var(--sc-space-4);
+  font-size: var(--sc-text-sm);
+  color: var(--sc-color-text-secondary);
+}
+
+.alternate a {
+  color: var(--sc-color-link);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-5);
+}
+
+.statusActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-3);
+  align-items: flex-start;
+}

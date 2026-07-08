@@ -1,0 +1,25 @@
+{
+  "name": "spexcrafters",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SpexCrafters — Global B2B Optical Marketplace and Sourcing Platform (monorepo)",
+  "engines": {
+    "node": ">=22 <23",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev:infra": "docker compose -f infrastructure/docker/compose.yaml up -d",
+    "dev:infra:down": "docker compose -f infrastructure/docker/compose.yaml down",
+    "dev:web": "pnpm --filter @spexcrafters/web dev",
+    "dev:api": "cd apps/api && mvn spring-boot:run -pl application",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "tokens:build": "pnpm --filter @spexcrafters/design-tokens build",
+    "tokens:check": "pnpm --filter @spexcrafters/design-tokens build:check",
+    "api-client:generate": "pnpm --filter @spexcrafters/api-client generate",
+    "e2e": "pnpm --filter @spexcrafters/web e2e"
+  }
+}

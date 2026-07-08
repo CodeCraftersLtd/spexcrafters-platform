@@ -1,0 +1,80 @@
+{
+  "color": {
+    "paper": {
+      "$description": "Warm-white surfaces (design-system.md §2.1)",
+      "0": { "$type": "color", "$value": "#FDFDFB" },
+      "1": { "$type": "color", "$value": "#F7F7F4" },
+      "2": { "$type": "color", "$value": "#F1F1EC" }
+    },
+    "ink": {
+      "$description": "Cool near-black neutrals (design-system.md §2.1)",
+      "50": { "$type": "color", "$value": "#F0F1F3" },
+      "100": { "$type": "color", "$value": "#E4E7EB" },
+      "200": { "$type": "color", "$value": "#CDD2D9" },
+      "300": { "$type": "color", "$value": "#A6AEB8" },
+      "400": { "$type": "color", "$value": "#7A8492" },
+      "500": { "$type": "color", "$value": "#5C6672" },
+      "600": { "$type": "color", "$value": "#444D58" },
+      "700": { "$type": "color", "$value": "#2E353E" },
+      "800": { "$type": "color", "$value": "#1F242B" },
+      "900": { "$type": "color", "$value": "#14171C" },
+      "950": { "$type": "color", "$value": "#0C0E12" }
+    },
+    "accent": {
+      "$description": "Calibrated cobalt — the single interaction accent (design-system.md §2.2)",
+      "50": { "$type": "color", "$value": "#EDF1FD" },
+      "100": { "$type": "color", "$value": "#D8E1FA" },
+      "200": { "$type": "color", "$value": "#B3C4F4" },
+      "300": { "$type": "color", "$value": "#86A0EC" },
+      "400": { "$type": "color", "$value": "#5A7BE0" },
+      "500": { "$type": "color", "$value": "#3A5CCC" },
+      "600": { "$type": "color", "$value": "#2947B8" },
+      "700": { "$type": "color", "$value": "#1F3691" },
+      "800": { "$type": "color", "$value": "#17296E" },
+      "900": { "$type": "color", "$value": "#101D4E" }
+    },
+    "success": {
+      "$description": "Status ramp — stops 100/300/700/800 fixed by design-system.md §2.3; 600/900 interpolated consistently",
+      "100": { "$type": "color", "$value": "#D9F0E2" },
+      "300": { "$type": "color", "$value": "#6FCF97" },
+      "600": { "$type": "color", "$value": "#22894F" },
+      "700": { "$type": "color", "$value": "#1B6E45" },
+      "800": { "$type": "color", "$value": "#14522F" },
+      "900": { "$type": "color", "$value": "#0E3D23" }
+    },
+    "warning": {
+      "$description": "Status ramp — stops 100/300/800/900 fixed by design-system.md §2.3; 600/700 interpolated consistently",
+      "100": { "$type": "color", "$value": "#FBEFD3" },
+      "300": { "$type": "color", "$value": "#F0BE4C" },
+      "600": { "$type": "color", "$value": "#B37800" },
+      "700": { "$type": "color", "$value": "#9E6900" },
+      "800": { "$type": "color", "$value": "#8A5A00" },
+      "900": { "$type": "color", "$value": "#6B4600" }
+    },
+    "danger": {
+      "$description": "Status ramp — stops 100/300/600/800 fixed by design-system.md §2.3; 700/900 interpolated consistently",
+      "100": { "$type": "color", "$value": "#FADEDE" },
+      "300": { "$type": "color", "$value": "#F08A8A" },
+      "600": { "$type": "color", "$value": "#BA2E2E" },
+      "700": { "$type": "color", "$value": "#9E2626" },
+      "800": { "$type": "color", "$value": "#7D1D1D" },
+      "900": { "$type": "color", "$value": "#641717" }
+    },
+    "info": {
+      "$description": "Status ramp — stops 100/300/700/800 fixed by design-system.md §2.3; 600/900 interpolated consistently",
+      "100": { "$type": "color", "$value": "#D9EDF8" },
+      "300": { "$type": "color", "$value": "#67B7E1" },
+      "600": { "$type": "color", "$value": "#0E71A6" },
+      "700": { "$type": "color", "$value": "#0B5E8A" },
+      "800": { "$type": "color", "$value": "#084566" },
+      "900": { "$type": "color", "$value": "#06344D" }
+    }
+  },
+  "gradient": {
+    "spectral": {
+      "$type": "gradient",
+      "$description": "RESTRICTED token (design-direction.md §4.1): whitelist only — Logo, HomepageHero keyline, VerifiedBadge, CelebrationState, OG-image templates. Decorative-only; never carries text or meaning; max 4px stroke; max one instance per viewport.",
+      "$value": "linear-gradient(90deg, #6E56CF 0%, #3E63DD 22%, #00A2C7 42%, #30A46C 62%, #FFC53D 82%, #E5484D 100%)"
+    }
+  }
+}

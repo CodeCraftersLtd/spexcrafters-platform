@@ -1,0 +1,25 @@
+{
+  "name": "@spexcrafters/design-tokens",
+  "version": "0.1.0",
+  "description": "SpexCrafters design tokens — DTCG JSON source of truth with generated CSS custom properties (--sc-*) and TypeScript constants",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    "./css": "./build/css/tokens.css",
+    "./ts": "./build/ts/tokens.ts"
+  },
+  "files": [
+    "src",
+    "build",
+    "scripts"
+  ],
+  "scripts": {
+    "build": "node scripts/build-tokens.mjs",
+    "build:check": "node scripts/build-tokens.mjs --check",
+    "lint": "echo \"design-tokens: nothing to lint\"",
+    "typecheck": "echo \"design-tokens: nothing to typecheck\"",
+    "test": "node scripts/build-tokens.mjs --check"
+  }
+}

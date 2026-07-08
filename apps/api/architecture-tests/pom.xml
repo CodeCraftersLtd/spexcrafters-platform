@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.spexcrafters</groupId>
+    <artifactId>spexcrafters-api</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>spexcrafters-architecture-tests</artifactId>
+  <name>SpexCrafters :: architecture-tests</name>
+  <description>ArchUnit enforcement of the module interaction rules (system-architecture §G.3)</description>
+
+  <dependencies>
+    <!-- Modules under analysis (production classes only; tests are excluded by import option) -->
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-shared-kernel</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-audit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-identity</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-organizations</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- Annotation types referenced by the rules -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

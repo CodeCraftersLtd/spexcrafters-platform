@@ -1,0 +1,17 @@
+{
+  "motion": {
+    "duration": {
+      "$description": "All durations collapse to 0ms under prefers-reduced-motion (design-system.md §4.6)",
+      "instant": { "$type": "duration", "$value": "80ms" },
+      "fast": { "$type": "duration", "$value": "120ms" },
+      "base": { "$type": "duration", "$value": "160ms" },
+      "slow": { "$type": "duration", "$value": "240ms" },
+      "story": { "$type": "duration", "$value": "400ms" }
+    },
+    "ease": {
+      "standard": { "$type": "cubicBezier", "$value": "cubic-bezier(0.2, 0, 0, 1)" },
+      "exit": { "$type": "cubicBezier", "$value": "cubic-bezier(0.3, 0, 1, 1)" },
+      "instrument": { "$type": "cubicBezier", "$value": "cubic-bezier(0.5, 0, 0.1, 1)" }
+    }
+  }
+}

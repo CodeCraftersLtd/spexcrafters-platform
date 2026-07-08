@@ -1,0 +1,46 @@
+/* Input — tokens only (semantic tier). Full §5 state matrix. */
+
+.input {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: var(--sc-space-10); /* 40px target (≥24px, WCAG 2.5.8) */
+  padding-block: var(--sc-space-2);
+  padding-inline: var(--sc-space-3);
+  background-color: var(--sc-color-bg-surface);
+  color: var(--sc-color-text-primary);
+  border: var(--sc-border-strong);
+  border-radius: var(--sc-radius-sm);
+  font-family: var(--sc-font-ui);
+  font-size: var(--sc-text-md);
+  line-height: var(--sc-leading-ui);
+  transition: border-color var(--sc-motion-duration-instant)
+    var(--sc-motion-ease-standard);
+}
+
+.input::placeholder {
+  color: var(--sc-color-text-placeholder);
+}
+
+.input:hover:not(:disabled) {
+  border-color: var(--sc-color-border-strong-hover);
+}
+
+/* Focus-visible: the one system focus ring (§5). */
+.input:focus-visible {
+  outline: 2px solid var(--sc-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Disabled: tokens, never opacity on text (§5). */
+.input:disabled {
+  background-color: var(--sc-color-bg-surface-raised);
+  border-color: var(--sc-color-border-decorative);
+  color: var(--sc-color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Error: border-error token color; message + aria-invalid are wired by
+ * FormField — color is never the sole indicator (§5). */
+.input[aria-invalid="true"] {
+  border-color: var(--sc-color-status-danger);
+}

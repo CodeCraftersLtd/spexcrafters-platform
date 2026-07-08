@@ -1,0 +1,25 @@
+{
+  "name": "@spexcrafters/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Typed client for the SpexCrafters API, generated from the committed OpenAPI 3.1 contract",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./spec": "./spec/openapi.json"
+  },
+  "scripts": {
+    "generate": "openapi-typescript spec/openapi.json -o src/generated/schema.d.ts",
+    "generate:check": "openapi-typescript spec/openapi.json -o src/generated/schema.check.d.ts && node scripts/diff-generated.mjs",
+    "lint": "echo \"api-client: lint via consumer packages\"",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "echo \"api-client: covered by contract job\"",
+    "build": "echo \"api-client: consumed from source\""
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.4.0",
+    "typescript": "^5.7.0"
+  }
+}

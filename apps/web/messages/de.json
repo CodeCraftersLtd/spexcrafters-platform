@@ -1,0 +1,119 @@
+{
+  "common": {
+    "appName": "SpexCrafters",
+    "tagline": "Global B2B optical marketplace",
+    "skipToContent": "Skip to main content",
+    "localeSwitcherLabel": "Language",
+    "mainNavigationLabel": "Main navigation",
+    "footerLegalLabel": "Legal",
+    "comingSoon": "Coming soon",
+    "loading": "Loading…",
+    "footer": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy",
+      "accessibility": "Accessibility",
+      "imprint": "Imprint",
+      "copyright": "© {year} SpexCrafters. All rights reserved."
+    }
+  },
+  "home": {
+    "metaTitle": "Global B2B Optical Marketplace",
+    "metaDescription": "SpexCrafters connects optical buyers with verified manufacturers and suppliers worldwide — lenses, frames, machinery, and services.",
+    "hero": {
+      "title": "The optical industry, calibrated.",
+      "subtitle": "Source lenses, frames, machinery, and services from verified manufacturers worldwide — with specifications you can trust."
+    },
+    "cta": {
+      "findSuppliers": "Find suppliers",
+      "createAccount": "Create account"
+    }
+  },
+  "auth": {
+    "register": {
+      "metaTitle": "Create account",
+      "title": "Create your account",
+      "subtitle": "Join the global B2B optical marketplace.",
+      "displayNameLabel": "Full name",
+      "displayNameHint": "Shown to suppliers and colleagues.",
+      "emailLabel": "Work email",
+      "passwordLabel": "Password",
+      "passwordHint": "At least 12 characters. Paste is allowed.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "checkEmail": {
+        "title": "Check your email",
+        "body": "We sent a verification link to {email}. Follow it to activate your account.",
+        "resend": "Resend verification email",
+        "resent": "If an unverified account exists for {email}, a new verification email is on its way."
+      }
+    },
+    "login": {
+      "metaTitle": "Sign in",
+      "title": "Sign in",
+      "subtitle": "Welcome back to SpexCrafters.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Sign in",
+      "noAccount": "New to SpexCrafters?",
+      "createAccount": "Create an account"
+    },
+    "verifyEmail": {
+      "metaTitle": "Verify email",
+      "title": "Email verification",
+      "verifying": "Verifying your email address…",
+      "successTitle": "Email verified",
+      "successBody": "Your email address is confirmed. You can sign in now.",
+      "goToLogin": "Go to sign in",
+      "errorTitle": "Verification failed",
+      "missingToken": "This verification link is missing its token. Request a new email below.",
+      "resendTitle": "Request a new verification email",
+      "resendEmailLabel": "Email",
+      "resendSubmit": "Send verification email",
+      "resendAccepted": "If an unverified account exists for this address, a new verification email is on its way."
+    },
+    "validation": {
+      "displayNameRequired": "Enter your name.",
+      "displayNameTooLong": "Names can be at most 120 characters.",
+      "emailRequired": "Enter your email address.",
+      "emailInvalid": "Enter a valid email address, like name@company.com.",
+      "emailTooLong": "Email addresses can be at most 254 characters.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "Passwords must be at least 12 characters.",
+      "passwordTooLong": "Passwords can be at most 128 characters."
+    },
+    "serverErrors": {
+      "conflict": "An account with this email already exists. Try signing in instead.",
+      "authentication-failed": "The email or password is incorrect.",
+      "email-not-verified": "Your email address is not verified yet. Check your inbox for the verification link.",
+      "token-gone": "This verification link has expired or was already used.",
+      "validation-failed": "Some fields need attention. Review the messages below.",
+      "rate-limited": "Too many attempts. Wait a moment, then try again.",
+      "unexpected": "Something went wrong on our side. Try again shortly."
+    }
+  },
+  "buyer": {
+    "metaTitle": "Dashboard",
+    "navigationLabel": "Buyer navigation",
+    "nav": {
+      "dashboard": "Dashboard"
+    },
+    "welcome": "Welcome, {name}",
+    "dashboardIntro": "Your RFQs, quotations, and messages will appear here.",
+    "logout": "Sign out"
+  },
+  "errors": {
+    "notFound": {
+      "metaTitle": "Page not found",
+      "title": "Page not found",
+      "body": "The page you are looking for does not exist or has moved.",
+      "backHome": "Back to homepage"
+    },
+    "unexpected": {
+      "title": "Something went wrong",
+      "body": "An unexpected error occurred. You can try again.",
+      "retry": "Try again"
+    }
+  }
+}

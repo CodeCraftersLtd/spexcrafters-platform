@@ -1,0 +1,32 @@
+/* FormField — tokens only (semantic tier). */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-1);
+  font-family: var(--sc-font-ui);
+}
+
+.label {
+  color: var(--sc-color-text-primary);
+  font-size: var(--sc-text-sm);
+  font-weight: var(--sc-font-weight-medium);
+  line-height: var(--sc-leading-ui);
+}
+
+.hint {
+  margin: 0;
+  color: var(--sc-color-text-muted);
+  font-size: var(--sc-text-sm);
+  line-height: var(--sc-leading-ui);
+}
+
+/* Error text uses the status token (danger-600 light / danger-300 dark) —
+ * always alongside aria-invalid + describedby, never color alone (§5). */
+.error {
+  margin: 0;
+  color: var(--sc-color-status-danger);
+  font-size: var(--sc-text-sm);
+  font-weight: var(--sc-font-weight-medium);
+  line-height: var(--sc-leading-ui);
+}

@@ -1,0 +1,50 @@
+name: ci-web
+
+on:
+  push:
+    branches: [main]
+    paths: ["apps/web/**", "packages/**", "pnpm-workspace.yaml", "package.json", ".github/workflows/ci-web.yml"]
+  pull_request:
+    paths: ["apps/web/**", "packages/**", "pnpm-workspace.yaml", "package.json", ".github/workflows/ci-web.yml"]
+
+concurrency:
+  group: ci-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # BOOTSTRAP: switch to `--frozen-lockfile` as soon as pnpm-lock.yaml is
+      # committed by the first developer machine (tracked in sprint-01 report).
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Design tokens — build outputs are current
+        run: pnpm tokens:check
+
+      - name: Lint
+        run: pnpm -r lint
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Unit tests
+        run: pnpm -r test
+
+      - name: Build web
+        run: pnpm --filter @spexcrafters/web build
+        env:
+          SESSION_SECRET: Y2ktYnVpbGQtb25seS1ub3QtYS1yZWFsLXNlY3JldC0hIQ==
+          API_BASE_URL: http://localhost:8080/api/v1
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000

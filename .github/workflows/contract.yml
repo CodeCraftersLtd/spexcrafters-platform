@@ -1,0 +1,45 @@
+name: contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/api-client/**"
+      - "apps/api/**"
+      - ".github/workflows/contract.yml"
+  pull_request:
+    paths:
+      - "packages/api-client/**"
+      - "apps/api/**"
+      - ".github/workflows/contract.yml"
+
+jobs:
+  client-generation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate client types from committed spec
+        run: pnpm --filter @spexcrafters/api-client generate
+
+      - name: Typecheck api-client (bootstrap types vs generated schema)
+        run: pnpm --filter @spexcrafters/api-client typecheck
+
+      - name: Breaking-change detection vs main
+        if: github.event_name == 'pull_request'
+        uses: oasdiff/oasdiff-action/breaking@v0.0.19
+        with:
+          base: "https://raw.githubusercontent.com/${{ github.repository }}/main/packages/api-client/spec/openapi.json"
+          revision: packages/api-client/spec/openapi.json
+          fail-on: ERR

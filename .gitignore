@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Builds
+dist/
+build/
+.next/
+out/
+storybook-static/
+target/
+packages/design-tokens/build/
+
+# Environment & secrets — never commit real values
+.env
+.env.*
+!.env.example
+
+# Local tool settings (per-machine permissions)
+.claude/settings.local.json
+
+# IDE / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.iml
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+*.lcov
+
+# Logs
+*.log
+logs/
+
+# Java
+*.class
+.mvn/wrapper/maven-wrapper.jar
