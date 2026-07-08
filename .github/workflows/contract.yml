@@ -9,10 +9,6 @@ on:
       - "apps/api/**"
       - ".github/workflows/contract.yml"
   pull_request:
-    paths:
-      - "packages/api-client/**"
-      - "apps/api/**"
-      - ".github/workflows/contract.yml"
 
 permissions:
   contents: read
