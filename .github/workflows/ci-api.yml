@@ -35,6 +35,7 @@ jobs:
         run: ./mvnw -B verify
         working-directory: apps/api
 
+      # -am builds sibling reactor modules (verify does not install them to ~/.m2).
       - name: Validate Flyway migrations from empty schema
-        run: ./mvnw -B -pl application test -Dtest=*MigrationTest* -DfailIfNoTests=false
+        run: ./mvnw -B -pl application -am test -Dtest=*MigrationTest* -DfailIfNoTests=false
         working-directory: apps/api

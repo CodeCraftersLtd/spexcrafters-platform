@@ -18,6 +18,7 @@ regexes = [
   '''Y2ktYnVpbGQtb25seS1ub3QtYS1yZWFsLXNlY3JldC0hIQ==''',
   '''ZTJlLXNtb2tlLW9ubHktbm90LWEtcmVhbC1zZWNyZXQtNDgtYnl0ZXMhIQ==''',
   '''ZTJlLXNtb2tlLW9ubHktMzItYnl0ZS1zZWNyZXQhIQ==''',
+  '''ZTJlLWNpLW9ubHktc2Vzc2lvbi1zZWNyZXQtMzJiISE=''',
   # Documented dev-only fallbacks in committed examples/config
   '''dev-only-change-me''',
   '''dev-only-jwt-secret-change-me''',
