@@ -13,6 +13,9 @@ on:
       - "apps/api/**"
       - ".github/workflows/contract.yml"
 
+permissions:
+  contents: read
+
 jobs:
   client-generation:
     runs-on: ubuntu-latest
@@ -27,8 +30,8 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+      - name: Install dependencies (deterministic)
+        run: pnpm install --frozen-lockfile
 
       - name: Generate client types from committed spec
         run: pnpm --filter @spexcrafters/api-client generate

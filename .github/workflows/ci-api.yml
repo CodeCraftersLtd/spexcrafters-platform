@@ -7,6 +7,9 @@ on:
   pull_request:
     paths: ["apps/api/**", ".github/workflows/ci-api.yml"]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-api-${{ github.ref }}
   cancel-in-progress: true
@@ -26,8 +29,11 @@ jobs:
 
       # `verify` runs unit tests, Testcontainers-backed integration tests
       # (Docker is available on ubuntu-latest), and the ArchUnit module suite.
+      # Wrapper-pinned Maven (3.9.9) — never a runner-provided version.
       - name: Build and verify
-        run: mvn -f apps/api/pom.xml -B verify
+        run: ./mvnw -B verify
+        working-directory: apps/api
 
       - name: Validate Flyway migrations from empty schema
-        run: mvn -f apps/api/pom.xml -B -pl application test -Dtest=*MigrationTest* -DfailIfNoTests=false
+        run: ./mvnw -B -pl application test -Dtest=*MigrationTest* -DfailIfNoTests=false
+        working-directory: apps/api

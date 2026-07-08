@@ -6,6 +6,9 @@ on:
   pull_request:
     paths: ["apps/**", "packages/**", "infrastructure/docker/**", ".github/workflows/e2e.yml"]
 
+permissions:
+  contents: read
+
 concurrency:
   group: e2e-${{ github.ref }}
   cancel-in-progress: true
@@ -27,7 +30,8 @@ jobs:
           cache: maven
 
       - name: Build API
-        run: mvn -f apps/api/pom.xml -B -DskipTests package
+        run: ./mvnw -B -DskipTests package
+        working-directory: apps/api
 
       - name: Start API
         run: |
@@ -51,8 +55,8 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+      - name: Install dependencies (deterministic)
+        run: pnpm install --frozen-lockfile
 
       - name: Build and start web
         run: |

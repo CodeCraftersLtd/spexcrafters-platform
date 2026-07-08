@@ -1,0 +1,29 @@
+# SpexCrafters gitleaks configuration.
+# Extends the default ruleset; allowlists ONLY the intentional, non-secret
+# test fixtures and CI placeholder values triaged on 2026-07-08 (all decode
+# to self-describing "not-a-real-secret" strings or are public test-fixture
+# passphrases). Anything new that trips a rule must be triaged, not added
+# here by reflex.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Intentional test fixtures and CI-only placeholder values (no real secrets)"
+regexes = [
+  # E2E / integration-test fixture passphrases (public by design)
+  '''correct-horse-battery-staple''',
+  '''sturdy-passphrase-42''',
+  # CI placeholder env values; base64 of self-describing "…-not-a-real-secret…" strings
+  '''Y2ktYnVpbGQtb25seS1ub3QtYS1yZWFsLXNlY3JldC0hIQ==''',
+  '''ZTJlLXNtb2tlLW9ubHktbm90LWEtcmVhbC1zZWNyZXQtNDgtYnl0ZXMhIQ==''',
+  '''ZTJlLXNtb2tlLW9ubHktMzItYnl0ZS1zZWNyZXQhIQ==''',
+  # Documented dev-only fallbacks in committed examples/config
+  '''dev-only-change-me''',
+  '''dev-only-jwt-secret-change-me''',
+  '''dev-only-generate-32-bytes''',
+]
+paths = [
+  '''apps/web/e2e/.*\.spec\.ts''',
+  '''apps/api/application/src/test/.*''',
+]

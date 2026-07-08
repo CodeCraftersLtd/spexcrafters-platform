@@ -7,6 +7,9 @@ on:
   pull_request:
     paths: ["apps/web/**", "packages/**", "pnpm-workspace.yaml", "package.json", ".github/workflows/ci-web.yml"]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-web-${{ github.ref }}
   cancel-in-progress: true
@@ -25,10 +28,8 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      # BOOTSTRAP: switch to `--frozen-lockfile` as soon as pnpm-lock.yaml is
-      # committed by the first developer machine (tracked in sprint-01 report).
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+      - name: Install dependencies (deterministic)
+        run: pnpm install --frozen-lockfile
 
       - name: Design tokens — build outputs are current
         run: pnpm tokens:check
