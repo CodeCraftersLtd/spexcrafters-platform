@@ -25,9 +25,14 @@ async function createOrganization(page: Page, name: string): Promise<string> {
   await page.getByLabel(orgCopy.create.typeLabel).selectOption('BUYER');
   await page.getByRole('button', { name: orgCopy.create.submit }).click();
 
-  // Success redirects to the new workspace: /en/organizations/{id}.
-  await page.waitForURL(/\/en\/organizations\/([^/?#]+)$/, { timeout: 15_000 });
-  const match = page.url().match(/\/en\/organizations\/([^/?#]+)$/);
+  // Success redirects to the new workspace: /en/organizations/{uuid}. Match a
+  // UUID specifically — the literal ".../organizations/new" the form submits
+  // from also matches a generic [^/]+ segment, so a loose pattern would return
+  // before the redirect and capture "new" as the id.
+  const workspaceUrl =
+    /\/en\/organizations\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
+  await page.waitForURL(workspaceUrl, { timeout: 15_000 });
+  const match = page.url().match(workspaceUrl);
   if (!match?.[1]) {
     throw new Error(`could not extract organization id from ${page.url()}`);
   }
@@ -132,9 +137,13 @@ test.describe('organizations vertical slice', () => {
         pageB.getByLabel(workspaceCopy.invitations.emailLabel),
       ).toHaveCount(0);
 
-      // A's members list now shows B.
+      // A's members list now shows B. Exact match: as OWNER, A also renders a
+      // role-select whose accessible label ("Role for <name>") contains the
+      // display name, so a loose text match resolves to two elements.
       await pageA.goto(`/en/organizations/${orgAId}`);
-      await expect(pageA.getByText(userB.displayName)).toBeVisible();
+      await expect(
+        pageA.getByText(userB.displayName, { exact: true }),
+      ).toBeVisible();
 
       // Logout A → the organizations area redirects to login.
       await pageA.getByRole('button', { name: orgCopy.logout }).click();
