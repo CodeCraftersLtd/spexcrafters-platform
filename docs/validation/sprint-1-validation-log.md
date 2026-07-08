@@ -113,8 +113,19 @@ Verified: Argon2id password hashing (BouncyCastle) · SHA-256-hashed single-use 
 - **Low:** CSRF on BFF relies on SameSite=Lax + JSON content type; explicit double-submit token planned with the session hardening pass (TD-5).
 - **Not claimed:** production security certification. No pen test performed.
 
-## Phase 13 — CI first run ⛔ EXTERNAL BLOCKER
-No Git remote is configured and no GitHub credentials exist in this environment (`git remote -v` empty). CI workflows are authored and lint-clean but **have never executed**. Required follow-up: create the GitHub repository, push `main` + tags, confirm all five workflows green — this is also where Testcontainers integration tests and the Compose stack get their first execution.
+## Phase 13 — CI first run ✅ COMPLETED 2026-07-09 (hosted validation)
+
+Remote: `github.com/CodeCraftersLtd/spexcrafters-platform` (private). `main` + both tags pushed; no force pushes, no history rewrites. Five CI-remediation commits fixed real first-run findings at root cause:
+
+| Commit | Finding fixed |
+|---|---|
+| `454787d` | trivy-action pin didn't exist; `workflow_dispatch` added (path-filtered workflows don't fire on an initial branch push); gitleaks initial-push range failure self-healed |
+| `e5745bb` | `mvnw` committed non-executable from Windows (`core.filemode=false`) → exit 126 on Linux runners; trivy tag needs `v` prefix |
+| `4c46428` | **Trivy's first scan found 15 real HIGH/CRITICAL vulns** → Boot 3.5.6→3.5.16 (Tomcat ≥10.1.55, CVE-2026-41293 CRITICAL), jackson-bom pinned 2.21.4 (CVE-2026-54512), BouncyCastle 1.78.1→1.84 (CVE-2025-14813 CRITICAL); e2e `SESSION_SECRET` placeholder was 31 bytes (session util enforces 32); ci-api migration step needs `-am` |
+| `5a0188e` | `-Dsurefire.failIfNoSpecifiedTests=false` for `-am` sibling modules; runtime image → `eclipse-temurin:25-jre-alpine` (Ubuntu-based JRE bundles `/usr/bin/pebble` with 6 HIGH CVEs; app.jar itself scanned **0 findings** after remediation) |
+| `747896f` | `apk upgrade` in runtime stage (Alpine base lagged security patches: libexpat et al., 5 HIGH fixed) |
+
+**Hosted results:** Testcontainers integration suites (AuthFlow 5, RefreshTokenRotation 4, ProblemJson, FlywayMigration 2) — **passed on first hosted execution**, matching local behavior exactly · Compose services healthy in the e2e workflow · both container images build · full Playwright smoke journey green in CI · gitleaks green · Trivy green after remediation (app jar: 0 findings). No tests disabled, no gates bypassed, no rules relaxed.
 
 ## Phase 14 — Reproducibility ✅ (local-machine equivalent)
 Fresh `git clone` of the validated commit → `pnpm install` (lockfile-driven) → `tokens:build` → `-r typecheck`/`-r test` → web production build → `./mvnw compile` — all green following only repository documentation. Undocumented steps found and fixed in docs: JVM TEMP-path constraint (below), portable-toolchain PATH notes. **Caveat:** same machine (shared pnpm store/Maven cache speeds it up but doesn't change results); a true clean-machine run happens with CI (Phase 13).
