@@ -148,12 +148,32 @@ public abstract class AbstractIntegrationTest {
         return count == null ? 0 : count;
     }
 
-    /** The jsonb {@code detail} payloads (as text, nulls included) of matching audit rows. */
+    /**
+     * The jsonb {@code detail} payloads of matching audit rows, normalized to compact JSON.
+     * PostgreSQL renders jsonb text with a space after every colon/comma; re-serializing
+     * through Jackson yields the compact form the assertions match against, so tests do not
+     * depend on the driver's whitespace.
+     */
     protected List<String> auditDetails(String action, String actorUserId) {
-        return jdbcTemplate.queryForList(
-                "select detail::text from audit.audit_log where action = ? and actor_user_id = ?"
-                        + " order by at, id",
-                String.class, action, UUID.fromString(actorUserId));
+        return jdbcTemplate
+                .queryForList(
+                        "select detail::text from audit.audit_log where action = ? and actor_user_id = ?"
+                                + " order by at, id",
+                        String.class, action, UUID.fromString(actorUserId))
+                .stream()
+                .map(this::compactJson)
+                .toList();
+    }
+
+    private String compactJson(String json) {
+        if (json == null) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(objectMapper.readTree(json));
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return json;
+        }
     }
 
     /** The {@code target_id} values of matching audit rows, oldest first. */

@@ -156,7 +156,7 @@ class RefreshTokenRotationIntegrationTest extends AbstractIntegrationTest {
             assertThat(responses).filteredOn(r -> r.getStatusCode() == HttpStatus.UNAUTHORIZED)
                     .hasSize(threads - 1)
                     .allSatisfy(response -> assertThat(json(response).get("type").asText())
-                            .endsWith("/problems/authentication-failed"));
+                            .endsWith("/problems/concurrent-refresh"));
 
             // The family survived the race: the winner's successor token still refreshes.
             String successor = json(winners.get(0)).get("refreshToken").asText();
