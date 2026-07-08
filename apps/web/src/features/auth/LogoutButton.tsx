@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Button } from '@spexcrafters/ui';
 
 import type { Locale } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 
 interface LogoutButtonProps {
   locale: Locale;
@@ -20,7 +21,7 @@ export function LogoutButton({ locale, label }: LogoutButtonProps) {
     }
     setBusy(true);
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await sendJson('/api/auth/logout', 'POST');
     } finally {
       // Full navigation so the server re-renders without the session cookie.
       window.location.assign(`/${locale}`);

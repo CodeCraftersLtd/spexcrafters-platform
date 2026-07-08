@@ -7,6 +7,7 @@ import type { MyMembership } from '@spexcrafters/api-client';
 import { Alert } from '@spexcrafters/ui';
 
 import type { Dictionary, Locale } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 import { interpolate } from '@/lib/interpolate';
 import { readBffError } from '@/features/auth/client-errors';
 import { mapAcceptInvitationError } from '@/features/organizations/org-errors';
@@ -49,11 +50,7 @@ export function AcceptInvitation({ locale, token, copy }: AcceptInvitationProps)
     void (async () => {
       let response: Response;
       try {
-        response = await fetch('/api/invitations/accept', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ token }),
-        });
+        response = await sendJson('/api/invitations/accept', 'POST', { token });
       } catch {
         if (!cancelled) {
           setState({

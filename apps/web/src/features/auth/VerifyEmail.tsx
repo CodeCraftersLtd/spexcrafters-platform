@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
 import type { Dictionary, Locale } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 import { readBffError, translateError } from '@/features/auth/client-errors';
 import {
   createResendVerificationSchema,
@@ -57,11 +58,7 @@ export function VerifyEmail({
     void (async () => {
       let response: Response;
       try {
-        response = await fetch('/api/auth/verify-email', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ token }),
-        });
+        response = await sendJson('/api/auth/verify-email', 'POST', { token });
       } catch {
         if (!cancelled) {
           setState({ status: 'error', message: serverErrors.unexpected });
@@ -136,11 +133,11 @@ function ResendForm({ copy, validation, serverErrors }: ResendFormProps) {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const response = await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(values),
-      });
+      const response = await sendJson(
+        '/api/auth/resend-verification',
+        'POST',
+        values,
+      );
       setOutcome(response.status === 202 ? 'accepted' : 'failed');
     } catch {
       setOutcome('failed');
