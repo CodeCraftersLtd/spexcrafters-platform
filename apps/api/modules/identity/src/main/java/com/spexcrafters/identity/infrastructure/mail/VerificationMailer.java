@@ -1,6 +1,7 @@
 package com.spexcrafters.identity.infrastructure.mail;
 
 import com.spexcrafters.identity.infrastructure.config.FrontendProperties;
+import com.spexcrafters.sharedkernel.util.LogSanitizer;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.net.URLEncoder;
@@ -50,9 +51,10 @@ public class VerificationMailer {
             helper.setSubject("Verify your SpexCrafters email address");
             helper.setText(plainTextBody(displayName, link), htmlBody(displayName, link));
             mailSender.send(message);
-            log.info("Verification email sent to {}", recipientEmail);
+            log.info("Verification email sent to {}", LogSanitizer.maskEmail(recipientEmail));
         } catch (MailException | MessagingException ex) {
-            log.error("Failed to send verification email to {}; the user can request a resend", recipientEmail, ex);
+            log.error("Failed to send verification email to {}; the user can request a resend",
+                    LogSanitizer.maskEmail(recipientEmail), ex);
         }
     }
 

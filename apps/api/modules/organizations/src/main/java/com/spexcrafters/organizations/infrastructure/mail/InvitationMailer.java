@@ -2,6 +2,7 @@ package com.spexcrafters.organizations.infrastructure.mail;
 
 import com.spexcrafters.organizations.domain.OrganizationRole;
 import com.spexcrafters.organizations.infrastructure.config.OrganizationsFrontendProperties;
+import com.spexcrafters.sharedkernel.util.LogSanitizer;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.net.URLEncoder;
@@ -52,10 +53,10 @@ public class InvitationMailer {
             helper.setSubject("You have been invited to join " + organizationName + " on SpexCrafters");
             helper.setText(plainTextBody(organizationName, role, link), htmlBody(organizationName, role, link));
             mailSender.send(message);
-            log.info("Invitation email sent to {}", recipientEmail);
+            log.info("Invitation email sent to {}", LogSanitizer.maskEmail(recipientEmail));
         } catch (MailException | MessagingException ex) {
             log.error("Failed to send invitation email to {}; the inviter can revoke and re-invite",
-                    recipientEmail, ex);
+                    LogSanitizer.maskEmail(recipientEmail), ex);
         }
     }
 

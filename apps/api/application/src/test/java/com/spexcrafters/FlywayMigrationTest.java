@@ -24,8 +24,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * Runs the Flyway history against an empty PostgreSQL 17 database (its own container, not
  * the shared one) and boots the full context, which also exercises Hibernate's
  * {@code ddl-auto=validate} check of every JPA mapping against the migrated schema.
- * Additionally proves the stepwise upgrade path V1 → V2 on a separate database, mirroring
- * what a deployed environment that already ran V1 will execute.
+ * Additionally proves the stepwise upgrade path V1 → V2 → V3 on a separate database,
+ * mirroring what a deployed environment that already ran earlier versions will execute.
  * Matched by the CI step {@code -Dtest=*MigrationTest*}.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -45,7 +45,21 @@ class FlywayMigrationTest {
                 "select version from flyway_schema_history where success order by installed_rank",
                 String.class);
 
-        assertThat(applied).contains("1", "2");
+        assertThat(applied).contains("1", "2", "3");
+    }
+
+    @Test
+    void addsTheJsonbAuditDetailColumn() {
+        // V3 (TD-9): audit.audit_log.detail is nullable jsonb.
+        List<String> detailColumn = jdbcTemplate.queryForList(
+                """
+                select data_type || ':' || is_nullable
+                from information_schema.columns
+                where table_schema = 'audit' and table_name = 'audit_log' and column_name = 'detail'
+                """,
+                String.class);
+
+        assertThat(detailColumn).containsExactly("jsonb:YES");
     }
 
     @Test
@@ -93,11 +107,12 @@ class FlywayMigrationTest {
     }
 
     /**
-     * Applies V1 only (Flyway {@code target=1}), then migrates the rest — the exact path a
-     * database that was baselined on the identity slice takes when V2 ships.
+     * Applies each version in turn (Flyway {@code target}), asserting the intermediate
+     * states — the exact path a deployed database that was baselined on an earlier slice
+     * takes when the next migration ships.
      */
     @Test
-    void migratesStepwiseFromV1ToV2() throws SQLException {
+    void migratesStepwiseThroughEveryVersion() throws SQLException {
         String database = "stepwise_upgrade";
         try (Connection connection = DriverManager.getConnection(
                 EMPTY_POSTGRES.getJdbcUrl(), EMPTY_POSTGRES.getUsername(), EMPTY_POSTGRES.getPassword());
@@ -107,22 +122,43 @@ class FlywayMigrationTest {
         String url = "jdbc:postgresql://" + EMPTY_POSTGRES.getHost() + ":"
                 + EMPTY_POSTGRES.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT) + "/" + database;
 
-        Flyway upToV1 = Flyway.configure()
-                .dataSource(url, EMPTY_POSTGRES.getUsername(), EMPTY_POSTGRES.getPassword())
-                .locations("classpath:db/migration")
-                .target(MigrationVersion.fromVersion("1"))
-                .load();
-        upToV1.migrate();
+        migrateTo(url, "1");
         assertThat(appliedVersions(url)).containsExactly("1");
         assertThat(schemaExists(url, "organizations")).isFalse();
 
-        Flyway toLatest = Flyway.configure()
-                .dataSource(url, EMPTY_POSTGRES.getUsername(), EMPTY_POSTGRES.getPassword())
-                .locations("classpath:db/migration")
-                .load();
-        toLatest.migrate();
+        migrateTo(url, "2");
         assertThat(appliedVersions(url)).containsExactly("1", "2");
         assertThat(schemaExists(url, "organizations")).isTrue();
+        assertThat(auditDetailColumnExists(url)).isFalse();
+
+        migrateTo(url, null);
+        assertThat(appliedVersions(url)).containsExactly("1", "2", "3");
+        assertThat(auditDetailColumnExists(url)).isTrue();
+    }
+
+    /** Migrates {@code url} up to {@code targetVersion} ({@code null} = latest). */
+    private static void migrateTo(String url, String targetVersion) {
+        var configuration = Flyway.configure()
+                .dataSource(url, EMPTY_POSTGRES.getUsername(), EMPTY_POSTGRES.getPassword())
+                .locations("classpath:db/migration");
+        if (targetVersion != null) {
+            configuration = configuration.target(MigrationVersion.fromVersion(targetVersion));
+        }
+        configuration.load().migrate();
+    }
+
+    private static boolean auditDetailColumnExists(String url) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(
+                url, EMPTY_POSTGRES.getUsername(), EMPTY_POSTGRES.getPassword());
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(
+                        """
+                        select 1 from information_schema.columns
+                        where table_schema = 'audit' and table_name = 'audit_log'
+                          and column_name = 'detail' and data_type = 'jsonb'
+                        """)) {
+            return resultSet.next();
+        }
     }
 
     private static List<String> appliedVersions(String url) throws SQLException {

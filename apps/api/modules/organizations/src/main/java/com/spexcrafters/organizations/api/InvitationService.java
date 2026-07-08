@@ -52,6 +52,7 @@ public class InvitationService {
     private final UserDirectory userDirectory;
     private final InvitationMailer invitationMailer;
     private final InvitationExpirer invitationExpirer;
+    private final InvitationMismatchAuditor mismatchAuditor;
     private final AuditLogger auditLogger;
     private final InvitationProperties invitationProperties;
     private final Clock clock;
@@ -63,6 +64,7 @@ public class InvitationService {
             UserDirectory userDirectory,
             InvitationMailer invitationMailer,
             InvitationExpirer invitationExpirer,
+            InvitationMismatchAuditor mismatchAuditor,
             AuditLogger auditLogger,
             InvitationProperties invitationProperties,
             Clock clock) {
@@ -73,6 +75,7 @@ public class InvitationService {
         this.userDirectory = userDirectory;
         this.invitationMailer = invitationMailer;
         this.invitationExpirer = invitationExpirer;
+        this.mismatchAuditor = mismatchAuditor;
         this.auditLogger = auditLogger;
         this.invitationProperties = invitationProperties;
         this.clock = clock;
@@ -162,7 +165,8 @@ public class InvitationService {
     /**
      * Accepts an invitation token for the authenticated user. The account email must equal
      * the invitation email case-insensitively (403 {@code invitation-identity-mismatch},
-     * no organization details leaked); a past-expiry PENDING token is lazily marked
+     * no organization details leaked, audited as {@code organization.invitation.mismatch}
+     * — TD-10); a past-expiry PENDING token is lazily marked
      * EXPIRED (surviving the 410 rollback); membership creation and token consumption are
      * atomic.
      */
@@ -182,6 +186,8 @@ public class InvitationService {
         UserSummaryDto caller = userDirectory.findById(userId)
                 .orElseThrow(() -> new AuthenticationFailedException("This account no longer exists."));
         if (!caller.email().equalsIgnoreCase(invitation.getEmail())) {
+            // TD-10: audited in REQUIRES_NEW so the row survives the 403 rollback.
+            mismatchAuditor.recordMismatch(userId, invitation.getId());
             throw new InvitationIdentityMismatchException();
         }
         if (memberships.existsByOrganizationIdAndUserIdAndStatus(

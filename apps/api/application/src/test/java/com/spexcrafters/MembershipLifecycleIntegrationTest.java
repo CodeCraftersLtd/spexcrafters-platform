@@ -87,9 +87,21 @@ class MembershipLifecycleIntegrationTest extends AbstractOrganizationsIntegratio
         ResponseEntity<String> invitations = getWithBearer(
                 "/api/v1/organizations/" + orgId + "/invitations", owner.accessToken());
         assertThat(json(invitations).get(0).get("status").asText()).isEqualTo("PENDING");
+        String invitationId = json(invitations).get(0).get("id").asText();
 
         // The stranger did not join anything.
         assertThat(json(getWithBearer("/api/v1/me/organizations", stranger.accessToken()))).isEmpty();
+
+        // TD-10: the mismatch survives the 403 rollback as an audit row whose jsonb detail
+        // carries ids only — never email addresses.
+        assertThat(countAuditRows("organization.invitation.mismatch", stranger.userId())).isEqualTo(1);
+        assertThat(auditDetails("organization.invitation.mismatch", stranger.userId()))
+                .singleElement().asString()
+                .contains("\"invitationId\":\"" + invitationId + "\"")
+                .contains("\"actorUserId\":\"" + stranger.userId() + "\"")
+                .doesNotContain("@")
+                .doesNotContain(invitedEmail)
+                .doesNotContain(stranger.email());
     }
 
     @Test
