@@ -54,6 +54,7 @@ CI mirrors these in [.github/workflows](.github/workflows) (`ci-web`, `ci-api`, 
 - **Backend builds use the Maven Wrapper** (`apps/api/mvnw`), pinned to Maven 3.9.9 — do not rely on a globally installed Maven.
 - **`next start` prints a standalone warning:** container images run the standalone server (`node .next/standalone/server.js`, see the web Dockerfile); use `pnpm dev:web` for local development.
 - **First-build validation record:** [docs/validation/sprint-1-validation-log.md](docs/validation/sprint-1-validation-log.md) — verified toolchain versions, defect log, known limitations, technical-debt register.
+- **Validation status:** the `sprint-1-validated` tag means **local validation completed**. Docker/Testcontainers/CI/container builds are validated only by the first green hosted CI run (`sprint-1-ci-validated` gate — see [docs/deployment/ci-activation.md](docs/deployment/ci-activation.md)).
 
 ## Ground rules
 

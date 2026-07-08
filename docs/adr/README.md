@@ -25,6 +25,8 @@ This directory records the significant architectural decisions for SpexCrafters.
 | 014 | Testing strategy | Planned | — | JUnit 5 + Testcontainers + ArchUnit; Playwright + Vitest + Storybook (+ test-runner, axe) |
 | 015 | Deployment strategy | Planned | — | Docker + GitHub Actions + Terraform; immutable images, Flyway on deploy, blue-green/rolling |
 | 016 | CMS strategy | Planned | — | PostgreSQL-backed `content` module with CMS-shaped abstraction; no headless CMS in v1 |
+| 017 | [Content-Security-Policy strategy](ADR-017-content-security-policy.md) | Accepted (interim) | 2026-07-08 | SSG-compatible CSP with strict non-script directives; nonce/hash remediation bound to Phase-4 design (SEC-DEBT-1) |
+| 018 | CSRF protection for the BFF | Planned | — | Explicit CSRF mechanism beyond SameSite=Lax; decided during Sprint-2 hardening (post-organizations) |
 
 ## ADR template
 
