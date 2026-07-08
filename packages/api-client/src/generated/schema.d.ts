@@ -132,6 +132,179 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/me/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the caller's active organization memberships */
+        get: operations["listMyOrganizations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create an organization; the caller becomes its initial OWNER atomically */
+        post: operations["createOrganization"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organizations/{organizationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Fetch an organization (requires organization.read)
+         * @description Non-members receive 404 (existence concealment); members lacking a capability receive 403.
+         */
+        get: operations["getOrganization"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update organization profile (requires organization.update; optimistic locking via version) */
+        patch: operations["updateOrganization"];
+        trace?: never;
+    };
+    "/organizations/{organizationId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        /** List active members (requires organization.members.read) */
+        get: operations["listMembers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organizations/{organizationId}/members/{membershipId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+                membershipId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a member (requires organization.members.remove; rank rules; last-owner protected; self-removal allowed except last owner) */
+        delete: operations["removeMember"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organizations/{organizationId}/members/{membershipId}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+                membershipId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** Change a member's role (requires organization.roles.manage — OWNER only; self-change forbidden; last-owner protected) */
+        put: operations["changeMemberRole"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organizations/{organizationId}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        /** List invitations (requires organization.members.read) */
+        get: operations["listInvitations"];
+        put?: never;
+        /** Invite by email (requires organization.members.invite; ADMIN may invite MEMBER role only; raw token delivered solely via email) */
+        post: operations["createInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organizations/{organizationId}/invitations/{invitationId}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+                invitationId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke a pending invitation (requires organization.members.invite; idempotent for already-revoked) */
+        post: operations["revokeInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/invitations/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept an invitation token (authenticated; account email must match the invitation; single-use) */
+        post: operations["acceptInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -194,6 +367,98 @@ export interface components {
          * @enum {string}
          */
         Locale: "en" | "zh-Hans" | "fr" | "de";
+        /**
+         * @description Clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        OrganizationType: "BUYER" | "SUPPLIER" | "HYBRID";
+        /**
+         * @description Rank order OWNER > ADMIN > MEMBER; see organizations-capability-model.md.
+         * @enum {string}
+         */
+        OrganizationRole: "OWNER" | "ADMIN" | "MEMBER";
+        /**
+         * @description Typed capabilities; clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        Capability: "organization.read" | "organization.update" | "organization.members.read" | "organization.members.invite" | "organization.members.remove" | "organization.roles.manage";
+        /** @enum {string} */
+        InvitationStatus: "PENDING" | "ACCEPTED" | "REVOKED" | "EXPIRED";
+        CreateOrganizationRequest: {
+            name: string;
+            type: components["schemas"]["OrganizationType"];
+            /** @description ISO 3166-1 alpha-2, uppercase */
+            country?: string;
+        };
+        UpdateOrganizationRequest: {
+            name?: string;
+            country?: string;
+            /** @description Optimistic-locking version from the last read; mismatch → 409 */
+            version: number;
+        };
+        OrganizationResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            type: components["schemas"]["OrganizationType"];
+            country?: string;
+            /** Format: date-time */
+            createdAt: string;
+            version: number;
+            callerRole: components["schemas"]["OrganizationRole"];
+            callerCapabilities: components["schemas"]["Capability"][];
+        };
+        MyMembership: {
+            /** Format: uuid */
+            membershipId: string;
+            /** Format: uuid */
+            organizationId: string;
+            organizationName: string;
+            organizationType: components["schemas"]["OrganizationType"];
+            role: components["schemas"]["OrganizationRole"];
+            /** Format: date-time */
+            joinedAt: string;
+        };
+        MemberResponse: {
+            /** Format: uuid */
+            membershipId: string;
+            /** Format: uuid */
+            userId: string;
+            displayName: string;
+            /** Format: email */
+            email: string;
+            role: components["schemas"]["OrganizationRole"];
+            /** Format: date-time */
+            joinedAt: string;
+        };
+        ChangeRoleRequest: {
+            role: components["schemas"]["OrganizationRole"];
+        };
+        CreateInvitationRequest: {
+            /** Format: email */
+            email: string;
+            /**
+             * @description OWNER cannot be invited; promote after joining. ADMIN actors may set MEMBER only.
+             * @enum {string}
+             */
+            role: "ADMIN" | "MEMBER";
+        };
+        InvitationResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: email */
+            email: string;
+            /** @enum {string} */
+            role: "ADMIN" | "MEMBER";
+            status: components["schemas"]["InvitationStatus"];
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AcceptInvitationRequest: {
+            token: string;
+        };
         /** @description RFC 9457 problem details. Content type application/problem+json. */
         Problem: {
             /** Format: uri */
@@ -239,8 +504,26 @@ export interface components {
                 "application/problem+json": components["schemas"]["Problem"];
             };
         };
-        /** @description Resource conflict (e.g. email already registered). */
+        /** @description Resource conflict (e.g. email already registered, optimistic-lock version mismatch, duplicate membership, last-owner invariant). */
         Conflict: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description Authenticated member lacks the required capability (problem type .../problems/authorization). */
+        Forbidden: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description Resource absent — or concealed from non-members by tenancy policy. */
+        NotFound: {
             headers: {
                 [name: string]: unknown;
             };
@@ -448,6 +731,302 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationFailed"];
+        };
+    };
+    listMyOrganizations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Memberships of the authenticated user. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyMembership"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+        };
+    };
+    createOrganization: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrganizationRequest"];
+            };
+        };
+        responses: {
+            /** @description Created. Includes the caller's role and resolved capabilities. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationResponse"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["RateLimited"];
+        };
+    };
+    getOrganization: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Organization. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationResponse"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    updateOrganization: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOrganizationRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated organization. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationResponse"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    listMembers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Active members. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberResponse"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    removeMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+                membershipId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Removed. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    changeMemberRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+                membershipId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeRoleRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated membership. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberResponse"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    listInvitations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invitations. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationResponse"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    createInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInvitationRequest"];
+            };
+        };
+        responses: {
+            /** @description Invitation created and email dispatched. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationResponse"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["RateLimited"];
+        };
+    };
+    revokeInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizationId: string;
+                invitationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Revoked (idempotent). */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            410: components["responses"]["TokenGone"];
+        };
+    };
+    acceptInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcceptInvitationRequest"];
+            };
+        };
+        responses: {
+            /** @description Membership created. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyMembership"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
+            410: components["responses"]["TokenGone"];
+            422: components["responses"]["ValidationError"];
         };
     };
 }

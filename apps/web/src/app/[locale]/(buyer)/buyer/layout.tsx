@@ -47,6 +47,11 @@ export default async function BuyerLayout({ children, params }: BuyerLayoutProps
                 {dict.buyer.nav.dashboard}
               </Link>
             </li>
+            <li>
+              <Link className={styles.navLink} href={`/${locale}/organizations`}>
+                {dict.buyer.nav.organizations}
+              </Link>
+            </li>
           </ul>
         </nav>
       </aside>

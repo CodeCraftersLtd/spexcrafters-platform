@@ -9,10 +9,10 @@
 > (gate: `sprint-1-ci-validated`, created only after CI is green — see
 > [docs/deployment/ci-activation.md](../deployment/ci-activation.md)).
 > Additionally, the organizations capability required by the Sprint-1 approval
-> gate was **not implemented** (stub) — a **scope divergence now explicitly
-> accepted by the stakeholder as the first Sprint-2 deliverable**; Sprint 1 is
-> therefore not contractually complete until organizations lands or that
-> acceptance stands as recorded here.
+> gate was **not implemented** (stub) — a scope divergence accepted by the
+> stakeholder as the first Sprint-2 deliverable. **RESOLVED in Phase 5**: the
+> organizations vertical slice is implemented and PR-gated on hosted CI — see
+> [phase-5-organizations-report.md](phase-5-organizations-report.md).
 
 **Started:** 2026-07-08 · **Baseline:** commit `b1f2fd385de182031b8445e1706621f0bab70daf` (tag `sprint-1-pre-validation`)
 **Objective:** prove the Sprint 1 implementation is reproducible, compilable, testable, and consistent with the approved architecture. No new features; no Sprint 2 work.

@@ -1,0 +1,27 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  padding: var(--sc-space-8) var(--sc-space-4);
+  min-block-size: 100dvh;
+  background: var(--sc-color-bg-page);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-5);
+  inline-size: 100%;
+  max-inline-size: 28rem;
+  block-size: fit-content;
+  padding: var(--sc-space-8);
+  border: var(--sc-border-hairline);
+  border-radius: var(--sc-radius-md);
+  background: var(--sc-color-bg-surface);
+  box-shadow: var(--sc-shadow-1);
+}
+
+.title {
+  font-family: var(--sc-font-display);
+  font-size: var(--sc-text-xl);
+  line-height: var(--sc-leading-snug);
+}

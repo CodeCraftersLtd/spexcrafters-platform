@@ -26,6 +26,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
@@ -81,6 +82,19 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = baseProblem(HttpStatus.UNPROCESSABLE_ENTITY, ProblemTypes.VALIDATION_ERROR,
                 "Validation failed", "The request body is missing or malformed.", request);
         return respond(HttpStatus.UNPROCESSABLE_ENTITY, problem, new HttpHeaders());
+    }
+
+    /**
+     * Malformed path/query values (e.g. a non-UUID {@code organizationId}) are client
+     * errors, not 500s. A malformed id cannot reference any resource, so a validation
+     * problem reveals nothing an attacker did not already know.
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ProblemDetail> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
+            HttpServletRequest request) {
+        List<ProblemFieldError> errors = List.of(new ProblemFieldError(
+                Objects.requireNonNullElse(ex.getName(), "parameter"), "Invalid", "Invalid value"));
+        return validationProblem(errors, request);
     }
 
     /** Safety net for unique-constraint races that slip past explicit existence checks. */
