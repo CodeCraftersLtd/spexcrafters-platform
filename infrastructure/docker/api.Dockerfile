@@ -10,8 +10,10 @@ COPY apps/api/application apps/api/application
 COPY apps/api/architecture-tests apps/api/architecture-tests
 RUN mvn -f apps/api/pom.xml -B -DskipTests package
 
-FROM eclipse-temurin:25-jre AS runtime
-RUN useradd --system --uid 10001 spexcrafters
+# Alpine variant: the Ubuntu-based -jre image ships /usr/bin/pebble (Go binary)
+# which carries HIGH CVEs unrelated to this application (first Trivy scan).
+FROM eclipse-temurin:25-jre-alpine AS runtime
+RUN adduser -S -u 10001 spexcrafters
 USER 10001
 WORKDIR /app
 COPY --from=build /workspace/apps/api/application/target/*.jar app.jar
