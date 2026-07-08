@@ -15,12 +15,15 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-interface BuyerLayoutProps {
+interface OrganizationsLayoutProps {
   children: ReactNode;
   params: Promise<{ locale: string }>;
 }
 
-export default async function BuyerLayout({ children, params }: BuyerLayoutProps) {
+export default async function OrganizationsLayout({
+  children,
+  params,
+}: OrganizationsLayoutProps) {
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : defaultLocale;
   const dict = getDictionary(locale);
@@ -29,7 +32,7 @@ export default async function BuyerLayout({ children, params }: BuyerLayoutProps
   const session = await getSession();
   if (!session) {
     redirect(
-      `/${locale}/auth/login?returnTo=${encodeURIComponent(`/${locale}/buyer`)}`,
+      `/${locale}/auth/login?returnTo=${encodeURIComponent(`/${locale}/organizations`)}`,
     );
   }
 
@@ -40,16 +43,16 @@ export default async function BuyerLayout({ children, params }: BuyerLayoutProps
         <Link className={styles.wordmark} href={`/${locale}`}>
           {dict.common.appName}
         </Link>
-        <nav aria-label={dict.buyer.navigationLabel}>
+        <nav aria-label={dict.organizations.navigationLabel}>
           <ul className={styles.navList}>
             <li>
               <Link className={styles.navLink} href={`/${locale}/buyer`}>
-                {dict.buyer.nav.dashboard}
+                {dict.organizations.nav.dashboard}
               </Link>
             </li>
             <li>
               <Link className={styles.navLink} href={`/${locale}/organizations`}>
-                {dict.buyer.nav.organizations}
+                {dict.organizations.nav.organizations}
               </Link>
             </li>
           </ul>
@@ -61,7 +64,7 @@ export default async function BuyerLayout({ children, params }: BuyerLayoutProps
             currentLocale={locale}
             label={dict.common.localeSwitcherLabel}
           />
-          <LogoutButton locale={locale} label={dict.buyer.logout} />
+          <LogoutButton locale={locale} label={dict.organizations.logout} />
         </header>
         <main id="main-content" className={styles.main}>
           {children}

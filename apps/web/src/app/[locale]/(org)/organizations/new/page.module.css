@@ -1,0 +1,17 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-6);
+  max-inline-size: 32rem;
+}
+
+.title {
+  font-family: var(--sc-font-display);
+  font-size: var(--sc-text-2xl);
+  line-height: var(--sc-leading-snug);
+}
+
+.subtitle {
+  color: var(--sc-color-text-secondary);
+  max-inline-size: 55ch;
+}

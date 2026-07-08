@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import {
@@ -43,6 +44,13 @@ export default async function BuyerDashboardPage({ params }: BuyerDashboardPageP
         {interpolate(dict.buyer.welcome, { name: session.user.displayName })}
       </h1>
       <p className={styles.intro}>{dict.buyer.dashboardIntro}</p>
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>{dict.buyer.organizationsCard.title}</h2>
+        <p className={styles.intro}>{dict.buyer.organizationsCard.body}</p>
+        <Link className={styles.cardLink} href={`/${locale}/organizations`}>
+          {dict.buyer.organizationsCard.cta}
+        </Link>
+      </div>
     </section>
   );
 }

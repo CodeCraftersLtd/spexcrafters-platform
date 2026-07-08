@@ -42,13 +42,4 @@ export const localeDisplayNames: Record<Locale, string> = {
   de: 'Deutsch',
 };
 
-/** Replace `{name}`-style placeholders in a dictionary message. */
-export function interpolate(
-  template: string,
-  values: Record<string, string | number>,
-): string {
-  return template.replace(/\{(\w+)\}/g, (match, key: string) => {
-    const value = values[key];
-    return value === undefined ? match : String(value);
-  });
-}
+export { interpolate } from './interpolate';

@@ -1,11 +1,20 @@
 import type {
+  AcceptInvitationRequest,
+  ChangeRoleRequest,
+  CreateInvitationRequest,
+  CreateOrganizationRequest,
+  InvitationResponse,
   LoginRequest,
+  MemberResponse,
+  MyMembership,
+  OrganizationResponse,
   Problem,
   RefreshRequest,
   RegisterRequest,
   RegisterResponse,
   ResendVerificationRequest,
   TokenResponse,
+  UpdateOrganizationRequest,
   UserSummary,
   VerifyEmailRequest,
 } from './types';
@@ -53,7 +62,7 @@ export function createApiClient(options: ApiClientOptions) {
   const { baseUrl, getAccessToken, fetchImpl = fetch } = options;
 
   async function request<T>(
-    method: 'GET' | 'POST',
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
     path: string,
     body?: unknown,
     authenticated = false,
@@ -81,6 +90,74 @@ export function createApiClient(options: ApiClientOptions) {
     refreshTokens: (req: RefreshRequest) => request<TokenResponse>('POST', '/auth/refresh', req),
     logout: (req: RefreshRequest) => request<void>('POST', '/auth/logout', req),
     getCurrentUser: () => request<UserSummary>('GET', '/me', undefined, true),
+
+    // Organizations (Phase 5) — all authenticated (bearer).
+    listMyOrganizations: () =>
+      request<MyMembership[]>('GET', '/me/organizations', undefined, true),
+    createOrganization: (req: CreateOrganizationRequest) =>
+      request<OrganizationResponse>('POST', '/organizations', req, true),
+    getOrganization: (organizationId: string) =>
+      request<OrganizationResponse>(
+        'GET',
+        `/organizations/${encodeURIComponent(organizationId)}`,
+        undefined,
+        true,
+      ),
+    updateOrganization: (organizationId: string, req: UpdateOrganizationRequest) =>
+      request<OrganizationResponse>(
+        'PATCH',
+        `/organizations/${encodeURIComponent(organizationId)}`,
+        req,
+        true,
+      ),
+    listMembers: (organizationId: string) =>
+      request<MemberResponse[]>(
+        'GET',
+        `/organizations/${encodeURIComponent(organizationId)}/members`,
+        undefined,
+        true,
+      ),
+    removeMember: (organizationId: string, membershipId: string) =>
+      request<void>(
+        'DELETE',
+        `/organizations/${encodeURIComponent(organizationId)}/members/${encodeURIComponent(membershipId)}`,
+        undefined,
+        true,
+      ),
+    changeMemberRole: (
+      organizationId: string,
+      membershipId: string,
+      req: ChangeRoleRequest,
+    ) =>
+      request<MemberResponse>(
+        'PUT',
+        `/organizations/${encodeURIComponent(organizationId)}/members/${encodeURIComponent(membershipId)}/role`,
+        req,
+        true,
+      ),
+    listInvitations: (organizationId: string) =>
+      request<InvitationResponse[]>(
+        'GET',
+        `/organizations/${encodeURIComponent(organizationId)}/invitations`,
+        undefined,
+        true,
+      ),
+    createInvitation: (organizationId: string, req: CreateInvitationRequest) =>
+      request<InvitationResponse>(
+        'POST',
+        `/organizations/${encodeURIComponent(organizationId)}/invitations`,
+        req,
+        true,
+      ),
+    revokeInvitation: (organizationId: string, invitationId: string) =>
+      request<void>(
+        'POST',
+        `/organizations/${encodeURIComponent(organizationId)}/invitations/${encodeURIComponent(invitationId)}/revoke`,
+        undefined,
+        true,
+      ),
+    acceptInvitation: (req: AcceptInvitationRequest) =>
+      request<MyMembership>('POST', '/invitations/accept', req, true),
   };
 }
 

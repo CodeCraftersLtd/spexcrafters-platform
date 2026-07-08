@@ -71,6 +71,9 @@ function negotiateLocale(request: NextRequest): Locale {
   return defaultLocale;
 }
 
+/** Second path segments (after the locale) that require a session cookie. */
+const GUARDED_SEGMENTS = new Set(['buyer', 'organizations', 'invitations']);
+
 export function middleware(request: NextRequest): NextResponse {
   const { pathname, search } = request.nextUrl;
   const [, firstSegment = '', secondSegment = ''] = pathname.split('/');
@@ -83,10 +86,10 @@ export function middleware(request: NextRequest): NextResponse {
     return NextResponse.redirect(url);
   }
 
-  // UX auth guard for the buyer portal. Presence-only check — the buyer
-  // layout enforces the session server-side; this just short-circuits the
+  // UX auth guard for the signed-in areas. Presence-only check — the layouts
+  // and pages enforce the session server-side; this just short-circuits the
   // round trip for signed-out visitors.
-  if (secondSegment === 'buyer' && !request.cookies.has(SESSION_COOKIE_NAME)) {
+  if (GUARDED_SEGMENTS.has(secondSegment) && !request.cookies.has(SESSION_COOKIE_NAME)) {
     const url = request.nextUrl.clone();
     url.pathname = `/${firstSegment}/auth/login`;
     url.search = '';

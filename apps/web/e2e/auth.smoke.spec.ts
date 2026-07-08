@@ -1,6 +1,8 @@
-import { expect, test, type APIRequestContext } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 import en from '../messages/en.json';
+
+import { findVerificationToken, uniqueSmokeUser } from './helpers';
 
 /**
  * Walking-skeleton smoke: registration → email verification (via Mailpit) →
@@ -8,87 +10,12 @@ import en from '../messages/en.json';
  * Mailpit (:8025) to be running alongside the web app.
  */
 
-const MAILPIT_URL = process.env.MAILPIT_URL ?? 'http://localhost:8025';
-
-interface MailpitAddress {
-  Address: string;
-}
-
-interface MailpitMessageSummary {
-  ID: string;
-  To: MailpitAddress[];
-}
-
-interface MailpitSearchResult {
-  messages: MailpitMessageSummary[];
-}
-
-interface MailpitMessage {
-  Text: string;
-  HTML: string;
-}
-
-async function findVerificationToken(
-  request: APIRequestContext,
-  email: string,
-): Promise<string> {
-  let token: string | null = null;
-
-  await expect
-    .poll(
-      async () => {
-        const searchResponse = await request.get(
-          `${MAILPIT_URL}/api/v1/search`,
-          { params: { query: `to:"${email}"` } },
-        );
-        if (!searchResponse.ok()) {
-          return null;
-        }
-        const result = (await searchResponse.json()) as MailpitSearchResult;
-        const message = result.messages.find((candidate) =>
-          candidate.To.some(
-            (to) => to.Address.toLowerCase() === email.toLowerCase(),
-          ),
-        );
-        if (!message) {
-          return null;
-        }
-
-        const messageResponse = await request.get(
-          `${MAILPIT_URL}/api/v1/message/${message.ID}`,
-        );
-        if (!messageResponse.ok()) {
-          return null;
-        }
-        const body = (await messageResponse.json()) as MailpitMessage;
-        const content = `${body.Text ?? ''}\n${body.HTML ?? ''}`;
-        const match = content.match(/[?&]token=([A-Za-z0-9._~-]+)/);
-        token = match?.[1] ?? null;
-        return token;
-      },
-      {
-        message: `verification email for ${email} did not arrive in Mailpit`,
-        timeout: 30_000,
-        intervals: [1_000],
-      },
-    )
-    .not.toBeNull();
-
-  if (!token) {
-    throw new Error('verification token not extracted');
-  }
-  return token;
-}
-
 test.describe('auth vertical slice', () => {
   test('register → verify → login → dashboard → logout @smoke', async ({
     page,
     request,
   }) => {
-    const uniqueEmail = `e2e.smoke.${Date.now()}.${Math.floor(Math.random() * 1e6)}@spexcrafters.test`;
-    // Must satisfy the platform password policy (≥12 chars incl. a digit).
-    const password = 'correct-horse-battery-staple-9';
-    const displayName = 'Smoke Test Buyer';
+    const user = uniqueSmokeUser('smoke', 'Smoke Test Buyer');
 
     // 1. Register. Wait for hydration before interacting: a pre-hydration
     // click would trigger a native (non-RHF) submit instead of the client
@@ -100,9 +27,9 @@ test.describe('auth vertical slice', () => {
       page.getByRole('heading', { name: en.auth.register.title }),
     ).toBeVisible();
 
-    await page.getByLabel(en.auth.register.displayNameLabel).fill(displayName);
-    await page.getByLabel(en.auth.register.emailLabel).fill(uniqueEmail);
-    await page.getByLabel(en.auth.register.passwordLabel).fill(password);
+    await page.getByLabel(en.auth.register.displayNameLabel).fill(user.displayName);
+    await page.getByLabel(en.auth.register.emailLabel).fill(user.email);
+    await page.getByLabel(en.auth.register.passwordLabel).fill(user.password);
     await page
       .getByRole('button', { name: en.auth.register.submit })
       .click();
@@ -110,7 +37,7 @@ test.describe('auth vertical slice', () => {
     await expect(page.getByText(en.auth.register.checkEmail.title)).toBeVisible();
 
     // 2. Pull the verification link from Mailpit.
-    const token = await findVerificationToken(request, uniqueEmail);
+    const token = await findVerificationToken(request, user.email);
 
     // 3. Follow the verification link.
     await page.goto(`/en/auth/verify-email?token=${encodeURIComponent(token)}`);
@@ -125,14 +52,14 @@ test.describe('auth vertical slice', () => {
     await page.waitForLoadState('networkidle');
 
     // 4. Log in.
-    await page.getByLabel(en.auth.login.emailLabel).fill(uniqueEmail);
-    await page.getByLabel(en.auth.login.passwordLabel).fill(password);
+    await page.getByLabel(en.auth.login.emailLabel).fill(user.email);
+    await page.getByLabel(en.auth.login.passwordLabel).fill(user.password);
     await page.getByRole('button', { name: en.auth.login.submit }).click();
 
     // 5. Buyer dashboard greets the user by display name.
     await expect(page).toHaveURL(/\/en\/buyer/, { timeout: 15_000 });
     await expect(
-      page.getByRole('heading', { name: `Welcome, ${displayName}` }),
+      page.getByRole('heading', { name: `Welcome, ${user.displayName}` }),
     ).toBeVisible();
 
     // 6. Log out and confirm the session guard re-engages.
