@@ -555,6 +555,8 @@ export function createApiClient(options: ApiClientOptions) {
       request<BrandSummary[]>(
         'GET',
         `/platform/taxonomy/brands${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+        undefined,
+        true,
       ),
     validateSpecification: (req: SpecificationValidationRequest, locale?: string) =>
       request<SpecificationValidationResult>(
