@@ -27,6 +27,11 @@ This directory records the significant architectural decisions for SpexCrafters.
 | 016 | CMS strategy | Planned | — | PostgreSQL-backed `content` module with CMS-shaped abstraction; no headless CMS in v1 |
 | 017 | [Content-Security-Policy strategy](ADR-017-content-security-policy.md) | Accepted (interim) | 2026-07-08 | SSG-compatible CSP with strict non-script directives; nonce/hash remediation bound to Phase-4 design (SEC-DEBT-1) |
 | 018 | [CSRF protection for the BFF](ADR-018-csrf-protection.md) | Accepted | 2026-07-09 | Session-bound synchronizer token (sealed in the JWE session, `sc_csrf` transport cookie, `X-CSRF-Token` header) + Origin/Fetch-Metadata/JSON-content-type depth layer; login CSRF via origin+content-type (no pre-session token exists) |
+| 019 | [i18n framework, routing & negotiation](ADR-019-i18n-framework-routing.md) | Accepted | 2026-07-09 | next-intl on App Router; 20 BCP-47 locales; URL→pref→Accept-Language→en; server-resolved, per-namespace loading |
+| 020 | [Multilingual DB content model & translation lifecycle](ADR-020-multilingual-content-model.md) | Accepted | 2026-07-09 | Normalized per-context `_translation` tables; MISSING→…→APPROVED lifecycle; source_version stale detection; no column-per-language |
+| 021 | [RTL strategy & global typography](ADR-021-rtl-typography.md) | Accepted | 2026-07-09 | Root `dir`; CSS logical properties only; bidi isolation for LTR technical runs; script-grouped Noto font loading |
+| 022 | [International SEO & machine-translation policy](ADR-022-international-seo-mt-policy.md) | Accepted | 2026-07-09 | Self-canonicalizing localized URLs; hreflang only for available translations; noindex empty/MT; MT dev-only, never authoritative |
+| 023 | [Object storage & evidence upload](ADR-023-object-storage-evidence.md) | Accepted | 2026-07-09 | `ObjectStorage` port; MinIO local/CI, S3 prod; presigned staged upload + server finalize (sha256/magic-byte); deferred malware scanner, fail-closed, never fake CLEAN |
 
 ## ADR template
 
