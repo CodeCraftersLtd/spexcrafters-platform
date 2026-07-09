@@ -2975,6 +2975,50 @@
       }
     },
     "/platform/taxonomy/categories": {
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "listAdminCategories",
+        "summary": "Platform-staff FLAT list of ALL categories (including inactive), ordered by path, each with its uuid and parentCode.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "BCP-47 locale; server falls back to en."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every category in every state, flat, ordered by path.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
       "post": {
         "tags": [
           "taxonomy"
@@ -3282,6 +3326,50 @@
           }
         }
       ],
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "getAdminCategorySpecificationTemplate",
+        "summary": "Platform-staff effective specification template for a category, keyed by uuid.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "BCP-47 locale; server falls back to en."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Effective specification template (own + inherited slots).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EffectiveSpecificationTemplate"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
       "put": {
         "tags": [
           "taxonomy"
@@ -3332,7 +3420,100 @@
         }
       }
     },
+    "/platform/taxonomy/categories/{id}/translations": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "listCategoryTranslations",
+        "summary": "Platform-staff list of a category's translations in every locale and status.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All translation rows for the category (all locales, all statuses).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TranslationView"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
     "/platform/taxonomy/attributes": {
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "listAdminAttributes",
+        "summary": "Platform-staff list of ALL attributes (including deprecated and non-visible).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "BCP-47 locale; server falls back to en."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every attribute in every state, as full details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AttributeDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
       "post": {
         "tags": [
           "taxonomy"
@@ -3572,6 +3753,50 @@
       }
     },
     "/platform/taxonomy/enumerations": {
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "listAdminEnumerations",
+        "summary": "Platform-staff list of ALL enumerations (including inactive), each with its uuid and all values.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "BCP-47 locale; server falls back to en."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every enumeration in every state, each with all its values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnumerationDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
       "post": {
         "tags": [
           "taxonomy"
@@ -3970,6 +4195,50 @@
       }
     },
     "/platform/taxonomy/certifications": {
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "listAdminCertifications",
+        "summary": "Platform-staff list of ALL certifications (including deprecated and inactive).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "BCP-47 locale; server falls back to en."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every certification in every state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Certification"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
       "post": {
         "tags": [
           "taxonomy"
@@ -4021,6 +4290,50 @@
       }
     },
     "/platform/taxonomy/units": {
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "listAdminUnits",
+        "summary": "Platform-staff list of ALL units of measure (including inactive).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "BCP-47 locale; server falls back to en."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every unit in every state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Unit"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
       "post": {
         "tags": [
           "taxonomy"
@@ -4067,6 +4380,52 @@
                 "$ref": "#/components/schemas/CreateUnitRequest"
               }
             }
+          }
+        }
+      }
+    },
+    "/platform/taxonomy/countries": {
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "listAdminCountries",
+        "summary": "Platform-staff list of ALL countries (including inactive).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "BCP-47 locale; server falls back to en."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every country in every state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Country"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
           }
         }
       }
@@ -6106,11 +6465,16 @@
       "EnumerationSummary": {
         "type": "object",
         "required": [
+          "id",
           "code",
           "active",
           "valueCount"
         ],
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "code": {
             "type": "string"
           },
@@ -6157,11 +6521,16 @@
       "EnumerationDetail": {
         "type": "object",
         "required": [
+          "id",
           "code",
           "active",
           "values"
         ],
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "code": {
             "type": "string"
           },

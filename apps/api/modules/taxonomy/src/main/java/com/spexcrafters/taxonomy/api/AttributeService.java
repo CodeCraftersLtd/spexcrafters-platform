@@ -68,7 +68,10 @@ public class AttributeService {
 
     @Transactional(readOnly = true)
     public List<AttributeSummary> list(String locale) {
-        List<Attribute> all = attributes.findAllByOrderBySortOrderAsc();
+        // Public read: deprecated and non-visible attributes are excluded.
+        List<Attribute> all = attributes.findAllByOrderBySortOrderAsc().stream()
+                .filter(a -> !a.isDeprecated() && a.isVisible())
+                .toList();
         List<UUID> ids = all.stream().map(Attribute::getId).toList();
         Map<UUID, List<AttributeTranslation>> byAttr = translations.findByAttributeIdIn(ids).stream()
                 .collect(Collectors.groupingBy(AttributeTranslation::getAttributeId));
@@ -86,8 +89,24 @@ public class AttributeService {
 
     @Transactional(readOnly = true)
     public AttributeDetail get(String code, String locale) {
-        Attribute attr = attributes.findByCode(code).orElseThrow(TaxonomyNotFoundException::new);
+        // Public read: a deprecated or non-visible attribute is hidden (404).
+        Attribute attr = attributes.findByCode(code)
+                .filter(a -> !a.isDeprecated() && a.isVisible())
+                .orElseThrow(TaxonomyNotFoundException::new);
         return toDetail(attr, locale);
+    }
+
+    /**
+     * Administration attribute list: platform-staff-only (TAXONOMY_READ). Returns EVERY attribute
+     * (including deprecated and non-visible) as full {@link AttributeDetail}s so staff can review
+     * and edit them regardless of status.
+     */
+    @Transactional(readOnly = true)
+    public List<AttributeDetail> listForAdmin(UUID userId, String locale) {
+        platformAccess.require(userId, PlatformCapability.TAXONOMY_READ);
+        return attributes.findAllByOrderBySortOrderAsc().stream()
+                .map(attr -> toDetail(attr, locale))
+                .toList();
     }
 
     // ------------------------------------------------------------------ administration

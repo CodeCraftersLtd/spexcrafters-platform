@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import type {
-  AttributeSummary,
+  AttributeDetail,
   CreateAttributeRequest,
 } from '@spexcrafters/api-client';
 import { Alert, Button, FormField } from '@spexcrafters/ui';
@@ -23,7 +23,8 @@ import { createAttributeSchema, type CreateAttributeValues } from './schemas';
 import styles from './taxonomy.module.css';
 
 interface AttributeListProps {
-  attributes: AttributeSummary[];
+  /** `listAdminAttributes` result — ALL attributes incl. deprecated + non-visible. */
+  attributes: AttributeDetail[];
   locale: string;
 }
 

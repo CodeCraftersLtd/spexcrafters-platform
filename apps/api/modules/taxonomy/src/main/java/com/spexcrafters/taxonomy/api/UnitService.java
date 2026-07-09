@@ -48,6 +48,20 @@ public class UnitService {
                 .toList();
     }
 
+    /**
+     * Administration unit list: platform-staff-only (TAXONOMY_READ). Returns EVERY unit
+     * (including inactive) so staff can review all statuses.
+     */
+    @Transactional(readOnly = true)
+    public List<Unit> listForAdmin(UUID userId, String locale) {
+        platformAccess.require(userId, PlatformCapability.TAXONOMY_READ);
+        Map<String, List<UnitTranslation>> byUnit = translations.findAll().stream()
+                .collect(Collectors.groupingBy(UnitTranslation::getUnitCode));
+        return units.findAllByOrderBySortOrderAsc().stream()
+                .map(u -> toDto(u, byUnit.getOrDefault(u.getCode(), List.of()), locale))
+                .toList();
+    }
+
     @Transactional
     public Unit create(UUID userId, String code, UnitFamily family, String baseUnitCode, BigDecimal factorToBase,
             BigDecimal offsetToBase, String displayFormat, String originalLocaleRaw, String displayName) {

@@ -123,6 +123,63 @@ public class CategoryService {
         return buildEffectiveTemplate(category, locale);
     }
 
+    // ------------------------------------------------------------------ administration reads
+
+    /**
+     * Administration category list: platform-staff-only (TAXONOMY_READ). Returns EVERY category
+     * (including inactive) as a FLAT list ordered by materialized {@code path}, each carrying its
+     * stable {@code id} and {@code parentCode}. This single read also supplies the dashboard's
+     * code -> id map, replacing the per-category detail fan-out.
+     */
+    @Transactional(readOnly = true)
+    public List<CategoryDetail> listForAdmin(UUID userId, String locale) {
+        platformAccess.require(userId, PlatformCapability.TAXONOMY_READ);
+        List<Category> all = categories.findAllByOrderByPathAsc();
+        Map<UUID, String> codeById = all.stream()
+                .collect(Collectors.toMap(Category::getId, Category::getCode));
+        List<UUID> ids = all.stream().map(Category::getId).toList();
+        Map<UUID, List<CategoryTranslation>> byCat = ids.isEmpty() ? Map.of()
+                : translations.findByCategoryIdIn(ids).stream()
+                        .collect(Collectors.groupingBy(CategoryTranslation::getCategoryId));
+        List<CategoryDetail> result = new ArrayList<>();
+        for (Category category : all) {
+            Resolved resolved = resolveName(category,
+                    byCat.getOrDefault(category.getId(), List.of()), locale);
+            String parentCode = category.getParentId() == null ? null
+                    : codeById.get(category.getParentId());
+            result.add(new CategoryDetail(category.getId(), category.getCode(), parentCode,
+                    category.getClassification(), category.getDepth(), category.getPath(),
+                    category.isActive(), category.getSortOrder(), resolved.name(), resolved.description(),
+                    null, category.getVersion(), null));
+        }
+        return result;
+    }
+
+    /**
+     * Administration effective-template read keyed by category uuid (public read keys by code).
+     * Platform-staff-only (TAXONOMY_READ); unknown id -> 404.
+     */
+    @Transactional(readOnly = true)
+    public EffectiveSpecificationTemplate getEffectiveTemplateForAdmin(UUID userId, UUID categoryId,
+            String locale) {
+        platformAccess.require(userId, PlatformCapability.TAXONOMY_READ);
+        Category category = categories.findById(categoryId).orElseThrow(TaxonomyNotFoundException::new);
+        return buildEffectiveTemplate(category, locale);
+    }
+
+    /**
+     * All translation rows for a category, in EVERY locale and status (draft/approved/rejected),
+     * so staff can inspect the translation state. Platform-staff-only (TAXONOMY_READ).
+     */
+    @Transactional(readOnly = true)
+    public List<TranslationView> listTranslations(UUID userId, UUID categoryId) {
+        platformAccess.require(userId, PlatformCapability.TAXONOMY_READ);
+        Category category = categories.findById(categoryId).orElseThrow(TaxonomyNotFoundException::new);
+        return translations.findByCategoryId(categoryId).stream()
+                .map(t -> toTranslationView(t, category.getSourceVersion()))
+                .toList();
+    }
+
     // ------------------------------------------------------------------ administration
 
     @Transactional

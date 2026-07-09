@@ -14,6 +14,8 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     List<Category> findAllByOrderBySortOrderAsc();
 
+    List<Category> findAllByOrderByPathAsc();
+
     List<Category> findByActiveTrueOrderBySortOrderAsc();
 
     List<Category> findByParentId(UUID parentId);

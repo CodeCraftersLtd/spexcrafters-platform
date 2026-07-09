@@ -43,6 +43,22 @@ public class CertificationService {
 
     @Transactional(readOnly = true)
     public List<Certification> list(String locale) {
+        // Public read: inactive and deprecated certifications are excluded.
+        Map<UUID, List<CertificationTranslation>> byCert = translations.findAll().stream()
+                .collect(Collectors.groupingBy(CertificationTranslation::getCertificationId));
+        return certifications.findAllByOrderBySortOrderAsc().stream()
+                .filter(c -> c.isActive() && !c.isDeprecated())
+                .map(c -> toDto(c, byCert.getOrDefault(c.getId(), List.of()), locale))
+                .toList();
+    }
+
+    /**
+     * Administration certification list: platform-staff-only (TAXONOMY_READ). Returns EVERY
+     * certification (including deprecated and inactive) so staff can review all statuses.
+     */
+    @Transactional(readOnly = true)
+    public List<Certification> listForAdmin(UUID userId, String locale) {
+        platformAccess.require(userId, PlatformCapability.TAXONOMY_READ);
         Map<UUID, List<CertificationTranslation>> byCert = translations.findAll().stream()
                 .collect(Collectors.groupingBy(CertificationTranslation::getCertificationId));
         return certifications.findAllByOrderBySortOrderAsc().stream()

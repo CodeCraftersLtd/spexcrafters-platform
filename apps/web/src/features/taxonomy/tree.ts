@@ -1,4 +1,4 @@
-import type { CategoryTreeNode } from '@spexcrafters/api-client';
+import type { CategoryDetail, CategoryTreeNode } from '@spexcrafters/api-client';
 
 /**
  * Pure helpers for the category tree (framework-agnostic; unit-tested). The
@@ -6,6 +6,72 @@ import type { CategoryTreeNode } from '@spexcrafters/api-client';
  * it for the parent/category pickers and derive slug/code previews for the
  * create forms.
  */
+
+/**
+ * A category node for the admin dashboard, nested from the FLAT
+ * `listAdminCategories` read. Unlike the public `CategoryTreeNode`, this carries
+ * the stable `id` (so translation actions target the uuid directly) and includes
+ * inactive categories.
+ */
+export interface AdminCategoryNode {
+  id: string;
+  code: string;
+  parentCode: string | null;
+  classification: CategoryDetail['classification'];
+  name: string;
+  active: boolean;
+  depth: number;
+  sortOrder: number;
+  children: AdminCategoryNode[];
+}
+
+/**
+ * Nest the flat, path-ordered `listAdminCategories` result by `parentCode`.
+ * Sibling order follows input order (the API returns categories ordered by
+ * materialized path, i.e. depth-first pre-order). A category whose `parentCode`
+ * is absent from the input (or null) becomes a root, so the whole set is always
+ * reachable even if an ancestor is missing.
+ */
+export function buildAdminCategoryTree(
+  categories: readonly CategoryDetail[],
+): AdminCategoryNode[] {
+  const byCode = new Map<string, AdminCategoryNode>();
+  for (const category of categories) {
+    byCode.set(category.code, {
+      id: category.id,
+      code: category.code,
+      parentCode: category.parentCode ?? null,
+      classification: category.classification,
+      name: category.name,
+      active: category.active,
+      depth: category.depth,
+      sortOrder: category.sortOrder,
+      children: [],
+    });
+  }
+  const roots: AdminCategoryNode[] = [];
+  for (const category of categories) {
+    const node = byCode.get(category.code)!;
+    const parent = node.parentCode ? byCode.get(node.parentCode) : undefined;
+    if (parent) {
+      parent.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+  return roots;
+}
+
+/** code → uuid map built from the flat `listAdminCategories` read. */
+export function categoryIdByCode(
+  categories: readonly CategoryDetail[],
+): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const category of categories) {
+    map[category.code] = category.id;
+  }
+  return map;
+}
 
 export interface FlatCategory {
   code: string;

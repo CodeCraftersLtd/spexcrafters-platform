@@ -9,6 +9,8 @@ import com.spexcrafters.taxonomy.api.CategoryDetail;
 import com.spexcrafters.taxonomy.api.CategoryService;
 import com.spexcrafters.taxonomy.api.Certification;
 import com.spexcrafters.taxonomy.api.CertificationService;
+import com.spexcrafters.taxonomy.api.Country;
+import com.spexcrafters.taxonomy.api.CountryService;
 import com.spexcrafters.taxonomy.api.EffectiveSpecificationTemplate;
 import com.spexcrafters.taxonomy.api.EnumerationDetail;
 import com.spexcrafters.taxonomy.api.EnumerationService;
@@ -34,9 +36,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Platform-staff taxonomy administration (18 operations). Every operation is authorized against
- * a platform capability in the service layer ({@code TAXONOMY_WRITE}, or {@code BRAND_APPROVE}
- * for brand approval) — never an organization role. Non-staff callers receive a 403.
+ * Platform-staff taxonomy administration. Every operation is authorized against a platform
+ * capability in the service layer — {@code TAXONOMY_READ} for the all-status admin reads,
+ * {@code TAXONOMY_WRITE} for mutations, or {@code BRAND_APPROVE} for brand approval — never an
+ * organization role. Non-staff callers receive a 403. The admin reads return DTOs (never JPA
+ * entities) in EVERY state, while the public read surface exposes only active/approved content.
  */
 @RestController
 @RequestMapping("/api/v1/platform/taxonomy")
@@ -46,16 +50,18 @@ public class PlatformTaxonomyController {
     private final AttributeService attributeService;
     private final EnumerationService enumerationService;
     private final UnitService unitService;
+    private final CountryService countryService;
     private final CertificationService certificationService;
     private final BrandService brandService;
 
     public PlatformTaxonomyController(CategoryService categoryService, AttributeService attributeService,
-            EnumerationService enumerationService, UnitService unitService,
+            EnumerationService enumerationService, UnitService unitService, CountryService countryService,
             CertificationService certificationService, BrandService brandService) {
         this.categoryService = categoryService;
         this.attributeService = attributeService;
         this.enumerationService = enumerationService;
         this.unitService = unitService;
+        this.countryService = countryService;
         this.certificationService = certificationService;
         this.brandService = brandService;
     }
@@ -72,6 +78,32 @@ public class PlatformTaxonomyController {
     }
 
     // ------------------------------------------------------------------ categories
+
+    /**
+     * operationId: listAdminCategories — platform-staff FLAT view of ALL categories (including
+     * inactive), ordered by path, each carrying its uuid + parentCode. Supplies the dashboard's
+     * code -> id map in a single read.
+     */
+    @GetMapping("/categories")
+    public List<CategoryDetail> listAdminCategories(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String locale) {
+        return categoryService.listForAdmin(AuthenticatedUser.id(jwt), locale);
+    }
+
+    /** operationId: listCategoryTranslations — all locales + all statuses for one category. */
+    @GetMapping("/categories/{id}/translations")
+    public List<TranslationView> listCategoryTranslations(@AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID id) {
+        return categoryService.listTranslations(AuthenticatedUser.id(jwt), id);
+    }
+
+    /** operationId: getAdminCategorySpecificationTemplate — effective template keyed by uuid. */
+    @GetMapping("/categories/{id}/specification-template")
+    public EffectiveSpecificationTemplate getAdminCategorySpecificationTemplate(
+            @AuthenticationPrincipal Jwt jwt, @PathVariable UUID id,
+            @RequestParam(required = false) String locale) {
+        return categoryService.getEffectiveTemplateForAdmin(AuthenticatedUser.id(jwt), id, locale);
+    }
 
     /** operationId: createCategory */
     @PostMapping("/categories")
@@ -122,6 +154,13 @@ public class PlatformTaxonomyController {
 
     // ------------------------------------------------------------------ attributes
 
+    /** operationId: listAdminAttributes — ALL attributes (including deprecated + non-visible). */
+    @GetMapping("/attributes")
+    public List<AttributeDetail> listAdminAttributes(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String locale) {
+        return attributeService.listForAdmin(AuthenticatedUser.id(jwt), locale);
+    }
+
     /** operationId: createAttribute */
     @PostMapping("/attributes")
     @ResponseStatus(HttpStatus.CREATED)
@@ -153,6 +192,16 @@ public class PlatformTaxonomyController {
     }
 
     // ------------------------------------------------------------------ enumerations
+
+    /**
+     * operationId: listAdminEnumerations — ALL enumerations (including inactive), each with its
+     * uuid and its values (including inactive/deprecated).
+     */
+    @GetMapping("/enumerations")
+    public List<EnumerationDetail> listAdminEnumerations(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String locale) {
+        return enumerationService.listForAdmin(AuthenticatedUser.id(jwt), locale);
+    }
 
     /** operationId: createEnumeration */
     @PostMapping("/enumerations")
@@ -207,7 +256,28 @@ public class PlatformTaxonomyController {
                 request.description(), request.source());
     }
 
-    // ------------------------------------------------------------------ certifications & units
+    // ------------------------------------------------------------------ certifications, units & countries
+
+    /** operationId: listAdminCertifications — ALL certifications (including deprecated/inactive). */
+    @GetMapping("/certifications")
+    public List<Certification> listAdminCertifications(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String locale) {
+        return certificationService.listForAdmin(AuthenticatedUser.id(jwt), locale);
+    }
+
+    /** operationId: listAdminUnits — ALL units (including inactive). */
+    @GetMapping("/units")
+    public List<Unit> listAdminUnits(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String locale) {
+        return unitService.listForAdmin(AuthenticatedUser.id(jwt), locale);
+    }
+
+    /** operationId: listAdminCountries — ALL countries (including inactive). */
+    @GetMapping("/countries")
+    public List<Country> listAdminCountries(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String locale) {
+        return countryService.listForAdmin(AuthenticatedUser.id(jwt), locale);
+    }
 
     /** operationId: createCertification */
     @PostMapping("/certifications")

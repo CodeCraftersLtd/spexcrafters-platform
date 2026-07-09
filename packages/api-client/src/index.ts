@@ -558,6 +558,72 @@ export function createApiClient(options: ApiClientOptions) {
         undefined,
         true,
       ),
+    /** Platform-staff: ALL categories (incl. inactive), flat, each with uuid + parentCode. */
+    listAdminCategories: (params?: { locale?: string }) =>
+      request<CategoryDetail[]>(
+        'GET',
+        `/platform/taxonomy/categories${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+        undefined,
+        true,
+      ),
+    /** Platform-staff: a category's translations in every locale and status. */
+    listCategoryTranslations: (id: string) =>
+      request<TranslationView[]>(
+        'GET',
+        `/platform/taxonomy/categories/${enc(id)}/translations`,
+        undefined,
+        true,
+      ),
+    /** Platform-staff: effective specification template for a category, keyed by uuid. */
+    getAdminCategorySpecificationTemplate: (id: string, locale?: string) =>
+      request<EffectiveSpecificationTemplate>(
+        'GET',
+        `/platform/taxonomy/categories/${enc(id)}/specification-template${
+          locale ? `?locale=${enc(locale)}` : ''
+        }`,
+        undefined,
+        true,
+      ),
+    /** Platform-staff: ALL attributes (incl. deprecated + non-visible), as full details. */
+    listAdminAttributes: (params?: { locale?: string }) =>
+      request<AttributeDetail[]>(
+        'GET',
+        `/platform/taxonomy/attributes${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+        undefined,
+        true,
+      ),
+    /** Platform-staff: ALL enumerations (incl. inactive), each with uuid + all values. */
+    listAdminEnumerations: (params?: { locale?: string }) =>
+      request<EnumerationDetail[]>(
+        'GET',
+        `/platform/taxonomy/enumerations${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+        undefined,
+        true,
+      ),
+    /** Platform-staff: ALL certifications (incl. deprecated/inactive). */
+    listAdminCertifications: (params?: { locale?: string }) =>
+      request<Certification[]>(
+        'GET',
+        `/platform/taxonomy/certifications${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+        undefined,
+        true,
+      ),
+    /** Platform-staff: ALL units (incl. inactive). */
+    listAdminUnits: (params?: { locale?: string }) =>
+      request<Unit[]>(
+        'GET',
+        `/platform/taxonomy/units${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+        undefined,
+        true,
+      ),
+    /** Platform-staff: ALL countries (incl. inactive). */
+    listAdminCountries: (params?: { locale?: string }) =>
+      request<Country[]>(
+        'GET',
+        `/platform/taxonomy/countries${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+        undefined,
+        true,
+      ),
     validateSpecification: (req: SpecificationValidationRequest, locale?: string) =>
       request<SpecificationValidationResult>(
         'POST',
