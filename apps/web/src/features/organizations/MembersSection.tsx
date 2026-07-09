@@ -11,6 +11,7 @@ import type {
 import { Alert, Button } from '@spexcrafters/ui';
 
 import type { Dictionary, Locale } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 import { interpolate } from '@/lib/interpolate';
 import { readBffError } from '@/features/auth/client-errors';
 import {
@@ -61,9 +62,9 @@ export function MembersSection({
     try {
       let response: Response;
       try {
-        response = await fetch(
+        response = await sendJson(
           `/api/orgs/${encodeURIComponent(organizationId)}/members/${encodeURIComponent(member.membershipId)}`,
-          { method: 'DELETE' },
+          'DELETE',
         );
       } catch {
         setError(serverErrors.unexpected);
@@ -90,13 +91,10 @@ export function MembersSection({
     try {
       let response: Response;
       try {
-        response = await fetch(
+        response = await sendJson(
           `/api/orgs/${encodeURIComponent(organizationId)}/members/${encodeURIComponent(member.membershipId)}/role`,
-          {
-            method: 'PUT',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ role }),
-          },
+          'PUT',
+          { role },
         );
       } catch {
         setError(serverErrors.unexpected);

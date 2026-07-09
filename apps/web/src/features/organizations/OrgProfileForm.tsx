@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
 import type { Dictionary } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 import { readBffError } from '@/features/auth/client-errors';
 import { translateOrgError } from '@/features/organizations/org-errors';
 import {
@@ -62,17 +63,17 @@ export function OrgProfileForm({
     setSaved(false);
     let response: Response;
     try {
-      response = await fetch(`/api/orgs/${encodeURIComponent(organizationId)}`, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/json' },
-        // PATCH semantics: only provided fields change. An empty country is
-        // omitted (the contract has no explicit clear operation).
-        body: JSON.stringify({
+      // PATCH semantics: only provided fields change. An empty country is
+      // omitted (the contract has no explicit clear operation).
+      response = await sendJson(
+        `/api/orgs/${encodeURIComponent(organizationId)}`,
+        'PATCH',
+        {
           name: values.name,
           ...(values.country ? { country: values.country } : {}),
           version,
-        }),
-      });
+        },
+      );
     } catch {
       setFormError(serverErrors.unexpected);
       return;

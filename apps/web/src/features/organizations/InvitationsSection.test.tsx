@@ -15,7 +15,10 @@ vi.mock('@spexcrafters/ui', () => {
     loading?: boolean;
     children?: ReactNode;
   }
-  function Button({ variant, size, loading, children, ...rest }: MockButtonProps) {
+  function Button({ loading, children, ...rest }: MockButtonProps) {
+    // variant/size are design-system props consumed by the real Button; the
+    // mock ignores them (they pass through in ...rest as harmless lowercase
+    // DOM attributes).
     return (
       <button aria-busy={loading || undefined} {...rest}>
         {children}

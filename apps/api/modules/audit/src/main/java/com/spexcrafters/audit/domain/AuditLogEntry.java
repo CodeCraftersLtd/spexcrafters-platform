@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.domain.Persistable;
 
 /**
@@ -40,6 +42,16 @@ public class AuditLogEntry implements Persistable<UUID> {
     @Column(name = "correlation_id", length = 64)
     private String correlationId;
 
+    /**
+     * Structured event payload as a raw JSON document (TD-9), e.g. the checked capability
+     * of an authorization denial. Mapped as a plain string carrying pre-serialized JSON:
+     * Hibernate writes it straight into the {@code jsonb} column without a format-mapper
+     * round trip, and {@code ddl-auto=validate} accepts the mapping.
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "detail")
+    private String detail;
+
     @Column(name = "at", nullable = false)
     private Instant at;
 
@@ -51,13 +63,14 @@ public class AuditLogEntry implements Persistable<UUID> {
     }
 
     public AuditLogEntry(UUID id, UUID actorUserId, String action, String targetType,
-            String targetId, String correlationId, Instant at) {
+            String targetId, String correlationId, String detail, Instant at) {
         this.id = id;
         this.actorUserId = actorUserId;
         this.action = action;
         this.targetType = targetType;
         this.targetId = targetId;
         this.correlationId = correlationId;
+        this.detail = detail;
         this.at = at;
     }
 
@@ -95,6 +108,10 @@ public class AuditLogEntry implements Persistable<UUID> {
 
     public String getCorrelationId() {
         return correlationId;
+    }
+
+    public String getDetail() {
+        return detail;
     }
 
     public Instant getAt() {

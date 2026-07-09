@@ -9,11 +9,17 @@ import {
   readJsonBody,
   upstreamUnavailable,
 } from '@/lib/bff';
+import { enforceUnauthenticatedOrigin } from '@/lib/csrf';
 import { createSession } from '@/lib/session';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request): Promise<NextResponse> {
+  const csrfError = enforceUnauthenticatedOrigin(request);
+  if (csrfError) {
+    return csrfError;
+  }
+
   const body = await readJsonBody<LoginRequest>(request);
   if (!body) {
     return invalidRequestBody();

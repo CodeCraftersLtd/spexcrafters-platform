@@ -18,6 +18,7 @@ const payload: SessionPayload = {
   accessToken: 'access-token-value',
   refreshToken: 'refresh-token-value-refresh-token-value',
   accessTokenExpiresAt: Math.floor(Date.now() / 1000) + 600,
+  csrfToken: 'csrf-token-value-csrf-token-value-abc',
   user: {
     id: '0195b4f2-7c3a-7000-8000-000000000001',
     email: 'ada@example.com',
@@ -37,6 +38,26 @@ describe('session JWE round trip', () => {
     expect(opened?.refreshToken).toBe(payload.refreshToken);
     expect(opened?.accessTokenExpiresAt).toBe(payload.accessTokenExpiresAt);
     expect(opened?.user).toEqual(payload.user);
+  });
+
+  it('seals and round-trips the CSRF token (ADR-018 canonical value)', async () => {
+    const token = await sealSession(payload, KEY);
+    // The token is the canonical CSRF value and must never appear in cleartext.
+    expect(token).not.toContain(payload.csrfToken);
+
+    const opened = await openSession(token, KEY);
+    expect(opened?.csrfToken).toBe(payload.csrfToken);
+  });
+
+  it('rejects a payload with no CSRF token (shape guard)', async () => {
+    const invalid = {
+      accessToken: payload.accessToken,
+      refreshToken: payload.refreshToken,
+      accessTokenExpiresAt: payload.accessTokenExpiresAt,
+      user: payload.user,
+    } as unknown as SessionPayload;
+    const token = await sealSession(invalid, KEY);
+    expect(await openSession(token, KEY)).toBeNull();
   });
 
   it('produces an unreadable (encrypted) compact token', async () => {

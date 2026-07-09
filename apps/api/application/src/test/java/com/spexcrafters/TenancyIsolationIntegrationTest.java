@@ -86,6 +86,20 @@ class TenancyIsolationIntegrationTest extends AbstractOrganizationsIntegrationTe
         assertThat(countAuditRows("authorization.denied", userB.userId())).isGreaterThanOrEqualTo(7);
         assertThat(countAuditRows("authorization.denied", userA.userId())).isGreaterThanOrEqualTo(5);
 
+        // TD-9: target_id is the plain organization id (no "capability=" encoding) and the
+        // checked capability travels in the structured jsonb detail instead.
+        assertThat(auditTargetIds("authorization.denied", userB.userId()))
+                .contains(orgA)
+                .allSatisfy(targetId -> assertThat(targetId).doesNotContain("capability="));
+        assertThat(auditDetails("authorization.denied", userB.userId()))
+                .isNotEmpty()
+                .allSatisfy(detail -> assertThat(detail)
+                        .contains("\"capability\":\"organization.")
+                        .contains("\"organizationId\":\""))
+                .anySatisfy(detail -> assertThat(detail)
+                        .contains("\"capability\":\"organization.read\"")
+                        .contains(orgA));
+
         // Nothing leaked or changed: A still sees its organization untouched.
         ResponseEntity<String> intact = getWithBearer("/api/v1/organizations/" + orgA, userA.accessToken());
         assertThat(intact.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { ApiProblemError, type Problem } from '@spexcrafters/api-client';
 
 import type { ClientError, ClientErrorBody, ClientFieldError } from '@/lib/bff';
+import { enforceCsrf } from '@/lib/csrf';
 import { getSession, refreshIfNeeded, type SessionPayload } from '@/lib/session';
 
 /**
@@ -37,6 +38,26 @@ export async function requireApiSession(): Promise<SessionPayload | NextResponse
     return unauthenticatedResponse();
   }
   return fresh;
+}
+
+/**
+ * Resolve a session AND enforce CSRF (ADR-018) for an authenticated mutation.
+ * Returns the session on success, or a ready-to-send response — 401 when there
+ * is no session, 403 when the CSRF guard rejects the request. Use across every
+ * org/invitation mutation handler so the guard is wired in exactly one place.
+ */
+export async function requireApiSessionWithCsrf(
+  request: Request,
+): Promise<SessionPayload | NextResponse<ClientErrorBody>> {
+  const session = await requireApiSession();
+  if (isErrorResponse(session)) {
+    return session;
+  }
+  const csrfError = enforceCsrf(request, session);
+  if (csrfError) {
+    return csrfError;
+  }
+  return session;
 }
 
 export function isErrorResponse(

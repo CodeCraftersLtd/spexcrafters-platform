@@ -51,6 +51,12 @@ spexcrafters:
     access-token-ttl: 10m
     refresh-token-ttl: 14d
     verification-token-ttl: 24h
+    # Concurrency grace window: reusing an already-rotated refresh token within this
+    # window is treated as a benign multi-tab race (401 without family revocation).
+    refresh-grace: 15s
+    # Absolute session lifetime per refresh-token family; renewal is denied once the
+    # family is older, regardless of activity (session-security-policy.md §1).
+    session-absolute-ttl: 30d
     # Organization invitation tokens (organizations module).
     invitation-ttl: 7d
   mail:

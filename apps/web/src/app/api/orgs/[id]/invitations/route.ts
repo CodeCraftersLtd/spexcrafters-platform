@@ -3,7 +3,11 @@ import { NextResponse } from 'next/server';
 import type { CreateInvitationRequest } from '@spexcrafters/api-client';
 
 import { invalidRequestBody, readJsonBody } from '@/lib/bff';
-import { apiErrorResponse, isErrorResponse, requireApiSession } from '@/lib/org-bff';
+import {
+  apiErrorResponse,
+  isErrorResponse,
+  requireApiSessionWithCsrf,
+} from '@/lib/org-bff';
 import { createServerApiClient } from '@/lib/server-api';
 
 export const runtime = 'nodejs';
@@ -18,7 +22,7 @@ export async function POST(
   request: Request,
   context: RouteContext,
 ): Promise<NextResponse> {
-  const session = await requireApiSession();
+  const session = await requireApiSessionWithCsrf(request);
   if (isErrorResponse(session)) {
     return session;
   }

@@ -9,6 +9,7 @@ import type { Capability, InvitationResponse } from '@spexcrafters/api-client';
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
 import type { Dictionary, Locale } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 import { interpolate } from '@/lib/interpolate';
 import { readBffError } from '@/features/auth/client-errors';
 import { invitableRoles } from '@/features/organizations/capabilities';
@@ -65,9 +66,9 @@ export function InvitationsSection({
     try {
       let response: Response;
       try {
-        response = await fetch(
+        response = await sendJson(
           `/api/orgs/${encodeURIComponent(organizationId)}/invitations/${encodeURIComponent(invitation.id)}/revoke`,
-          { method: 'POST' },
+          'POST',
         );
       } catch {
         setListError(serverErrors.unexpected);
@@ -179,13 +180,10 @@ function InviteForm({
     setSent(false);
     let response: Response;
     try {
-      response = await fetch(
+      response = await sendJson(
         `/api/orgs/${encodeURIComponent(organizationId)}/invitations`,
-        {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(values),
-        },
+        'POST',
+        values,
       );
     } catch {
       setFormError(serverErrors.unexpected);

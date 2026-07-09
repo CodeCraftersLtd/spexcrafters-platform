@@ -5,34 +5,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.mail.internet.MimeMessage;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.awaitility.Awaitility;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * Shared plumbing for the organizations-slice integration tests: authenticated users,
  * bearer-token HTTP helpers for every verb of the contract, invitation-token capture from
- * recorded email (never from the database — only the hash is stored) and audit-log lookups.
+ * recorded email (never from the database — only the hash is stored).
  */
 public abstract class AbstractOrganizationsIntegrationTest extends AbstractIntegrationTest {
 
     protected static final String PASSWORD = "sturdy-passphrase-42";
 
     private static final Pattern TOKEN_IN_LINK = Pattern.compile("token=([A-Za-z0-9_-]+)");
-
-    @Autowired
-    protected JdbcTemplate jdbcTemplate;
 
     protected record TestUser(String email, String userId, String accessToken) {
     }
@@ -122,21 +115,5 @@ public abstract class AbstractOrganizationsIntegrationTest extends AbstractInteg
         } catch (com.fasterxml.jackson.core.JsonProcessingException ex) {
             throw new IllegalArgumentException("Could not serialise test request body", ex);
         }
-    }
-
-    // ------------------------------------------------------------------ audit helpers
-
-    /** Actions recorded in {@code audit.audit_log} by {@code actorUserId}, oldest first. */
-    protected List<String> auditActionsBy(String actorUserId) {
-        return jdbcTemplate.queryForList(
-                "select action from audit.audit_log where actor_user_id = ? order by at, id",
-                String.class, UUID.fromString(actorUserId));
-    }
-
-    protected long countAuditRows(String action, String actorUserId) {
-        Long count = jdbcTemplate.queryForObject(
-                "select count(*) from audit.audit_log where action = ? and actor_user_id = ?",
-                Long.class, action, UUID.fromString(actorUserId));
-        return count == null ? 0 : count;
     }
 }

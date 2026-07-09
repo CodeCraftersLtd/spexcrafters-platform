@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
 import type { Dictionary, Locale } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 import { readBffError, translateError } from '@/features/auth/client-errors';
 import { createLoginSchema, type LoginFormValues } from '@/features/auth/schemas';
 
@@ -46,11 +47,7 @@ export function LoginForm({
     setFormError(null);
     let response: Response;
     try {
-      response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(values),
-      });
+      response = await sendJson('/api/auth/login', 'POST', values);
     } catch {
       setFormError(serverErrors.unexpected);
       return;

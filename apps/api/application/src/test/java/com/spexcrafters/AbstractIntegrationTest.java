@@ -8,6 +8,7 @@ import com.spexcrafters.support.RecordingMailConfig;
 import com.spexcrafters.support.RecordingMailSender;
 import jakarta.mail.internet.MimeMessage;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
@@ -52,6 +54,9 @@ public abstract class AbstractIntegrationTest {
 
     @Autowired
     protected RecordingMailSender mailRecorder;
+
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
 
     protected String uniqueEmail() {
         return "user-" + UUID.randomUUID() + "@example.com";
@@ -125,5 +130,57 @@ public abstract class AbstractIntegrationTest {
                 "password", password));
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         return json(response);
+    }
+
+    // ------------------------------------------------------------------ audit helpers
+
+    /** Actions recorded in {@code audit.audit_log} by {@code actorUserId}, oldest first. */
+    protected List<String> auditActionsBy(String actorUserId) {
+        return jdbcTemplate.queryForList(
+                "select action from audit.audit_log where actor_user_id = ? order by at, id",
+                String.class, UUID.fromString(actorUserId));
+    }
+
+    protected long countAuditRows(String action, String actorUserId) {
+        Long count = jdbcTemplate.queryForObject(
+                "select count(*) from audit.audit_log where action = ? and actor_user_id = ?",
+                Long.class, action, UUID.fromString(actorUserId));
+        return count == null ? 0 : count;
+    }
+
+    /**
+     * The jsonb {@code detail} payloads of matching audit rows, normalized to compact JSON.
+     * PostgreSQL renders jsonb text with a space after every colon/comma; re-serializing
+     * through Jackson yields the compact form the assertions match against, so tests do not
+     * depend on the driver's whitespace.
+     */
+    protected List<String> auditDetails(String action, String actorUserId) {
+        return jdbcTemplate
+                .queryForList(
+                        "select detail::text from audit.audit_log where action = ? and actor_user_id = ?"
+                                + " order by at, id",
+                        String.class, action, UUID.fromString(actorUserId))
+                .stream()
+                .map(this::compactJson)
+                .toList();
+    }
+
+    private String compactJson(String json) {
+        if (json == null) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(objectMapper.readTree(json));
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return json;
+        }
+    }
+
+    /** The {@code target_id} values of matching audit rows, oldest first. */
+    protected List<String> auditTargetIds(String action, String actorUserId) {
+        return jdbcTemplate.queryForList(
+                "select target_id from audit.audit_log where action = ? and actor_user_id = ?"
+                        + " order by at, id",
+                String.class, action, UUID.fromString(actorUserId));
     }
 }

@@ -9,10 +9,16 @@ import {
   readJsonBody,
   upstreamUnavailable,
 } from '@/lib/bff';
+import { enforceUnauthenticatedOrigin } from '@/lib/csrf';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request): Promise<NextResponse> {
+  const csrfError = enforceUnauthenticatedOrigin(request);
+  if (csrfError) {
+    return csrfError;
+  }
+
   const body = await readJsonBody<VerifyEmailRequest>(request);
   if (!body || typeof body.token !== 'string' || body.token.length === 0) {
     return invalidRequestBody();

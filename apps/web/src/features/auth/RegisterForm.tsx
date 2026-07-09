@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
 import { interpolate, type Dictionary, type Locale } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 import { readBffError, translateError } from '@/features/auth/client-errors';
 import {
   createRegisterSchema,
@@ -51,11 +52,7 @@ export function RegisterForm({
     setFormError(null);
     let response: Response;
     try {
-      response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ...values, locale }),
-      });
+      response = await sendJson('/api/auth/register', 'POST', { ...values, locale });
     } catch {
       setFormError(serverErrors.unexpected);
       return;
@@ -88,10 +85,8 @@ export function RegisterForm({
     }
     setResendState('sending');
     try {
-      await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email: registeredEmail }),
+      await sendJson('/api/auth/resend-verification', 'POST', {
+        email: registeredEmail,
       });
     } finally {
       setResendState('sent');

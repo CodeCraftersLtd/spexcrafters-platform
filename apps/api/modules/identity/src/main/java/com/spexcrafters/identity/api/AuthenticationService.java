@@ -7,6 +7,7 @@ import com.spexcrafters.identity.domain.LoginOutcome;
 import com.spexcrafters.identity.domain.LoginThrottle;
 import com.spexcrafters.identity.domain.OpaqueTokenGenerator;
 import com.spexcrafters.identity.domain.RefreshToken;
+import com.spexcrafters.identity.domain.SessionLifetimePolicy;
 import com.spexcrafters.identity.domain.TokenHasher;
 import com.spexcrafters.identity.domain.UserAccount;
 import com.spexcrafters.identity.domain.UserStatus;
@@ -17,11 +18,13 @@ import com.spexcrafters.identity.infrastructure.config.AuthProperties;
 import com.spexcrafters.identity.infrastructure.security.JwtIssuer;
 import com.spexcrafters.sharedkernel.problem.ApiProblemException;
 import com.spexcrafters.sharedkernel.problem.AuthenticationFailedException;
+import com.spexcrafters.sharedkernel.problem.ConcurrentRefreshException;
 import com.spexcrafters.sharedkernel.problem.RateLimitedException;
 import com.spexcrafters.sharedkernel.util.UuidV7;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.UUID;
@@ -42,6 +45,10 @@ public class AuthenticationService {
 
     private static final String BAD_CREDENTIALS = "Invalid email or password.";
     private static final String INVALID_REFRESH_TOKEN = "Refresh token is invalid, expired or revoked.";
+    private static final String CONCURRENT_REFRESH =
+            "Refresh token was already rotated by a concurrent refresh.";
+    private static final String SESSION_EXPIRED =
+            "Session exceeded its absolute lifetime. Please sign in again.";
 
     private final UserAccountRepository users;
     private final RefreshTokenRepository refreshTokens;
@@ -50,6 +57,7 @@ public class AuthenticationService {
     private final JwtIssuer jwtIssuer;
     private final AuditLogger auditLogger;
     private final AuthProperties authProperties;
+    private final SessionLifetimePolicy lifetimePolicy;
     private final Clock clock;
 
     /**
@@ -73,6 +81,8 @@ public class AuthenticationService {
         this.jwtIssuer = jwtIssuer;
         this.auditLogger = auditLogger;
         this.authProperties = authProperties;
+        this.lifetimePolicy = new SessionLifetimePolicy(
+                authProperties.refreshGrace(), authProperties.sessionAbsoluteTtl());
         this.clock = clock;
         this.timingEqualizerHash = passwordEncoder.encode(OpaqueTokenGenerator.generate());
     }
@@ -119,20 +129,33 @@ public class AuthenticationService {
 
     /**
      * Rotates a refresh token: the presented token is consumed and a successor in the same
-     * family is issued. Presenting an already-consumed or revoked token revokes the whole
-     * family (theft detection) — and that revocation commits despite the thrown 401.
+     * family is issued (strict single-use rotation).
+     *
+     * <p>Phase-6 semantics (session-security-policy.md §§1–2):
+     * <ul>
+     *   <li><b>Grace window:</b> presenting an already-rotated token within
+     *       {@code spexcrafters.auth.refresh-grace} of its rotation is a benign multi-tab
+     *       race — 401 without revoking the family (the shared BFF session cookie already
+     *       carries the winning rotation's tokens). Raw successor tokens are hash-only, so
+     *       re-returning the winner's pair is impossible by design.</li>
+     *   <li><b>Replay:</b> reuse after the grace window (or of a revoked token) is treated
+     *       as theft — the whole family is revoked and the revocation commits despite the
+     *       thrown 401 ({@code noRollbackFor}).</li>
+     *   <li><b>Absolute lifetime:</b> a family older than
+     *       {@code spexcrafters.auth.session-absolute-ttl} is denied renewal (401,
+     *       {@code identity.session.expired_absolute}) without revocation-audit spam.</li>
+     * </ul>
      */
     @Transactional(noRollbackFor = ApiProblemException.class)
     public IssuedTokens refresh(String rawRefreshToken) {
         Instant now = clock.instant();
-        RefreshToken current = refreshTokens.findByTokenHash(TokenHasher.sha256Hex(rawRefreshToken))
+        // FOR UPDATE: concurrent refreshes of the same token serialize here; the losers
+        // observe the winner's committed rotation and take the grace-window path below.
+        RefreshToken current = refreshTokens.findByTokenHashForUpdate(TokenHasher.sha256Hex(rawRefreshToken))
                 .orElseThrow(() -> new AuthenticationFailedException(INVALID_REFRESH_TOKEN));
 
         if (current.isConsumedOrRevoked()) {
-            refreshTokens.revokeFamily(current.getFamilyId(), now);
-            auditLogger.record("identity.refresh_token.reuse_detected", current.getUserId(),
-                    "refresh_token_family", current.getFamilyId().toString());
-            throw new AuthenticationFailedException(INVALID_REFRESH_TOKEN);
+            throw reuseFailure(current, now);
         }
         if (current.isExpired(now)) {
             throw new AuthenticationFailedException(INVALID_REFRESH_TOKEN);
@@ -144,9 +167,42 @@ public class AuthenticationService {
             throw new AuthenticationFailedException(INVALID_REFRESH_TOKEN);
         }
 
+        Instant familyCreatedAt = refreshTokens.findFamilyCreatedAt(current.getFamilyId()).orElse(now);
+        if (lifetimePolicy.isFamilyExpired(familyCreatedAt, now)) {
+            auditLogger.record("identity.session.expired_absolute", current.getUserId(),
+                    "refresh_token_family", current.getFamilyId().toString(),
+                    Map.of("familyId", current.getFamilyId().toString()));
+            throw new AuthenticationFailedException(SESSION_EXPIRED);
+        }
+
         MintedRefreshToken minted = mintRefreshToken(user, current.getFamilyId(), now);
         current.markReplacedBy(minted.entity().getId());
         return buildTokens(user, minted, now);
+    }
+
+    /**
+     * Decides what presenting a consumed-or-revoked token means. A rotated (not revoked)
+     * token whose successor was minted at most the grace window ago is a benign concurrent
+     * refresh: fail with 401 but leave the family alive. Everything else is a replay:
+     * revoke the family and audit both the detection and the revocation.
+     */
+    private ApiProblemException reuseFailure(RefreshToken current, Instant now) {
+        if (current.getRevokedAt() == null && current.getReplacedBy() != null) {
+            Optional<Instant> rotatedAt = refreshTokens.findById(current.getReplacedBy())
+                    .map(RefreshToken::getCreatedAt);
+            if (rotatedAt.isPresent() && lifetimePolicy.isWithinGrace(rotatedAt.get(), now)) {
+                return new ConcurrentRefreshException(CONCURRENT_REFRESH);
+            }
+        }
+        Map<String, String> detail = Map.of("familyId", current.getFamilyId().toString());
+        int revoked = refreshTokens.revokeFamily(current.getFamilyId(), now);
+        auditLogger.record("identity.session.replay_detected", current.getUserId(),
+                "refresh_token_family", current.getFamilyId().toString(), detail);
+        if (revoked > 0) {
+            auditLogger.record("identity.session.family_revoked", current.getUserId(),
+                    "refresh_token_family", current.getFamilyId().toString(), detail);
+        }
+        return new AuthenticationFailedException(INVALID_REFRESH_TOKEN);
     }
 
     private void throttleOrThrow(String email, String ipAddress, Instant now) {

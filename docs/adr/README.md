@@ -26,7 +26,7 @@ This directory records the significant architectural decisions for SpexCrafters.
 | 015 | Deployment strategy | Planned | — | Docker + GitHub Actions + Terraform; immutable images, Flyway on deploy, blue-green/rolling |
 | 016 | CMS strategy | Planned | — | PostgreSQL-backed `content` module with CMS-shaped abstraction; no headless CMS in v1 |
 | 017 | [Content-Security-Policy strategy](ADR-017-content-security-policy.md) | Accepted (interim) | 2026-07-08 | SSG-compatible CSP with strict non-script directives; nonce/hash remediation bound to Phase-4 design (SEC-DEBT-1) |
-| 018 | CSRF protection for the BFF | Planned | — | Explicit CSRF mechanism beyond SameSite=Lax; decided during Sprint-2 hardening (post-organizations) |
+| 018 | [CSRF protection for the BFF](ADR-018-csrf-protection.md) | Accepted | 2026-07-09 | Session-bound synchronizer token (sealed in the JWE session, `sc_csrf` transport cookie, `X-CSRF-Token` header) + Origin/Fetch-Metadata/JSON-content-type depth layer; login CSRF via origin+content-type (no pre-session token exists) |
 
 ## ADR template
 

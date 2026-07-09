@@ -9,6 +9,7 @@ import type { OrganizationResponse } from '@spexcrafters/api-client';
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
 import type { Dictionary, Locale } from '@/lib/i18n';
+import { sendJson } from '@/lib/csrf-client';
 import { readBffError } from '@/features/auth/client-errors';
 import { translateOrgError } from '@/features/organizations/org-errors';
 import {
@@ -57,14 +58,10 @@ export function CreateOrganizationForm({
     setFormError(null);
     let response: Response;
     try {
-      response = await fetch('/api/orgs', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          name: values.name,
-          type: values.type,
-          ...(values.country ? { country: values.country } : {}),
-        }),
+      response = await sendJson('/api/orgs', 'POST', {
+        name: values.name,
+        type: values.type,
+        ...(values.country ? { country: values.country } : {}),
       });
     } catch {
       setFormError(serverErrors.unexpected);
