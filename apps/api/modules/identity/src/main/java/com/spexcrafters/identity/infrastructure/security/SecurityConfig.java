@@ -38,6 +38,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        // Public marketplace surface: locale registry + public supplier profile foundation.
+                        .requestMatchers(org.springframework.http.HttpMethod.GET,
+                                "/api/v1/locales", "/api/v1/public/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())

@@ -37,6 +37,26 @@
       <artifactId>spexcrafters-organizations</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-media</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-platform-access</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-supplier</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-verification</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>com.tngtech.archunit</groupId>
