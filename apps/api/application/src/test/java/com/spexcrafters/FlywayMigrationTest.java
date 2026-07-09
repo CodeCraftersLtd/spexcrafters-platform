@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * Runs the Flyway history against an empty PostgreSQL 17 database (its own container, not
  * the shared one) and boots the full context, which also exercises Hibernate's
  * {@code ddl-auto=validate} check of every JPA mapping against the migrated schema.
- * Additionally proves the stepwise upgrade path V1 → V2 → V3 on a separate database,
+ * Additionally proves the stepwise upgrade path V1 → V2 → V3 → V4 on a separate database,
  * mirroring what a deployed environment that already ran earlier versions will execute.
  * Matched by the CI step {@code -Dtest=*MigrationTest*}.
  */
@@ -131,9 +131,14 @@ class FlywayMigrationTest {
         assertThat(schemaExists(url, "organizations")).isTrue();
         assertThat(auditDetailColumnExists(url)).isFalse();
 
-        migrateTo(url, null);
+        migrateTo(url, "3");
         assertThat(appliedVersions(url)).containsExactly("1", "2", "3");
         assertThat(auditDetailColumnExists(url)).isTrue();
+        assertThat(schemaExists(url, "supplier")).isFalse();
+
+        migrateTo(url, null);
+        assertThat(appliedVersions(url)).containsExactly("1", "2", "3", "4");
+        assertThat(schemaExists(url, "supplier")).isTrue();
     }
 
     /** Migrates {@code url} up to {@code targetVersion} ({@code null} = latest). */
