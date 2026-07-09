@@ -209,9 +209,13 @@ test.describe('taxonomy administration', () => {
       timeout: 15_000,
     });
 
-    // B (verify): the translated name renders under the es locale.
+    // B (verify): the translated name renders under the es locale. Scope to the parent's
+    // tree node — the localized name also legitimately appears in the parent-category and
+    // template <option> dropdowns, so an unscoped getByText matches multiple elements.
     await reloadUntil(page, 'es', async (p) => {
-      await expect(p.getByText(translatedName)).toBeVisible({ timeout: 3_000 });
+      await expect(
+        p.locator(`[data-category-code="${parentCode}"]`).getByText(translatedName, { exact: true }),
+      ).toBeVisible({ timeout: 3_000 });
     });
   });
 });
