@@ -13,7 +13,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -25,6 +27,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -57,6 +60,20 @@ public abstract class AbstractIntegrationTest {
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
+
+    /**
+     * TestRestTemplate's httpclient5 client, by default, honors a 429/503 {@code Retry-After}
+     * header and transparently re-executes the request after sleeping — which turned the
+     * login-throttle test into a ~15-minute wall-clock hang (Retry-After ≈ 900s) and would
+     * silently convert an asserted 429 into a later 401. Disable client-side auto-retry so
+     * throttled responses are observed directly and immediately. Production behavior is
+     * unaffected (this only configures the test HTTP client).
+     */
+    @BeforeEach
+    void disableTestClientAutoRetry() {
+        rest.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory(
+                HttpClients.custom().disableAutomaticRetries().build()));
+    }
 
     protected String uniqueEmail() {
         return "user-" + UUID.randomUUID() + "@example.com";
