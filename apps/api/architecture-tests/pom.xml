@@ -57,6 +57,11 @@
       <artifactId>spexcrafters-verification</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-taxonomy</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>com.tngtech.archunit</groupId>

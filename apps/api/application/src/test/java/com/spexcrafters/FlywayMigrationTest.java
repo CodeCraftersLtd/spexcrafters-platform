@@ -136,8 +136,14 @@ class FlywayMigrationTest {
         assertThat(auditDetailColumnExists(url)).isTrue();
         assertThat(schemaExists(url, "supplier")).isFalse();
 
-        migrateTo(url, null);
+        migrateTo(url, "4");
         assertThat(appliedVersions(url)).containsExactly("1", "2", "3", "4");
+        assertThat(schemaExists(url, "supplier")).isTrue();
+        assertThat(schemaExists(url, "taxonomy")).isFalse();
+
+        migrateTo(url, null);
+        assertThat(appliedVersions(url)).containsExactly("1", "2", "3", "4", "5");
+        assertThat(schemaExists(url, "taxonomy")).isTrue();
         assertThat(schemaExists(url, "supplier")).isTrue();
     }
 

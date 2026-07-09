@@ -48,6 +48,10 @@
       <groupId>com.spexcrafters</groupId>
       <artifactId>spexcrafters-verification</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.spexcrafters</groupId>
+      <artifactId>spexcrafters-taxonomy</artifactId>
+    </dependency>
 
     <!-- Persistence: driver + migrations -->
     <dependency>

@@ -28,7 +28,10 @@ public enum PlatformCapability {
     SUPPLIER_SUSPEND("supplier.suspend"),
     VERIFICATION_GRANT("supplier.verification.grant"),
     VERIFICATION_SUSPEND("supplier.verification.suspend"),
-    VERIFICATION_REVOKE("supplier.verification.revoke");
+    VERIFICATION_REVOKE("supplier.verification.revoke"),
+    TAXONOMY_READ("taxonomy.read"),
+    TAXONOMY_WRITE("taxonomy.write"),
+    BRAND_APPROVE("taxonomy.brand.approve");
 
     private final String wireName;
 
@@ -47,10 +50,12 @@ public enum PlatformCapability {
             case REVIEWER -> Set.of(REVIEW_READ, REVIEW_CLAIM, REVIEW_REQUEST_CHANGES);
             case SENIOR_REVIEWER -> Set.of(REVIEW_READ, REVIEW_CLAIM, REVIEW_REQUEST_CHANGES,
                     REVIEW_APPROVE, REVIEW_REJECT,
-                    VERIFICATION_GRANT, VERIFICATION_SUSPEND, VERIFICATION_REVOKE);
+                    VERIFICATION_GRANT, VERIFICATION_SUSPEND, VERIFICATION_REVOKE,
+                    TAXONOMY_READ);
             case PLATFORM_ADMIN -> Set.of(REVIEW_READ, REVIEW_CLAIM, REVIEW_REQUEST_CHANGES,
                     REVIEW_APPROVE, REVIEW_REJECT, SUPPLIER_SUSPEND,
-                    VERIFICATION_GRANT, VERIFICATION_SUSPEND, VERIFICATION_REVOKE);
+                    VERIFICATION_GRANT, VERIFICATION_SUSPEND, VERIFICATION_REVOKE,
+                    TAXONOMY_READ, TAXONOMY_WRITE, BRAND_APPROVE);
         };
     }
 }
