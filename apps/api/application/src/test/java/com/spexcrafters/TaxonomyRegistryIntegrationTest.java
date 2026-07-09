@@ -191,6 +191,67 @@ class TaxonomyRegistryIntegrationTest extends AbstractOrganizationsIntegrationTe
                 .isEqualTo(HttpStatus.OK);
     }
 
+    // --------------------------------------------------------------- admin-scoped all-status reads
+
+    @Test
+    void adminReadsExposeEveryStateWhilePublicReadsHideNonPublicAndAreStaffGated() {
+        TestUser admin = platformAdmin();
+
+        // A category that is then deactivated: public tree hides it, admin flat read keeps it.
+        JsonNode category = json(postJsonWithBearer("/api/v1/platform/taxonomy/categories",
+                Map.of("code", "ADMIN_ONLY_CAT", "classification", "OTHER", "originalLocale", "en",
+                        "name", "Admin Only"), admin.accessToken()));
+        String categoryId = category.get("id").asText();
+        postJsonWithBearer("/api/v1/platform/taxonomy/categories/" + categoryId + "/activation",
+                Map.of("active", false), admin.accessToken());
+
+        JsonNode publicTree = json(rest.getForEntity("/api/v1/taxonomy/categories", String.class));
+        assertThat(stream(publicTree).map(n -> n.get("code").asText())).doesNotContain("ADMIN_ONLY_CAT");
+
+        JsonNode adminCategories = json(getWithBearer("/api/v1/platform/taxonomy/categories",
+                admin.accessToken()));
+        assertThat(adminCategories.isArray()).isTrue();
+        assertThat(stream(adminCategories).map(n -> n.get("code").asText())).contains("ADMIN_ONLY_CAT");
+        // Every admin category carries its stable uuid (the code -> id map source).
+        assertThat(stream(adminCategories)).allMatch(n -> n.hasNonNull("id"));
+        assertThat(stream(adminCategories))
+                .filteredOn(n -> n.get("code").asText().equals("ADMIN_ONLY_CAT"))
+                .allMatch(n -> !n.get("active").asBoolean());
+
+        // A deprecated attribute: public list/get hide it, admin list keeps it.
+        JsonNode attribute = json(postJsonWithBearer("/api/v1/platform/taxonomy/attributes",
+                Map.of("code", "ADMIN_ONLY_ATTR", "dataType", "STRING", "originalLocale", "en",
+                        "name", "Admin Only Attribute"), admin.accessToken()));
+        String attributeId = attribute.get("id").asText();
+        postJsonWithBearer("/api/v1/platform/taxonomy/attributes/" + attributeId + "/deprecation",
+                Map.of("deprecated", true), admin.accessToken());
+
+        JsonNode publicAttributes = json(rest.getForEntity("/api/v1/taxonomy/attributes", String.class));
+        assertThat(stream(publicAttributes).map(n -> n.get("code").asText()))
+                .doesNotContain("ADMIN_ONLY_ATTR");
+        assertThat(rest.getForEntity("/api/v1/taxonomy/attributes/ADMIN_ONLY_ATTR", String.class)
+                .getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+        JsonNode adminAttributes = json(getWithBearer("/api/v1/platform/taxonomy/attributes",
+                admin.accessToken()));
+        assertThat(stream(adminAttributes).map(n -> n.get("code").asText())).contains("ADMIN_ONLY_ATTR");
+
+        // Enumeration stable id is exposed on both the public detail and the admin list.
+        JsonNode publicEnum = json(rest.getForEntity("/api/v1/taxonomy/enumerations/FRAME_SHAPE",
+                String.class));
+        assertThat(publicEnum.hasNonNull("id")).isTrue();
+        JsonNode adminEnums = json(getWithBearer("/api/v1/platform/taxonomy/enumerations",
+                admin.accessToken()));
+        assertThat(stream(adminEnums)).isNotEmpty().allMatch(n -> n.hasNonNull("id"));
+
+        // A non-TAXONOMY_READ caller is forbidden from every admin read.
+        TestUser outsider = signUpUser();
+        assertThat(getWithBearer("/api/v1/platform/taxonomy/categories", outsider.accessToken())
+                .getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(getWithBearer("/api/v1/platform/taxonomy/enumerations", outsider.accessToken())
+                .getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
     // --------------------------------------------------------------- helpers
 
     private TestUser platformAdmin() {

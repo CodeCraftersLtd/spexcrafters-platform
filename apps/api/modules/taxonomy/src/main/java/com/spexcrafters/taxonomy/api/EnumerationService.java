@@ -47,16 +47,35 @@ public class EnumerationService {
 
     @Transactional(readOnly = true)
     public List<EnumerationSummary> list(String locale) {
+        // Public read: only active enumerations are exposed.
         return enumerations.findAllByOrderByCodeAsc().stream()
-                .map(e -> new EnumerationSummary(e.getCode(), e.isActive(),
+                .filter(Enumeration::isActive)
+                .map(e -> new EnumerationSummary(e.getId(), e.getCode(), e.isActive(),
                         (int) values.countByEnumerationId(e.getId())))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public EnumerationDetail get(String code, String locale) {
-        Enumeration enumeration = enumerations.findByCode(code).orElseThrow(TaxonomyNotFoundException::new);
-        return toDetail(enumeration, locale);
+        // Public read: an inactive enumeration is hidden (404), and inactive/deprecated values
+        // are excluded from the detail.
+        Enumeration enumeration = enumerations.findByCode(code)
+                .filter(Enumeration::isActive)
+                .orElseThrow(TaxonomyNotFoundException::new);
+        return toDetail(enumeration, locale, false);
+    }
+
+    /**
+     * Administration enumeration list: platform-staff-only (TAXONOMY_READ). Returns EVERY
+     * enumeration (including inactive) with EVERY value (including inactive/deprecated), each
+     * carrying its stable {@code id}, so staff can administer values regardless of status.
+     */
+    @Transactional(readOnly = true)
+    public List<EnumerationDetail> listForAdmin(UUID userId, String locale) {
+        platformAccess.require(userId, PlatformCapability.TAXONOMY_READ);
+        return enumerations.findAllByOrderByCodeAsc().stream()
+                .map(e -> toDetail(e, locale, true))
+                .toList();
     }
 
     @Transactional
@@ -71,7 +90,8 @@ public class EnumerationService {
         enumerations.save(enumeration);
         audit.record("taxonomy.enumeration.created", userId, "enumeration", enumeration.getId().toString(),
                 Map.of("code", code));
-        return new EnumerationDetail(enumeration.getCode(), enumeration.isActive(), List.of());
+        return new EnumerationDetail(enumeration.getId(), enumeration.getCode(), enumeration.isActive(),
+                List.of());
     }
 
     @Transactional
@@ -144,8 +164,10 @@ public class EnumerationService {
                 translation.isStale(currentAfter), translation.getSourceVersion());
     }
 
-    private EnumerationDetail toDetail(Enumeration enumeration, String locale) {
-        List<EnumerationValue> vals = values.findByEnumerationIdOrderBySortOrderAsc(enumeration.getId());
+    private EnumerationDetail toDetail(Enumeration enumeration, String locale, boolean includeNonPublic) {
+        List<EnumerationValue> vals = values.findByEnumerationIdOrderBySortOrderAsc(enumeration.getId()).stream()
+                .filter(v -> includeNonPublic || (v.isActive() && !v.isDeprecated()))
+                .toList();
         List<UUID> valueIds = vals.stream().map(EnumerationValue::getId).toList();
         Map<UUID, List<EnumerationValueTranslation>> byValue = valueIds.isEmpty() ? Map.of()
                 : translations.findByEnumerationValueIdIn(valueIds).stream()
@@ -161,7 +183,7 @@ public class EnumerationService {
             views.add(new EnumerationValueView(v.getId(), v.getCode(), label, v.getSortOrder(),
                     v.isDeprecated(), v.isActive()));
         }
-        return new EnumerationDetail(enumeration.getCode(), enumeration.isActive(), views);
+        return new EnumerationDetail(enumeration.getId(), enumeration.getCode(), enumeration.isActive(), views);
     }
 
     private String requireLocale(String raw, String field) {

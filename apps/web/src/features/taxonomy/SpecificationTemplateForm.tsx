@@ -7,7 +7,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import type {
-  AttributeSummary,
+  AttributeDetail,
   PutSpecificationTemplateRequest,
 } from '@spexcrafters/api-client';
 import { Alert, Button, FormField } from '@spexcrafters/ui';
@@ -32,7 +32,7 @@ export interface TemplateCategoryOption {
 
 interface SpecificationTemplateFormProps {
   categories: TemplateCategoryOption[];
-  attributes: AttributeSummary[];
+  attributes: AttributeDetail[];
 }
 
 export function SpecificationTemplateForm({

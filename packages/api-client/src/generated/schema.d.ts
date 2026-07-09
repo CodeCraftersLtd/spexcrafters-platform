@@ -1143,7 +1143,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Platform-staff FLAT list of ALL categories (including inactive), ordered by path, each with its uuid and parentCode. */
+        get: operations["listAdminCategories"];
         put?: never;
         /** Create a category (requires TAXONOMY_WRITE) */
         post: operations["createCategory"];
@@ -1240,9 +1241,29 @@ export interface paths {
             };
             cookie?: never;
         };
-        get?: never;
+        /** Platform-staff effective specification template for a category, keyed by uuid. */
+        get: operations["getAdminCategorySpecificationTemplate"];
         /** Replace a category’s specification template (requires TAXONOMY_WRITE) */
         put: operations["putSpecificationTemplate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/categories/{id}/translations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** Platform-staff list of a category's translations in every locale and status. */
+        get: operations["listCategoryTranslations"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1257,7 +1278,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Platform-staff list of ALL attributes (including deprecated and non-visible). */
+        get: operations["listAdminAttributes"];
         put?: never;
         /** Create an attribute (requires TAXONOMY_WRITE) */
         post: operations["createAttribute"];
@@ -1332,7 +1354,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Platform-staff list of ALL enumerations (including inactive), each with its uuid and all values. */
+        get: operations["listAdminEnumerations"];
         put?: never;
         /** Create an enumeration registry (requires TAXONOMY_WRITE) */
         post: operations["createEnumeration"];
@@ -1445,7 +1468,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Platform-staff list of ALL certifications (including deprecated and inactive). */
+        get: operations["listAdminCertifications"];
         put?: never;
         /** Create a certification (requires TAXONOMY_WRITE) */
         post: operations["createCertification"];
@@ -1462,10 +1486,28 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Platform-staff list of ALL units of measure (including inactive). */
+        get: operations["listAdminUnits"];
         put?: never;
         /** Create a unit of measure (requires TAXONOMY_WRITE) */
         post: operations["createUnit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/countries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Platform-staff list of ALL countries (including inactive). */
+        get: operations["listAdminCountries"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2091,6 +2133,8 @@ export interface components {
             version: number;
         };
         EnumerationSummary: {
+            /** Format: uuid */
+            id: string;
             code: string;
             active: boolean;
             valueCount: number;
@@ -2105,6 +2149,8 @@ export interface components {
             active: boolean;
         };
         EnumerationDetail: {
+            /** Format: uuid */
+            id: string;
             code: string;
             active: boolean;
             values: components["schemas"]["EnumerationValueView"][];
@@ -4041,6 +4087,31 @@ export interface operations {
             422: components["responses"]["ValidationError"];
         };
     };
+    listAdminCategories: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Every category in every state, flat, ordered by path. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDetail"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+        };
+    };
     createCategory: {
         parameters: {
             query?: never;
@@ -4189,6 +4260,34 @@ export interface operations {
             422: components["responses"]["ValidationError"];
         };
     };
+    getAdminCategorySpecificationTemplate: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Effective specification template (own + inherited slots). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EffectiveSpecificationTemplate"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
     putSpecificationTemplate: {
         parameters: {
             query?: never;
@@ -4218,6 +4317,56 @@ export interface operations {
             404: components["responses"]["NotFound"];
             409: components["responses"]["Conflict"];
             422: components["responses"]["ValidationError"];
+        };
+    };
+    listCategoryTranslations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All translation rows for the category (all locales, all statuses). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranslationView"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listAdminAttributes: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Every attribute in every state, as full details. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeDetail"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
         };
     };
     createAttribute: {
@@ -4339,6 +4488,31 @@ export interface operations {
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
             422: components["responses"]["ValidationError"];
+        };
+    };
+    listAdminEnumerations: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Every enumeration in every state, each with all its values. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnumerationDetail"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
         };
     };
     createEnumeration: {
@@ -4546,6 +4720,31 @@ export interface operations {
             422: components["responses"]["ValidationError"];
         };
     };
+    listAdminCertifications: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Every certification in every state. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Certification"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+        };
+    };
     createCertification: {
         parameters: {
             query?: never;
@@ -4575,6 +4774,31 @@ export interface operations {
             422: components["responses"]["ValidationError"];
         };
     };
+    listAdminUnits: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Every unit in every state. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+        };
+    };
     createUnit: {
         parameters: {
             query?: never;
@@ -4602,6 +4826,31 @@ export interface operations {
             404: components["responses"]["NotFound"];
             409: components["responses"]["Conflict"];
             422: components["responses"]["ValidationError"];
+        };
+    };
+    listAdminCountries: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Every country in every state. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Country"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
         };
     };
 }

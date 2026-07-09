@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import type {
-  CategoryTreeNode,
+  CategoryDetail,
   CreateCategoryRequest,
 } from '@spexcrafters/api-client';
 import { Alert, Button, FormField } from '@spexcrafters/ui';
@@ -21,24 +21,36 @@ import { CATEGORY_CLASSIFICATIONS } from './constants';
 import { translateTaxonomyError } from './errors';
 import { createCategorySchema, type CreateCategoryValues } from './schemas';
 import { TranslationEditorPanel } from './TranslationEditorPanel';
-import { flattenCategoryTree, previewSlug } from './tree';
+import { buildAdminCategoryTree, previewSlug, type AdminCategoryNode } from './tree';
 import styles from './taxonomy.module.css';
 
 interface CategoryTreeProps {
-  tree: CategoryTreeNode[];
-  /** code → uuid, resolved server-side so translations can target the id. */
-  idByCode: Record<string, string>;
+  /**
+   * Flat, path-ordered `listAdminCategories` result (ALL categories including
+   * inactive). Each row carries its uuid, so translation actions target the id
+   * directly — no per-category detail fan-out.
+   */
+  categories: CategoryDetail[];
   /** Page locale — the default authoring language for the create form. */
   locale: string;
 }
 
-export function CategoryTree({ tree, idByCode, locale }: CategoryTreeProps) {
+export function CategoryTree({ categories, locale }: CategoryTreeProps) {
   const t = useTranslations('taxonomyAdmin.categories');
   const classificationCopy = useTranslations('taxonomyAdmin.classification');
   const common = useTranslations('taxonomyAdmin.common');
   const translateLabel = useTranslations('taxonomyAdmin.translations')('title');
 
-  const parentOptions = useMemo(() => flattenCategoryTree(tree), [tree]);
+  const tree = useMemo(() => buildAdminCategoryTree(categories), [categories]);
+  const parentOptions = useMemo(
+    () =>
+      categories.map((category) => ({
+        code: category.code,
+        name: category.name,
+        depth: category.depth,
+      })),
+    [categories],
+  );
 
   return (
     <div className={styles.section} id="categories">
@@ -53,7 +65,6 @@ export function CategoryTree({ tree, idByCode, locale }: CategoryTreeProps) {
             <CategoryNode
               key={node.code}
               node={node}
-              idByCode={idByCode}
               classificationCopy={classificationCopy as unknown as Translator}
               activeLabel={common('active')}
               inactiveLabel={common('inactive')}
@@ -70,24 +81,26 @@ export function CategoryTree({ tree, idByCode, locale }: CategoryTreeProps) {
 
 function CategoryNode({
   node,
-  idByCode,
   classificationCopy,
   activeLabel,
   inactiveLabel,
   translateLabel,
 }: {
-  node: CategoryTreeNode;
-  idByCode: Record<string, string>;
+  node: AdminCategoryNode;
   classificationCopy: Translator;
   activeLabel: string;
   inactiveLabel: string;
   translateLabel: string;
 }) {
   const [showTranslate, setShowTranslate] = useState(false);
-  const id = idByCode[node.code];
+  const id = node.id;
 
   return (
-    <li className={styles.treeNode} data-category-code={node.code}>
+    <li
+      className={`${styles.treeNode}${node.active ? '' : ` ${styles.inactive}`}`}
+      data-category-code={node.code}
+      data-category-active={node.active ? 'true' : 'false'}
+    >
       <div className={styles.treeRow}>
         <span className={styles.rowName}>{node.name}</span>
         <span className={`${styles.badge} ${styles.code}`}>{node.code}</span>
@@ -101,19 +114,17 @@ function CategoryNode({
         >
           {node.active ? activeLabel : inactiveLabel}
         </span>
-        {id ? (
-          <Button
-            variant="quiet"
-            size="sm"
-            type="button"
-            onClick={() => setShowTranslate((open) => !open)}
-          >
-            {translateLabel}
-          </Button>
-        ) : null}
+        <Button
+          variant="quiet"
+          size="sm"
+          type="button"
+          onClick={() => setShowTranslate((open) => !open)}
+        >
+          {translateLabel}
+        </Button>
       </div>
 
-      {showTranslate && id ? (
+      {showTranslate ? (
         <TranslationEditorPanel basePath="/api/taxonomy/categories" resourceId={id} supportsApprove />
       ) : null}
 
@@ -123,7 +134,6 @@ function CategoryNode({
             <CategoryNode
               key={child.code}
               node={child}
-              idByCode={idByCode}
               classificationCopy={classificationCopy}
               activeLabel={activeLabel}
               inactiveLabel={inactiveLabel}
@@ -141,7 +151,7 @@ function CreateCategoryForm({
   parentOptions,
 }: {
   locale: string;
-  parentOptions: ReturnType<typeof flattenCategoryTree>;
+  parentOptions: { code: string; name: string; depth: number }[];
 }) {
   const t = useTranslations('taxonomyAdmin.categories.create');
   const classificationCopy = useTranslations('taxonomyAdmin.classification');

@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UnitOfMeasureRepository extends JpaRepository<UnitOfMeasure, String> {
 
     List<UnitOfMeasure> findByActiveTrueOrderBySortOrderAsc();
+
+    List<UnitOfMeasure> findAllByOrderBySortOrderAsc();
 }
