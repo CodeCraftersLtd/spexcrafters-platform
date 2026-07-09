@@ -92,6 +92,72 @@ export type ReviewDetail = components['schemas']['ReviewDetail'];
 // Public profile foundation.
 export type PublicSupplierProfile = components['schemas']['PublicSupplierProfile'];
 
+// ---------------------------------------------------------------------------
+// Optical taxonomy & specification registry (Phase 8) — aliases over the
+// generated OpenAPI schema. Re-exports only: schema.d.ts is the source of
+// truth. See docs/architecture/optical-taxonomy-domain-model.md and
+// ADR-024..027.
+// ---------------------------------------------------------------------------
+
+// Enumerations (clients must tolerate unknown future values).
+export type CategoryClassification = components['schemas']['CategoryClassification'];
+export type AttributeDataType = components['schemas']['AttributeDataType'];
+export type UnitFamily = components['schemas']['UnitFamily'];
+export type BrandType = components['schemas']['BrandType'];
+export type BrandApprovalStatus = components['schemas']['BrandApprovalStatus'];
+export type TranslationSourceKind = components['schemas']['TranslationSourceKind'];
+export type TaxonomyCapability = components['schemas']['TaxonomyCapability'];
+
+// Categories.
+export type CategoryTreeNode = components['schemas']['CategoryTreeNode'];
+export type CategoryDetail = components['schemas']['CategoryDetail'];
+export type CreateCategoryRequest = components['schemas']['CreateCategoryRequest'];
+export type UpdateCategoryRequest = components['schemas']['UpdateCategoryRequest'];
+export type ActivationRequest = components['schemas']['ActivationRequest'];
+
+// Attributes.
+export type AttributeSummary = components['schemas']['AttributeSummary'];
+export type AttributeDetail = components['schemas']['AttributeDetail'];
+export type CreateAttributeRequest = components['schemas']['CreateAttributeRequest'];
+export type UpdateAttributeRequest = components['schemas']['UpdateAttributeRequest'];
+export type DeprecationRequest = components['schemas']['DeprecationRequest'];
+
+// Enumerations registry.
+export type EnumerationSummary = components['schemas']['EnumerationSummary'];
+export type EnumerationDetail = components['schemas']['EnumerationDetail'];
+export type EnumerationValueView = components['schemas']['EnumerationValueView'];
+export type CreateEnumerationRequest = components['schemas']['CreateEnumerationRequest'];
+export type AddEnumerationValueRequest = components['schemas']['AddEnumerationValueRequest'];
+
+// Units, countries, certifications.
+export type Unit = components['schemas']['Unit'];
+export type CreateUnitRequest = components['schemas']['CreateUnitRequest'];
+export type Country = components['schemas']['Country'];
+export type Certification = components['schemas']['Certification'];
+export type CreateCertificationRequest = components['schemas']['CreateCertificationRequest'];
+
+// Brands.
+export type BrandSummary = components['schemas']['BrandSummary'];
+export type BrandDetail = components['schemas']['BrandDetail'];
+export type CreateBrandRequest = components['schemas']['CreateBrandRequest'];
+export type BrandApprovalRequest = components['schemas']['BrandApprovalRequest'];
+
+// Translations (shared across category/attribute/enumeration-value/brand).
+export type TranslationUpsertRequest = components['schemas']['TranslationUpsertRequest'];
+export type TranslationView = components['schemas']['TranslationView'];
+
+// Specification templates & validation.
+export type SpecificationTemplateAttributeView =
+  components['schemas']['SpecificationTemplateAttributeView'];
+export type EffectiveSpecificationTemplate =
+  components['schemas']['EffectiveSpecificationTemplate'];
+export type PutSpecificationTemplateRequest =
+  components['schemas']['PutSpecificationTemplateRequest'];
+export type SpecificationValidationRequest =
+  components['schemas']['SpecificationValidationRequest'];
+export type SpecificationValidationResult =
+  components['schemas']['SpecificationValidationResult'];
+
 export interface RegisterRequest {
   email: string;
   password: string;

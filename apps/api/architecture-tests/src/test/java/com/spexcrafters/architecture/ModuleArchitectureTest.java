@@ -28,6 +28,7 @@ class ModuleArchitectureTest {
             "com.spexcrafters.platformaccess..",
             "com.spexcrafters.supplier..",
             "com.spexcrafters.verification..",
+            "com.spexcrafters.taxonomy..",
     };
 
     // ------------------------------------------------- cross-module access only via ..api..
@@ -84,6 +85,32 @@ class ModuleArchitectureTest {
                     "com.spexcrafters.verification.domain..",
                     "com.spexcrafters.verification.infrastructure..",
                     "com.spexcrafters.verification.web..");
+
+    @ArchTest
+    static final ArchRule taxonomy_internals_are_module_private = noClasses()
+            .that().resideOutsideOfPackage("com.spexcrafters.taxonomy..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.taxonomy.domain..",
+                    "com.spexcrafters.taxonomy.infrastructure..",
+                    "com.spexcrafters.taxonomy.web..");
+
+    /**
+     * The taxonomy context consumes other modules strictly through their {@code api} packages —
+     * it depends only on shared-kernel and the {@code api} of audit and platform-access.
+     */
+    @ArchTest
+    static final ArchRule taxonomy_uses_other_modules_only_via_their_api = noClasses()
+            .that().resideInAPackage("com.spexcrafters.taxonomy..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.audit.domain..", "com.spexcrafters.audit.infrastructure..",
+                    "com.spexcrafters.audit.web..",
+                    "com.spexcrafters.platformaccess.domain..",
+                    "com.spexcrafters.platformaccess.infrastructure..",
+                    "com.spexcrafters.identity..",
+                    "com.spexcrafters.organizations..",
+                    "com.spexcrafters.media..",
+                    "com.spexcrafters.supplier..",
+                    "com.spexcrafters.verification..");
 
     /** The supplier context consumes other modules strictly through their {@code api} packages. */
     @ArchTest

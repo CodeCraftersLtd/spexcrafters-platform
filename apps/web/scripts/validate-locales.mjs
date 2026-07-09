@@ -32,6 +32,7 @@ const SOURCE_LOCALE = 'en';
 const NAMESPACES = [
   'common', 'navigation', 'auth', 'organizations', 'suppliers', 'verification',
   'evidence', 'reviewer', 'errors', 'accessibility', 'seo', 'taxonomy',
+  'taxonomyAdmin',
 ];
 
 const errors = [];

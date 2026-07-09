@@ -864,6 +864,614 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/taxonomy/categories": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The active category tree, nested by parent (localized names) */
+        get: operations["getCategoryTree"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/categories/{code}": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        /** A single category by its stable code */
+        get: operations["getCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/categories/{code}/specification-template": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        /** The effective specification template for a category, including inherited attributes */
+        get: operations["getCategorySpecificationTemplate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/attributes": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the master attribute registry */
+        get: operations["listAttributes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/attributes/{code}": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        /** A single attribute by its stable code */
+        get: operations["getAttribute"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/enumerations": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the reusable enumeration registries */
+        get: operations["listEnumerations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/enumerations/{code}": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        /** An enumeration with its values and localized labels */
+        get: operations["getEnumeration"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/units": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the unit-of-measure registry */
+        get: operations["listUnits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/countries": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the ISO 3166-1 country registry */
+        get: operations["listCountries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/certifications": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the certification registry */
+        get: operations["listCertifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/brands": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+                /** @description Optional filter; public callers only ever see APPROVED brands regardless of this filter. */
+                status?: components["schemas"]["BrandApprovalStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List public brands (approved only) */
+        get: operations["listBrands"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/brands/{code}": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        /** A single approved brand by its stable code */
+        get: operations["getBrand"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/taxonomy/specifications/validate": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Validate a map of attribute values against a category’s effective specification template */
+        post: operations["validateSpecification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a category (requires TAXONOMY_WRITE) */
+        post: operations["createCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a category, including re-parenting (requires TAXONOMY_WRITE; optimistic version) */
+        patch: operations["updateCategory"];
+        trace?: never;
+    };
+    "/platform/taxonomy/categories/{id}/activation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Activate or deactivate a category (requires TAXONOMY_WRITE) */
+        post: operations["setCategoryActivation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/categories/{id}/translations/{locale}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** Create or update a category translation (requires TAXONOMY_WRITE) */
+        put: operations["upsertCategoryTranslation"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/categories/{id}/translations/{locale}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a category translation (requires TAXONOMY_WRITE) */
+        post: operations["approveCategoryTranslation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/categories/{id}/specification-template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** Replace a category’s specification template (requires TAXONOMY_WRITE) */
+        put: operations["putSpecificationTemplate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create an attribute (requires TAXONOMY_WRITE) */
+        post: operations["createAttribute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/attributes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update an attribute’s bounds, unit, enumeration and capability flags (requires TAXONOMY_WRITE; optimistic version) */
+        patch: operations["updateAttribute"];
+        trace?: never;
+    };
+    "/platform/taxonomy/attributes/{id}/deprecation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Deprecate or reinstate an attribute (requires TAXONOMY_WRITE) */
+        post: operations["setAttributeDeprecation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/attributes/{id}/translations/{locale}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** Create or update an attribute translation (requires TAXONOMY_WRITE) */
+        put: operations["upsertAttributeTranslation"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/enumerations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create an enumeration registry (requires TAXONOMY_WRITE) */
+        post: operations["createEnumeration"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/enumerations/{id}/values": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a value to an enumeration (requires TAXONOMY_WRITE) */
+        post: operations["addEnumerationValue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/enumeration-values/{id}/translations/{locale}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** Create or update an enumeration value translation (requires TAXONOMY_WRITE) */
+        put: operations["upsertEnumerationValueTranslation"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/brands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Platform-staff list of all brands in every approval status (for review and approval). */
+        get: operations["listAdminBrands"];
+        put?: never;
+        /** Create a brand (requires TAXONOMY_WRITE; starts PENDING) */
+        post: operations["createBrand"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/brands/{id}/approval": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve, reject or deprecate a brand (requires BRAND_APPROVE) */
+        post: operations["setBrandApproval"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/brands/{id}/translations/{locale}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** Create or update a brand translation (requires TAXONOMY_WRITE) */
+        put: operations["upsertBrandTranslation"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/certifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a certification (requires TAXONOMY_WRITE) */
+        post: operations["createCertification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/taxonomy/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a unit of measure (requires TAXONOMY_WRITE) */
+        post: operations["createUnit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1371,6 +1979,370 @@ export interface components {
                 code: string;
                 /** @description Locale-resolved; code maps to frontend i18n keys */
                 message: string;
+            }[];
+        };
+        /**
+         * @description Clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        CategoryClassification: "LENS" | "FRAME" | "SUNGLASSES" | "CONTACT_LENS" | "MACHINERY" | "LAB_EQUIPMENT" | "ACCESSORY" | "PACKAGING" | "COMPONENT" | "OTHER";
+        /**
+         * @description Clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        AttributeDataType: "STRING" | "INTEGER" | "DECIMAL" | "BOOLEAN" | "DATE" | "ENUMERATION" | "MEASUREMENT" | "RANGE" | "JSON" | "REFERENCE" | "MULTI_SELECT" | "SINGLE_SELECT" | "FILE_REFERENCE" | "COLOR" | "COUNTRY" | "LANGUAGE" | "BRAND" | "CERTIFICATION";
+        /**
+         * @description Clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        UnitFamily: "LENGTH" | "MASS" | "POWER_DIOPTER" | "ANGLE" | "COUNT";
+        /**
+         * @description Clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        BrandType: "LENS" | "FRAME" | "SUNGLASSES" | "CONTACT_LENS" | "MACHINE" | "ACCESSORY" | "GENERAL";
+        /**
+         * @description Clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        BrandApprovalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DEPRECATED";
+        /**
+         * @description Clients must tolerate unknown future values. Taxonomy’s own clone of the translation-source vocabulary (ADR-020 bounded-context rule).
+         * @enum {string}
+         */
+        TranslationSourceKind: "HUMAN" | "MACHINE" | "IMPORT";
+        /**
+         * @description Platform-staff capabilities for taxonomy administration; clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        TaxonomyCapability: "TAXONOMY_READ" | "TAXONOMY_WRITE" | "BRAND_APPROVE";
+        CategoryTreeNode: {
+            code: string;
+            classification: components["schemas"]["CategoryClassification"];
+            /** @description Resolved display name for the requested/fallback locale. */
+            name: string;
+            active: boolean;
+            sortOrder: number;
+            /** @description Primary SEO slug in the resolved locale, if authored. */
+            slug?: string | null;
+            children: components["schemas"]["CategoryTreeNode"][];
+        };
+        CategoryDetail: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            parentCode?: string | null;
+            classification: components["schemas"]["CategoryClassification"];
+            depth: number;
+            /** @description /-joined ancestor codes including self. */
+            path: string;
+            active: boolean;
+            sortOrder: number;
+            name: string;
+            description?: string | null;
+            primarySlug?: string | null;
+            /** @description Optimistic-locking version. */
+            version: number;
+            callerCapabilities?: components["schemas"]["TaxonomyCapability"][];
+        };
+        AttributeSummary: {
+            code: string;
+            dataType: components["schemas"]["AttributeDataType"];
+            name: string;
+            unitCode?: string | null;
+            enumerationCode?: string | null;
+            deprecated: boolean;
+            visible: boolean;
+            searchable?: boolean;
+            filterable?: boolean;
+            sortable?: boolean;
+            comparable?: boolean;
+            facetable?: boolean;
+            seo?: boolean;
+        };
+        AttributeDetail: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            dataType: components["schemas"]["AttributeDataType"];
+            unitCode?: string | null;
+            enumerationCode?: string | null;
+            minValue?: number | null;
+            maxValue?: number | null;
+            minLength?: number | null;
+            maxLength?: number | null;
+            regexPattern?: string | null;
+            searchable: boolean;
+            filterable: boolean;
+            sortable: boolean;
+            comparable: boolean;
+            facetable: boolean;
+            seo: boolean;
+            visible: boolean;
+            deprecated: boolean;
+            sortOrder?: number;
+            name: string;
+            description?: string | null;
+            /** @description Per-locale translation status summary, keyed by locale code. */
+            translationStatuses?: {
+                [key: string]: components["schemas"]["TranslationStatus"];
+            };
+            /** @description Optimistic-locking version. */
+            version: number;
+        };
+        EnumerationSummary: {
+            code: string;
+            active: boolean;
+            valueCount: number;
+        };
+        EnumerationValueView: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            label: string;
+            sortOrder: number;
+            deprecated: boolean;
+            active: boolean;
+        };
+        EnumerationDetail: {
+            code: string;
+            active: boolean;
+            values: components["schemas"]["EnumerationValueView"][];
+        };
+        Unit: {
+            code: string;
+            family: components["schemas"]["UnitFamily"];
+            baseUnitCode?: string | null;
+            factorToBase?: number | null;
+            offsetToBase: number;
+            displayName: string;
+            displayFormat?: string | null;
+        };
+        Country: {
+            /** @description ISO 3166-1 alpha-2. */
+            code: string;
+            alpha3: string;
+            numericCode: string;
+            region?: string | null;
+            subregion?: string | null;
+            continent?: string | null;
+            name: string;
+        };
+        Certification: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            /**
+             * @description Clients must tolerate unknown future values.
+             * @enum {string|null}
+             */
+            category?: "QUALITY" | "SAFETY" | "ENVIRONMENTAL" | "MEDICAL" | "REGULATORY" | null;
+            /** @description ISO 3166-1 alpha-2; null = global. */
+            countryScope?: string | null;
+            industryScope?: string | null;
+            validityMonths?: number | null;
+            name: string;
+            description?: string | null;
+            deprecated: boolean;
+        };
+        BrandSummary: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            brandType: components["schemas"]["BrandType"];
+            canonicalName: string;
+            displayName?: string | null;
+            countryCode?: string | null;
+            approvalStatus: components["schemas"]["BrandApprovalStatus"];
+        };
+        BrandDetail: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            brandType: components["schemas"]["BrandType"];
+            canonicalName: string;
+            displayName?: string | null;
+            ownerCompany?: string | null;
+            manufacturer?: string | null;
+            countryCode?: string | null;
+            website?: string | null;
+            logoStorageKey?: string | null;
+            approvalStatus: components["schemas"]["BrandApprovalStatus"];
+            aliases?: string[];
+            /** @description Optimistic-locking version. */
+            version: number;
+        };
+        SpecificationTemplateAttributeView: {
+            attributeCode: string;
+            dataType: components["schemas"]["AttributeDataType"];
+            name: string;
+            unitCode?: string | null;
+            enumerationCode?: string | null;
+            required: boolean;
+            /** @description true when defined on an ancestor category rather than this one. */
+            inherited: boolean;
+            sourceCategoryCode: string;
+            /** @description Engine-interpreted rule, e.g. {"requiredWhen":{"attribute":"<CODE>","equals":"<VALUE_CODE>"}}. */
+            conditional?: {
+                [key: string]: unknown;
+            } | null;
+            defaultValue?: string | null;
+            sortOrder: number;
+        };
+        EffectiveSpecificationTemplate: {
+            categoryCode: string;
+            templateCode?: string | null;
+            attributes: components["schemas"]["SpecificationTemplateAttributeView"][];
+        };
+        TranslationView: {
+            locale: string;
+            name?: string | null;
+            description?: string | null;
+            translationStatus: components["schemas"]["TranslationStatus"];
+            isOriginal: boolean;
+            stale: boolean;
+            sourceVersion: number;
+        };
+        SpecificationValidationRequest: {
+            categoryCode: string;
+            /** @description Map of attributeCode to raw string value. */
+            values: {
+                [key: string]: string;
+            };
+        };
+        SpecificationValidationResult: {
+            valid: boolean;
+            violations: {
+                attributeCode: string;
+                code: string;
+                /** @description Locale-resolved; code maps to frontend i18n keys. */
+                message: string;
+            }[];
+        };
+        CreateCategoryRequest: {
+            code: string;
+            parentCode?: string | null;
+            classification: components["schemas"]["CategoryClassification"];
+            /** @description BCP 47 code of the authoring language. */
+            originalLocale: string;
+            name: string;
+            sortOrder?: number;
+        };
+        UpdateCategoryRequest: {
+            parentCode?: string | null;
+            classification?: components["schemas"]["CategoryClassification"];
+            sortOrder?: number;
+            /** @description Optimistic-locking version; mismatch → 409. */
+            version: number;
+        };
+        ActivationRequest: {
+            active: boolean;
+        };
+        TranslationUpsertRequest: {
+            name: string;
+            description?: string;
+            source: components["schemas"]["TranslationSourceKind"];
+        };
+        CreateAttributeRequest: {
+            code: string;
+            dataType: components["schemas"]["AttributeDataType"];
+            unitCode?: string | null;
+            enumerationCode?: string | null;
+            minValue?: number | null;
+            maxValue?: number | null;
+            minLength?: number | null;
+            maxLength?: number | null;
+            regexPattern?: string | null;
+            searchable?: boolean;
+            filterable?: boolean;
+            sortable?: boolean;
+            comparable?: boolean;
+            facetable?: boolean;
+            seo?: boolean;
+            visible?: boolean;
+            originalLocale: string;
+            name: string;
+            description?: string;
+        };
+        UpdateAttributeRequest: {
+            unitCode?: string | null;
+            enumerationCode?: string | null;
+            minValue?: number | null;
+            maxValue?: number | null;
+            minLength?: number | null;
+            maxLength?: number | null;
+            regexPattern?: string | null;
+            searchable?: boolean;
+            filterable?: boolean;
+            sortable?: boolean;
+            comparable?: boolean;
+            facetable?: boolean;
+            seo?: boolean;
+            visible?: boolean;
+            /** @description Optimistic-locking version; mismatch → 409. */
+            version: number;
+        };
+        DeprecationRequest: {
+            deprecated: boolean;
+        };
+        CreateEnumerationRequest: {
+            code: string;
+        };
+        AddEnumerationValueRequest: {
+            code: string;
+            sortOrder?: number;
+            originalLocale: string;
+            label: string;
+            description?: string;
+        };
+        CreateBrandRequest: {
+            code: string;
+            brandType: components["schemas"]["BrandType"];
+            canonicalName: string;
+            ownerCompany?: string;
+            manufacturer?: string;
+            countryCode?: string;
+            website?: string;
+            originalLocale: string;
+            displayName?: string;
+        };
+        BrandApprovalRequest: {
+            status: components["schemas"]["BrandApprovalStatus"];
+        };
+        CreateCertificationRequest: {
+            code: string;
+            /**
+             * @description Clients must tolerate unknown future values.
+             * @enum {string|null}
+             */
+            category?: "QUALITY" | "SAFETY" | "ENVIRONMENTAL" | "MEDICAL" | "REGULATORY" | null;
+            countryScope?: string | null;
+            industryScope?: string | null;
+            validityMonths?: number | null;
+            originalLocale: string;
+            name: string;
+            description?: string;
+        };
+        CreateUnitRequest: {
+            code: string;
+            family: components["schemas"]["UnitFamily"];
+            baseUnitCode?: string | null;
+            factorToBase?: number | null;
+            offsetToBase?: number;
+            displayFormat?: string | null;
+            originalLocale: string;
+            displayName: string;
+        };
+        PutSpecificationTemplateRequest: {
+            code: string;
+            attributes: {
+                attributeCode: string;
+                required: boolean;
+                conditional?: {
+                    [key: string]: unknown;
+                } | null;
+                defaultValue?: string | null;
+                sortOrder: number;
             }[];
         };
     };
@@ -2745,6 +3717,890 @@ export interface operations {
             403: components["responses"]["Forbidden"];
             409: components["responses"]["Conflict"];
             410: components["responses"]["TokenGone"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    getCategoryTree: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The active category tree, nested by parent (localized names). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryTreeNode"][];
+                };
+            };
+        };
+    };
+    getCategory: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A single category by its stable code. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getCategorySpecificationTemplate: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The effective specification template for a category, including inherited attributes. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EffectiveSpecificationTemplate"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listAttributes: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List the master attribute registry. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeSummary"][];
+                };
+            };
+        };
+    };
+    getAttribute: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A single attribute by its stable code. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listEnumerations: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List the reusable enumeration registries. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnumerationSummary"][];
+                };
+            };
+        };
+    };
+    getEnumeration: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description An enumeration with its values and localized labels. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnumerationDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listUnits: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List the unit-of-measure registry. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"][];
+                };
+            };
+        };
+    };
+    listCountries: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List the ISO 3166-1 country registry. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Country"][];
+                };
+            };
+        };
+    };
+    listCertifications: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List the certification registry. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Certification"][];
+                };
+            };
+        };
+    };
+    listBrands: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+                /** @description Optional filter; public callers only ever see APPROVED brands regardless of this filter. */
+                status?: components["schemas"]["BrandApprovalStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List public brands (approved only). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BrandSummary"][];
+                };
+            };
+        };
+    };
+    getBrand: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A single approved brand by its stable code. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BrandDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    validateSpecification: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SpecificationValidationRequest"];
+            };
+        };
+        responses: {
+            /** @description Validation result (violations, if any). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpecificationValidationResult"];
+                };
+            };
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    createCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCategoryRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    updateCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCategoryRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    setCategoryActivation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActivationRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    upsertCategoryTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TranslationUpsertRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranslationView"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    approveCategoryTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranslationView"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    putSpecificationTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PutSpecificationTemplateRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EffectiveSpecificationTemplate"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    createAttribute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAttributeRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    updateAttribute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAttributeRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    setAttributeDeprecation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeprecationRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    upsertAttributeTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TranslationUpsertRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranslationView"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    createEnumeration: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateEnumerationRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnumerationDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    addEnumerationValue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddEnumerationValueRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnumerationValueView"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    upsertEnumerationValueTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TranslationUpsertRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranslationView"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    listAdminBrands: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Brands in every approval status. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BrandSummary"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+        };
+    };
+    createBrand: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBrandRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BrandDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    setBrandApproval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BrandApprovalRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BrandDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    upsertBrandTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TranslationUpsertRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranslationView"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    createCertification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCertificationRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Certification"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    createUnit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUnitRequest"];
+            };
+        };
+        responses: {
+            /** @description Resource created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
             422: components["responses"]["ValidationError"];
         };
     };

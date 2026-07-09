@@ -111,7 +111,10 @@ class SupplierV4MigrationTest {
         assertThat(appliedVersions(url)).containsExactly("1", "2", "3");
         assertThat(schemaExists(url, "supplier")).isFalse();
 
-        migrateTo(url, null);
+        // Target V4 explicitly: this test verifies the V4 stepwise upgrade, so it must stay
+        // pinned to V4 and not break as later migrations (V5+) ship. The full V1->latest chain
+        // is covered by FlywayMigrationTest.migratesStepwiseThroughEveryVersion.
+        migrateTo(url, "4");
         assertThat(appliedVersions(url)).containsExactly("1", "2", "3", "4");
         assertThat(schemaExists(url, "supplier")).isTrue();
         assertThat(schemaExists(url, "verification")).isTrue();

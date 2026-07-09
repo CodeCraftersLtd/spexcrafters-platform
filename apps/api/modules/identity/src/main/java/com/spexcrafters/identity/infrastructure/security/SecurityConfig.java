@@ -41,6 +41,9 @@ public class SecurityConfig {
                         // Public marketplace surface: locale registry + public supplier profile foundation.
                         .requestMatchers(org.springframework.http.HttpMethod.GET,
                                 "/api/v1/locales", "/api/v1/public/**").permitAll()
+                        // Public optical taxonomy registry (reads + the validation demo endpoint);
+                        // /api/v1/platform/taxonomy/** stays authenticated via anyRequest().
+                        .requestMatchers("/api/v1/taxonomy/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())

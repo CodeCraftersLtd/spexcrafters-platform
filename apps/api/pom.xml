@@ -31,6 +31,7 @@
     <module>modules/platform-access</module>
     <module>modules/supplier</module>
     <module>modules/verification</module>
+    <module>modules/taxonomy</module>
     <module>application</module>
     <module>architecture-tests</module>
   </modules>
@@ -109,6 +110,11 @@
       <dependency>
         <groupId>com.spexcrafters</groupId>
         <artifactId>spexcrafters-verification</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.spexcrafters</groupId>
+        <artifactId>spexcrafters-taxonomy</artifactId>
         <version>${project.version}</version>
       </dependency>
 

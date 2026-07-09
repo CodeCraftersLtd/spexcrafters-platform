@@ -1,10 +1,33 @@
 import type {
   AcceptInvitationRequest,
+  ActivationRequest,
+  AddEnumerationValueRequest,
   AddFacilityRequest,
+  AttributeDetail,
+  AttributeSummary,
+  BrandApprovalRequest,
+  BrandApprovalStatus,
+  BrandDetail,
+  BrandSummary,
+  CategoryDetail,
+  CategoryTreeNode,
+  Certification,
   ChangeRoleRequest,
+  Country,
+  CreateAttributeRequest,
+  CreateBrandRequest,
+  CreateCategoryRequest,
+  CreateCertificationRequest,
+  CreateEnumerationRequest,
   CreateInvitationRequest,
   CreateOrganizationRequest,
   CreateSupplierApplicationRequest,
+  CreateUnitRequest,
+  DeprecationRequest,
+  EffectiveSpecificationTemplate,
+  EnumerationDetail,
+  EnumerationSummary,
+  EnumerationValueView,
   Evidence,
   EvidenceUploadTicket,
   Facility,
@@ -20,6 +43,7 @@ import type {
   Problem,
   ProfileTranslation,
   PublicSupplierProfile,
+  PutSpecificationTemplateRequest,
   ReasonRequest,
   RefreshRequest,
   RegisterRequest,
@@ -30,9 +54,16 @@ import type {
   ReviewDetail,
   ReviewQueuePage,
   ReviewRequest,
+  SpecificationValidationRequest,
+  SpecificationValidationResult,
   SupplierApplication,
   SupplierProfile,
   TokenResponse,
+  TranslationUpsertRequest,
+  TranslationView,
+  Unit,
+  UpdateAttributeRequest,
+  UpdateCategoryRequest,
   UpdateOrganizationRequest,
   UpdateSupplierDraftRequest,
   UpsertTranslationRequest,
@@ -453,6 +484,196 @@ export function createApiClient(options: ApiClientOptions) {
         req ?? {},
         true,
       ),
+
+    // -----------------------------------------------------------------------
+    // Optical taxonomy & specification registry (Phase 8) — public reads, no
+    // bearer; /platform/taxonomy/** administration is platform-staff, bearer.
+    // -----------------------------------------------------------------------
+    getCategoryTree: (locale?: string) =>
+      request<CategoryTreeNode[]>(
+        'GET',
+        `/taxonomy/categories${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    getCategory: (code: string, locale?: string) =>
+      request<CategoryDetail>(
+        'GET',
+        `/taxonomy/categories/${enc(code)}${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    getCategorySpecificationTemplate: (code: string, locale?: string) =>
+      request<EffectiveSpecificationTemplate>(
+        'GET',
+        `/taxonomy/categories/${enc(code)}/specification-template${
+          locale ? `?locale=${enc(locale)}` : ''
+        }`,
+      ),
+    listAttributes: (locale?: string) =>
+      request<AttributeSummary[]>(
+        'GET',
+        `/taxonomy/attributes${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    getAttribute: (code: string, locale?: string) =>
+      request<AttributeDetail>(
+        'GET',
+        `/taxonomy/attributes/${enc(code)}${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    listEnumerations: (locale?: string) =>
+      request<EnumerationSummary[]>(
+        'GET',
+        `/taxonomy/enumerations${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    getEnumeration: (code: string, locale?: string) =>
+      request<EnumerationDetail>(
+        'GET',
+        `/taxonomy/enumerations/${enc(code)}${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    listUnits: (locale?: string) =>
+      request<Unit[]>('GET', `/taxonomy/units${locale ? `?locale=${enc(locale)}` : ''}`),
+    listCountries: (locale?: string) =>
+      request<Country[]>(
+        'GET',
+        `/taxonomy/countries${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    listCertifications: (locale?: string) =>
+      request<Certification[]>(
+        'GET',
+        `/taxonomy/certifications${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    listBrands: (params?: { locale?: string; status?: BrandApprovalStatus }) => {
+      const query = new URLSearchParams();
+      if (params?.locale) query.set('locale', params.locale);
+      if (params?.status) query.set('status', params.status);
+      const qs = query.toString();
+      return request<BrandSummary[]>('GET', `/taxonomy/brands${qs ? `?${qs}` : ''}`);
+    },
+    getBrand: (code: string, locale?: string) =>
+      request<BrandDetail>(
+        'GET',
+        `/taxonomy/brands/${enc(code)}${locale ? `?locale=${enc(locale)}` : ''}`,
+      ),
+    /** Platform-staff: all brands in every approval status (review/approval + admin gate). */
+    listAdminBrands: (params?: { locale?: string }) =>
+      request<BrandSummary[]>(
+        'GET',
+        `/platform/taxonomy/brands${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+        undefined,
+        true,
+      ),
+    validateSpecification: (req: SpecificationValidationRequest, locale?: string) =>
+      request<SpecificationValidationResult>(
+        'POST',
+        `/taxonomy/specifications/validate${locale ? `?locale=${enc(locale)}` : ''}`,
+        req,
+      ),
+
+    // Admin: categories.
+    createCategory: (req: CreateCategoryRequest) =>
+      request<CategoryDetail>('POST', '/platform/taxonomy/categories', req, true),
+    updateCategory: (id: string, req: UpdateCategoryRequest) =>
+      request<CategoryDetail>(
+        'PATCH',
+        `/platform/taxonomy/categories/${enc(id)}`,
+        req,
+        true,
+      ),
+    setCategoryActivation: (id: string, req: ActivationRequest) =>
+      request<CategoryDetail>(
+        'POST',
+        `/platform/taxonomy/categories/${enc(id)}/activation`,
+        req,
+        true,
+      ),
+    upsertCategoryTranslation: (id: string, locale: string, req: TranslationUpsertRequest) =>
+      request<TranslationView>(
+        'PUT',
+        `/platform/taxonomy/categories/${enc(id)}/translations/${enc(locale)}`,
+        req,
+        true,
+      ),
+    approveCategoryTranslation: (id: string, locale: string) =>
+      request<TranslationView>(
+        'POST',
+        `/platform/taxonomy/categories/${enc(id)}/translations/${enc(locale)}/approve`,
+        undefined,
+        true,
+      ),
+    putSpecificationTemplate: (id: string, req: PutSpecificationTemplateRequest) =>
+      request<EffectiveSpecificationTemplate>(
+        'PUT',
+        `/platform/taxonomy/categories/${enc(id)}/specification-template`,
+        req,
+        true,
+      ),
+
+    // Admin: attributes.
+    createAttribute: (req: CreateAttributeRequest) =>
+      request<AttributeDetail>('POST', '/platform/taxonomy/attributes', req, true),
+    updateAttribute: (id: string, req: UpdateAttributeRequest) =>
+      request<AttributeDetail>(
+        'PATCH',
+        `/platform/taxonomy/attributes/${enc(id)}`,
+        req,
+        true,
+      ),
+    setAttributeDeprecation: (id: string, req: DeprecationRequest) =>
+      request<AttributeDetail>(
+        'POST',
+        `/platform/taxonomy/attributes/${enc(id)}/deprecation`,
+        req,
+        true,
+      ),
+    upsertAttributeTranslation: (id: string, locale: string, req: TranslationUpsertRequest) =>
+      request<TranslationView>(
+        'PUT',
+        `/platform/taxonomy/attributes/${enc(id)}/translations/${enc(locale)}`,
+        req,
+        true,
+      ),
+
+    // Admin: enumerations.
+    createEnumeration: (req: CreateEnumerationRequest) =>
+      request<EnumerationDetail>('POST', '/platform/taxonomy/enumerations', req, true),
+    addEnumerationValue: (id: string, req: AddEnumerationValueRequest) =>
+      request<EnumerationValueView>(
+        'POST',
+        `/platform/taxonomy/enumerations/${enc(id)}/values`,
+        req,
+        true,
+      ),
+    upsertEnumerationValueTranslation: (
+      id: string,
+      locale: string,
+      req: TranslationUpsertRequest,
+    ) =>
+      request<TranslationView>(
+        'PUT',
+        `/platform/taxonomy/enumeration-values/${enc(id)}/translations/${enc(locale)}`,
+        req,
+        true,
+      ),
+
+    // Admin: brands.
+    createBrand: (req: CreateBrandRequest) =>
+      request<BrandDetail>('POST', '/platform/taxonomy/brands', req, true),
+    setBrandApproval: (id: string, req: BrandApprovalRequest) =>
+      request<BrandDetail>(
+        'POST',
+        `/platform/taxonomy/brands/${enc(id)}/approval`,
+        req,
+        true,
+      ),
+    upsertBrandTranslation: (id: string, locale: string, req: TranslationUpsertRequest) =>
+      request<TranslationView>(
+        'PUT',
+        `/platform/taxonomy/brands/${enc(id)}/translations/${enc(locale)}`,
+        req,
+        true,
+      ),
+
+    // Admin: certifications & units.
+    createCertification: (req: CreateCertificationRequest) =>
+      request<Certification>('POST', '/platform/taxonomy/certifications', req, true),
+    createUnit: (req: CreateUnitRequest) =>
+      request<Unit>('POST', '/platform/taxonomy/units', req, true),
   };
 }
 
