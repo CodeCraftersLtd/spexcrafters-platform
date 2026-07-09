@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,7 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { OrganizationResponse } from '@spexcrafters/api-client';
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
-import type { Dictionary, Locale } from '@/lib/i18n';
+import type { SupportedLocale } from '@/i18n/locales';
+import type { TranslateFn, Translator } from '@/i18n/translator';
 import { sendJson } from '@/lib/csrf-client';
 import { readBffError } from '@/features/auth/client-errors';
 import { translateOrgError } from '@/features/organizations/org-errors';
@@ -20,11 +22,7 @@ import {
 import styles from './org-components.module.css';
 
 interface CreateOrganizationFormProps {
-  locale: Locale;
-  copy: Dictionary['organizations']['create'];
-  types: Dictionary['organizations']['types'];
-  validation: Dictionary['organizations']['validation'];
-  serverErrors: Dictionary['organizations']['serverErrors'];
+  locale: SupportedLocale;
 }
 
 const FIELD_NAMES: ReadonlyArray<keyof CreateOrganizationFormValues> = [
@@ -33,14 +31,15 @@ const FIELD_NAMES: ReadonlyArray<keyof CreateOrganizationFormValues> = [
   'country',
 ];
 
-export function CreateOrganizationForm({
-  locale,
-  copy,
-  types,
-  validation,
-  serverErrors,
-}: CreateOrganizationFormProps) {
-  const schema = useMemo(() => createOrganizationSchema(validation), [validation]);
+export function CreateOrganizationForm({ locale }: CreateOrganizationFormProps) {
+  const t = useTranslations('organizations.create');
+  const types = useTranslations('organizations.types');
+  const validate = useTranslations('organizations.validation') as unknown as TranslateFn;
+  const serverErrors = useTranslations(
+    'organizations.serverErrors',
+  ) as unknown as Translator;
+
+  const schema = useMemo(() => createOrganizationSchema(validate), [validate]);
   const {
     register,
     handleSubmit,
@@ -64,7 +63,7 @@ export function CreateOrganizationForm({
         ...(values.country ? { country: values.country } : {}),
       });
     } catch {
-      setFormError(serverErrors.unexpected);
+      setFormError(serverErrors('unexpected'));
       return;
     }
 
@@ -100,9 +99,9 @@ export function CreateOrganizationForm({
       {formError ? <Alert tone="danger">{formError}</Alert> : null}
 
       <FormField
-        label={copy.nameLabel}
+        label={t('nameLabel')}
         htmlFor="org-name"
-        hint={copy.nameHint}
+        hint={t('nameHint')}
         error={errors.name?.message}
       >
         <Input
@@ -115,7 +114,7 @@ export function CreateOrganizationForm({
         />
       </FormField>
 
-      <FormField label={copy.typeLabel} htmlFor="org-type" error={errors.type?.message}>
+      <FormField label={t('typeLabel')} htmlFor="org-type" error={errors.type?.message}>
         <select
           id="org-type"
           className={styles.select}
@@ -123,16 +122,16 @@ export function CreateOrganizationForm({
           aria-describedby={errors.type ? 'org-type-error' : undefined}
           {...register('type')}
         >
-          <option value="BUYER">{types.BUYER}</option>
-          <option value="SUPPLIER">{types.SUPPLIER}</option>
-          <option value="HYBRID">{types.HYBRID}</option>
+          <option value="BUYER">{types('BUYER')}</option>
+          <option value="SUPPLIER">{types('SUPPLIER')}</option>
+          <option value="HYBRID">{types('HYBRID')}</option>
         </select>
       </FormField>
 
       <FormField
-        label={copy.countryLabel}
+        label={t('countryLabel')}
         htmlFor="org-country"
-        hint={copy.countryHint}
+        hint={t('countryHint')}
         error={errors.country?.message}
       >
         <Input
@@ -153,9 +152,9 @@ export function CreateOrganizationForm({
           type="submit"
           loading={isSubmitting || navigating}
         >
-          {copy.submit}
+          {t('submit')}
         </Button>
-        <Link href={`/${locale}/organizations`}>{copy.cancel}</Link>
+        <Link href={`/${locale}/organizations`}>{t('cancel')}</Link>
       </div>
     </form>
   );

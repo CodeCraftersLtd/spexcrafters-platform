@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
-import { interpolate, type Dictionary, type Locale } from '@/lib/i18n';
+import type { SupportedLocale } from '@/i18n/locales';
+import type { TranslateFn, Translator } from '@/i18n/translator';
 import { sendJson } from '@/lib/csrf-client';
 import { readBffError, translateError } from '@/features/auth/client-errors';
 import {
@@ -18,10 +20,7 @@ import {
 import styles from './auth-forms.module.css';
 
 interface RegisterFormProps {
-  locale: Locale;
-  copy: Dictionary['auth']['register'];
-  validation: Dictionary['auth']['validation'];
-  serverErrors: Dictionary['auth']['serverErrors'];
+  locale: SupportedLocale;
 }
 
 const FIELD_NAMES: ReadonlyArray<keyof RegisterFormValues> = [
@@ -30,13 +29,12 @@ const FIELD_NAMES: ReadonlyArray<keyof RegisterFormValues> = [
   'password',
 ];
 
-export function RegisterForm({
-  locale,
-  copy,
-  validation,
-  serverErrors,
-}: RegisterFormProps) {
-  const schema = useMemo(() => createRegisterSchema(validation), [validation]);
+export function RegisterForm({ locale }: RegisterFormProps) {
+  const t = useTranslations('auth.register');
+  const validate = useTranslations('auth.validation') as unknown as TranslateFn;
+  const serverErrors = useTranslations('auth.serverErrors') as unknown as Translator;
+
+  const schema = useMemo(() => createRegisterSchema(validate), [validate]);
   const {
     register,
     handleSubmit,
@@ -54,7 +52,7 @@ export function RegisterForm({
     try {
       response = await sendJson('/api/auth/register', 'POST', { ...values, locale });
     } catch {
-      setFormError(serverErrors.unexpected);
+      setFormError(serverErrors('unexpected'));
       return;
     }
 
@@ -96,13 +94,11 @@ export function RegisterForm({
   if (registeredEmail) {
     return (
       <div className={styles.stack} aria-live="polite">
-        <Alert tone="success" title={copy.checkEmail.title}>
-          {interpolate(copy.checkEmail.body, { email: registeredEmail })}
+        <Alert tone="success" title={t('checkEmail.title')}>
+          {t('checkEmail.body', { email: registeredEmail })}
         </Alert>
         {resendState === 'sent' ? (
-          <Alert tone="info">
-            {interpolate(copy.checkEmail.resent, { email: registeredEmail })}
-          </Alert>
+          <Alert tone="info">{t('checkEmail.resent', { email: registeredEmail })}</Alert>
         ) : (
           <div className={styles.statusActions}>
             <Button
@@ -112,7 +108,7 @@ export function RegisterForm({
               loading={resendState === 'sending'}
               onClick={resend}
             >
-              {copy.checkEmail.resend}
+              {t('checkEmail.resend')}
             </Button>
           </div>
         )}
@@ -125,9 +121,9 @@ export function RegisterForm({
       {formError ? <Alert tone="danger">{formError}</Alert> : null}
 
       <FormField
-        label={copy.displayNameLabel}
+        label={t('displayNameLabel')}
         htmlFor="register-displayName"
-        hint={copy.displayNameHint}
+        hint={t('displayNameHint')}
         error={errors.displayName?.message}
       >
         <Input
@@ -141,7 +137,7 @@ export function RegisterForm({
       </FormField>
 
       <FormField
-        label={copy.emailLabel}
+        label={t('emailLabel')}
         htmlFor="register-email"
         error={errors.email?.message}
       >
@@ -156,9 +152,9 @@ export function RegisterForm({
       </FormField>
 
       <FormField
-        label={copy.passwordLabel}
+        label={t('passwordLabel')}
         htmlFor="register-password"
-        hint={copy.passwordHint}
+        hint={t('passwordHint')}
         error={errors.password?.message}
       >
         <Input
@@ -173,13 +169,12 @@ export function RegisterForm({
 
       <div className={styles.actions}>
         <Button variant="primary" size="md" type="submit" loading={isSubmitting}>
-          {copy.submit}
+          {t('submit')}
         </Button>
       </div>
 
       <p className={styles.alternate}>
-        {copy.haveAccount}{' '}
-        <Link href={`/${locale}/auth/login`}>{copy.signIn}</Link>
+        {t('haveAccount')} <Link href={`/${locale}/auth/login`}>{t('signIn')}</Link>
       </p>
     </form>
   );

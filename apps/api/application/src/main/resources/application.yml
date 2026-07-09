@@ -61,3 +61,17 @@ spexcrafters:
     invitation-ttl: 7d
   mail:
     from: ${SPEXCRAFTERS_MAIL_FROM:no-reply@spexcrafters.com}
+  storage:
+    # S3-compatible object storage for evidence (ADR-023). Dev/CI: MinIO with non-prod
+    # credentials and an isolated private bucket. Production: AWS S3 (private, SSE).
+    endpoint: ${S3_ENDPOINT:http://localhost:9000}
+    region: ${S3_REGION:us-east-1}
+    access-key: ${S3_ACCESS_KEY:spexcrafters}
+    secret-key: ${S3_SECRET_KEY:spexcrafters_dev}
+    evidence-bucket: ${S3_BUCKET_EVIDENCE:spexcrafters-evidence}
+    path-style-access: ${S3_PATH_STYLE_ACCESS:true}
+    presign-ttl: 10m
+  evidence:
+    # Upload constraints; finalize enforces the size cap authoritatively from stored bytes.
+    max-bytes: 15728640
+    presign-ttl: 10m

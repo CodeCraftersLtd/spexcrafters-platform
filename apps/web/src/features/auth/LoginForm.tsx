@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
-import type { Dictionary, Locale } from '@/lib/i18n';
+import type { SupportedLocale } from '@/i18n/locales';
+import type { TranslateFn, Translator } from '@/i18n/translator';
 import { sendJson } from '@/lib/csrf-client';
 import { readBffError, translateError } from '@/features/auth/client-errors';
 import { createLoginSchema, type LoginFormValues } from '@/features/auth/schemas';
@@ -15,24 +17,19 @@ import { createLoginSchema, type LoginFormValues } from '@/features/auth/schemas
 import styles from './auth-forms.module.css';
 
 interface LoginFormProps {
-  locale: Locale;
+  locale: SupportedLocale;
   /** Sanitized internal path to navigate to after sign-in (defaults to the buyer dashboard). */
   returnTo?: string | undefined;
-  copy: Dictionary['auth']['login'];
-  validation: Dictionary['auth']['validation'];
-  serverErrors: Dictionary['auth']['serverErrors'];
 }
 
 const FIELD_NAMES: ReadonlyArray<keyof LoginFormValues> = ['email', 'password'];
 
-export function LoginForm({
-  locale,
-  returnTo,
-  copy,
-  validation,
-  serverErrors,
-}: LoginFormProps) {
-  const schema = useMemo(() => createLoginSchema(validation), [validation]);
+export function LoginForm({ locale, returnTo }: LoginFormProps) {
+  const t = useTranslations('auth.login');
+  const validate = useTranslations('auth.validation') as unknown as TranslateFn;
+  const serverErrors = useTranslations('auth.serverErrors') as unknown as Translator;
+
+  const schema = useMemo(() => createLoginSchema(validate), [validate]);
   const {
     register,
     handleSubmit,
@@ -49,7 +46,7 @@ export function LoginForm({
     try {
       response = await sendJson('/api/auth/login', 'POST', values);
     } catch {
-      setFormError(serverErrors.unexpected);
+      setFormError(serverErrors('unexpected'));
       return;
     }
 
@@ -81,7 +78,7 @@ export function LoginForm({
     <form className={styles.form} method="post" onSubmit={onSubmit} noValidate>
       {formError ? <Alert tone="danger">{formError}</Alert> : null}
 
-      <FormField label={copy.emailLabel} htmlFor="login-email" error={errors.email?.message}>
+      <FormField label={t('emailLabel')} htmlFor="login-email" error={errors.email?.message}>
         <Input
           id="login-email"
           type="email"
@@ -93,7 +90,7 @@ export function LoginForm({
       </FormField>
 
       <FormField
-        label={copy.passwordLabel}
+        label={t('passwordLabel')}
         htmlFor="login-password"
         error={errors.password?.message}
       >
@@ -114,13 +111,13 @@ export function LoginForm({
           type="submit"
           loading={isSubmitting || navigating}
         >
-          {copy.submit}
+          {t('submit')}
         </Button>
       </div>
 
       <p className={styles.alternate}>
-        {copy.noAccount}{' '}
-        <Link href={`/${locale}/auth/register`}>{copy.createAccount}</Link>
+        {t('noAccount')}{' '}
+        <Link href={`/${locale}/auth/register`}>{t('createAccount')}</Link>
       </p>
     </form>
   );

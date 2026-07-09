@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { Capability, InvitationResponse } from '@spexcrafters/api-client';
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
-import type { Dictionary, Locale } from '@/lib/i18n';
+import type { SupportedLocale } from '@/i18n/locales';
+import type { TranslateFn, Translator } from '@/i18n/translator';
 import { sendJson } from '@/lib/csrf-client';
-import { interpolate } from '@/lib/interpolate';
 import { readBffError } from '@/features/auth/client-errors';
 import { invitableRoles } from '@/features/organizations/capabilities';
 import { translateOrgError } from '@/features/organizations/org-errors';
@@ -22,14 +23,10 @@ import {
 import styles from './org-components.module.css';
 
 interface InvitationsSectionProps {
-  locale: Locale;
+  locale: SupportedLocale;
   organizationId: string;
   invitations: InvitationResponse[];
   callerCapabilities: Capability[];
-  copy: Dictionary['organizations']['workspace']['invitations'];
-  roles: Dictionary['organizations']['roles'];
-  validation: Dictionary['organizations']['validation'];
-  serverErrors: Dictionary['organizations']['serverErrors'];
 }
 
 /**
@@ -43,11 +40,14 @@ export function InvitationsSection({
   organizationId,
   invitations,
   callerCapabilities,
-  copy,
-  roles,
-  validation,
-  serverErrors,
 }: InvitationsSectionProps) {
+  const t = useTranslations('organizations.workspace.invitations');
+  const status = useTranslations('organizations.workspace.invitations.status');
+  const roles = useTranslations('organizations.roles');
+  const serverErrors = useTranslations(
+    'organizations.serverErrors',
+  ) as unknown as Translator;
+
   const router = useRouter();
   const roleOptions = invitableRoles(callerCapabilities);
   const canInvite = roleOptions.length > 0;
@@ -71,7 +71,7 @@ export function InvitationsSection({
           'POST',
         );
       } catch {
-        setListError(serverErrors.unexpected);
+        setListError(serverErrors('unexpected'));
         return;
       }
       if (response.ok) {
@@ -85,39 +85,37 @@ export function InvitationsSection({
   }
 
   return (
-    <section className={styles.stack} aria-label={copy.title}>
-      <h2 className={styles.subheading}>{copy.title}</h2>
+    <section className={styles.stack} aria-label={t('title')}>
+      <h2 className={styles.subheading}>{t('title')}</h2>
       {listError ? <Alert tone="danger">{listError}</Alert> : null}
 
       {invitations.length === 0 ? (
-        <p className={styles.empty}>{copy.empty}</p>
+        <p className={styles.empty}>{t('empty')}</p>
       ) : (
-        <ul className={styles.list} aria-label={copy.listLabel}>
+        <ul className={styles.list} aria-label={t('listLabel')}>
           {invitations.map((invitation) => (
             <li key={invitation.id} className={styles.row}>
               <div className={styles.rowMain}>
                 <span className={styles.rowName}>{invitation.email}</span>
                 <span className={styles.rowMeta}>
-                  {roles[invitation.role]} ·{' '}
-                  {interpolate(copy.expires, {
+                  {roles(invitation.role)} ·{' '}
+                  {t('expires', {
                     date: dateFormatter.format(new Date(invitation.expiresAt)),
                   })}
                 </span>
               </div>
               <div className={styles.rowActions}>
-                <span className={styles.badge}>{copy.status[invitation.status]}</span>
+                <span className={styles.badge}>{status(invitation.status)}</span>
                 {canInvite && invitation.status === 'PENDING' ? (
                   <Button
                     variant="secondary"
                     size="sm"
                     type="button"
                     loading={busyInvitationId === invitation.id}
-                    aria-label={interpolate(copy.revokeInvitationLabel, {
-                      email: invitation.email,
-                    })}
+                    aria-label={t('revokeInvitationLabel', { email: invitation.email })}
                     onClick={() => void revoke(invitation)}
                   >
-                    {copy.revoke}
+                    {t('revoke')}
                   </Button>
                 ) : null}
               </div>
@@ -130,10 +128,6 @@ export function InvitationsSection({
         <InviteForm
           organizationId={organizationId}
           roleOptions={roleOptions}
-          copy={copy}
-          roles={roles}
-          validation={validation}
-          serverErrors={serverErrors}
           onInvited={() => router.refresh()}
         />
       ) : null}
@@ -144,23 +138,18 @@ export function InvitationsSection({
 interface InviteFormProps {
   organizationId: string;
   roleOptions: ReadonlyArray<'ADMIN' | 'MEMBER'>;
-  copy: Dictionary['organizations']['workspace']['invitations'];
-  roles: Dictionary['organizations']['roles'];
-  validation: Dictionary['organizations']['validation'];
-  serverErrors: Dictionary['organizations']['serverErrors'];
   onInvited: () => void;
 }
 
-function InviteForm({
-  organizationId,
-  roleOptions,
-  copy,
-  roles,
-  validation,
-  serverErrors,
-  onInvited,
-}: InviteFormProps) {
-  const schema = useMemo(() => inviteMemberSchema(validation), [validation]);
+function InviteForm({ organizationId, roleOptions, onInvited }: InviteFormProps) {
+  const t = useTranslations('organizations.workspace.invitations');
+  const roles = useTranslations('organizations.roles');
+  const validate = useTranslations('organizations.validation') as unknown as TranslateFn;
+  const serverErrors = useTranslations(
+    'organizations.serverErrors',
+  ) as unknown as Translator;
+
+  const schema = useMemo(() => inviteMemberSchema(validate), [validate]);
   const {
     register,
     handleSubmit,
@@ -186,7 +175,7 @@ function InviteForm({
         values,
       );
     } catch {
-      setFormError(serverErrors.unexpected);
+      setFormError(serverErrors('unexpected'));
       return;
     }
 
@@ -215,15 +204,15 @@ function InviteForm({
       method="post"
       onSubmit={onSubmit}
       noValidate
-      aria-label={copy.inviteTitle}
+      aria-label={t('inviteTitle')}
     >
-      <h3 className={styles.subheading}>{copy.inviteTitle}</h3>
+      <h3 className={styles.subheading}>{t('inviteTitle')}</h3>
       {formError ? <Alert tone="danger">{formError}</Alert> : null}
-      {sent ? <Alert tone="success">{copy.sent}</Alert> : null}
+      {sent ? <Alert tone="success">{t('sent')}</Alert> : null}
 
       <div className={styles.inviteFields}>
         <FormField
-          label={copy.emailLabel}
+          label={t('emailLabel')}
           htmlFor="invite-email"
           error={errors.email?.message}
         >
@@ -237,14 +226,14 @@ function InviteForm({
         </FormField>
 
         <FormField
-          label={copy.roleLabel}
+          label={t('roleLabel')}
           htmlFor="invite-role"
           error={errors.role?.message}
         >
           <select id="invite-role" className={styles.select} {...register('role')}>
             {roleOptions.map((role) => (
               <option key={role} value={role}>
-                {roles[role]}
+                {roles(role)}
               </option>
             ))}
           </select>
@@ -253,7 +242,7 @@ function InviteForm({
 
       <div className={styles.actions}>
         <Button variant="primary" size="md" type="submit" loading={isSubmitting}>
-          {copy.submit}
+          {t('submit')}
         </Button>
       </div>
     </form>

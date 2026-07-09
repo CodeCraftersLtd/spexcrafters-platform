@@ -13,6 +13,7 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
+    "validate:locales": "node scripts/validate-locales.mjs",
     "e2e": "playwright test"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "@spexcrafters/ui": "workspace:*",
     "jose": "^6.0.10",
     "next": "^16.0.0",
+    "next-intl": "^4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.54.2",
@@ -35,12 +37,14 @@
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.13.0",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.18.0",
     "eslint-config-next": "^16.0.0",
     "jsdom": "^26.0.0",
+    "pg": "^8.22.0",
     "typescript": "^5.7.3",
     "vitest": "^3.0.5"
   }

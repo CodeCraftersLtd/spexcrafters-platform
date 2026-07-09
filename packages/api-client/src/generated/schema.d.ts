@@ -4,6 +4,565 @@
  */
 
 export interface paths {
+    "/locales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the supported locales (BCP 47 codes, direction, fallback) */
+        get: operations["listLocales"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/suppliers/{supplierId}/profile-foundation": {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        /** Public localized supplier profile foundation (ACTIVE suppliers only) */
+        get: operations["getPublicSupplierProfileFoundation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a supplier identity, its DRAFT application and profile (requires supplier.create; one active supplier per organization) */
+        post: operations["createSupplierApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/applications/{applicationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        /** Get a supplier application (requires supplier.read) */
+        get: operations["getSupplierApplication"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update draft content (requires supplier.update; DRAFT/CHANGES_REQUESTED only; optimistic version) */
+        patch: operations["updateSupplierApplicationDraft"];
+        trace?: never;
+    };
+    "/suppliers/applications/{applicationId}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit (or resubmit) the application for review (requires supplier.submit; enforces completeness) */
+        post: operations["submitSupplierApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/applications/{applicationId}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw the application (requires supplier.withdraw; frees the org's supplier slot) */
+        post: operations["withdrawSupplierApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/applications/{applicationId}/change-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        /** List change requests raised against the application (requires supplier.read) */
+        get: operations["listChangeRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/applications/{applicationId}/change-requests/{changeRequestId}/respond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+                changeRequestId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond to a change request (requires supplier.update) */
+        post: operations["respondToChangeRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        /** Get the full supplier profile with translations and facilities (requires supplier.read) */
+        get: operations["getSupplierProfile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/profile/translations/{locale}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** Create or update a profile translation (requires supplier.update; original language preserved; edits mark other locales stale) */
+        put: operations["upsertProfileTranslation"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/profile/translations/{locale}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a profile translation (requires supplier.update) */
+        post: operations["approveProfileTranslation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/profile/translations/{locale}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject a profile translation (requires supplier.update) */
+        post: operations["rejectProfileTranslation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/facilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a facility with its original-language name/description (requires supplier.update) */
+        post: operations["addSupplierFacility"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        /** List finalized evidence (requires supplier.evidence.read) */
+        get: operations["listEvidence"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/evidence/initiate-upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Initiate a presigned direct-to-storage upload (requires supplier.evidence.upload) */
+        post: operations["initiateEvidenceUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/evidence/{evidenceId}/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                evidenceId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finalize an upload: verify presence, size, sha256 and magic bytes (idempotent; requires supplier.evidence.upload) */
+        post: operations["finalizeEvidenceUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/evidence/{evidenceId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                evidenceId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete unreferenced, unretained evidence (requires supplier.evidence.delete) */
+        delete: operations["deleteEvidence"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/evidence/{evidenceId}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                evidenceId: string;
+            };
+            cookie?: never;
+        };
+        /** Backend-streamed evidence download (org supplier.evidence.read for own org, or platform supplier.review.read; fail-closed to downloadable states) */
+        get: operations["downloadEvidence"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/suppliers/{supplierId}/verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        /** Get scope-based verification status (requires supplier.verification.read) */
+        get: operations["getVerificationStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/review/suppliers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cursor page of the reviewer queue (requires supplier.review.read) */
+        get: operations["listReviewQueue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/review/suppliers/{applicationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        /** Reviewer detail: lifecycle, profile, evidence, change requests (requires supplier.review.read) */
+        get: operations["getReviewDetail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/review/suppliers/{applicationId}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Claim a submitted application for review (requires supplier.review.claim) */
+        post: operations["claimReview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/review/suppliers/{applicationId}/request-changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request changes with a reason (requires supplier.review.request_changes) */
+        post: operations["requestSupplierChanges"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/review/suppliers/{applicationId}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve the application, activating the supplier (requires supplier.review.approve) */
+        post: operations["approveSupplierApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/review/suppliers/{applicationId}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject the application (requires supplier.review.reject) */
+        post: operations["rejectSupplierApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/suppliers/{supplierId}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend an operational supplier (requires supplier.suspend) */
+        post: operations["suspendSupplier"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/suppliers/{supplierId}/verification/scopes/{scopeCode}/grant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                scopeCode: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Grant a verification scope with evidence linkage (requires supplier.verification.grant) */
+        post: operations["grantVerificationScope"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/suppliers/{supplierId}/verification/scopes/{scopeCode}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                scopeCode: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend a granted verification scope (requires supplier.verification.suspend) */
+        post: operations["suspendVerificationScope"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/platform/suppliers/{supplierId}/verification/scopes/{scopeCode}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                scopeCode: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke a verification scope (requires supplier.verification.revoke) */
+        post: operations["revokeVerificationScope"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/register": {
         parameters: {
             query?: never;
@@ -309,6 +868,345 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        LocaleInfo: {
+            /** @description BCP 47 code */
+            code: string;
+            /** @enum {string} */
+            dir: "ltr" | "rtl";
+            /** @description Deterministic fallback (en for all but en) */
+            fallback?: string | null;
+        };
+        /**
+         * @description Clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        SupplierApplicationStatus: "DRAFT" | "SUBMITTED" | "UNDER_REVIEW" | "CHANGES_REQUESTED" | "RESUBMITTED" | "APPROVED" | "REJECTED" | "WITHDRAWN";
+        /** @enum {string} */
+        OperationalStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "DEACTIVATED";
+        /** @enum {string} */
+        ClaimStatus: "CLAIMED" | "EVIDENCE_SUBMITTED" | "VERIFIED" | "REJECTED";
+        /** @enum {string} */
+        TranslationStatus: "MISSING" | "DRAFT" | "MACHINE_TRANSLATED" | "HUMAN_REVIEWED" | "APPROVED" | "REJECTED";
+        /** @enum {string} */
+        TranslationSource: "HUMAN" | "MACHINE" | "IMPORT";
+        /**
+         * @description Phase 7 never marks evidence CLEAN (deferred scanner).
+         * @enum {string}
+         */
+        ScanStatus: "PENDING_SCAN" | "SCANNING" | "CLEAN" | "REJECTED" | "QUARANTINED";
+        /** @enum {string} */
+        EvidenceUploadState: "INITIATED" | "FINALIZED";
+        /** @enum {string} */
+        EvidenceReviewStatus: "UNREVIEWED" | "ACCEPTED" | "REJECTED";
+        /** @enum {string} */
+        RetentionStatus: "NONE" | "RETAINED";
+        /**
+         * @description Scope-based; there is no verified boolean anywhere.
+         * @enum {string}
+         */
+        VerificationScopeStatus: "NOT_REQUESTED" | "PENDING" | "UNDER_REVIEW" | "VERIFIED" | "REJECTED" | "CHANGES_REQUESTED" | "EXPIRED" | "SUSPENDED" | "REVOKED";
+        /** @enum {string} */
+        AddressPrivacy: "PUBLIC_CITY" | "PRIVATE";
+        /** @enum {string} */
+        FacilityOwnership: "OWNED" | "LEASED" | "PARTNER";
+        /**
+         * @description Org-scoped supplier capabilities; clients must tolerate unknown future values.
+         * @enum {string}
+         */
+        SupplierCapability: "supplier.create" | "supplier.read" | "supplier.update" | "supplier.submit" | "supplier.withdraw" | "supplier.evidence.read" | "supplier.evidence.upload" | "supplier.evidence.delete" | "supplier.verification.read";
+        CreateSupplierApplicationRequest: {
+            /** Format: uuid */
+            organizationId: string;
+            /** @description BCP 47 code of the authoring language */
+            originalLocale: string;
+            /** @description Class E — never machine-translated */
+            legalName: string;
+        };
+        SupplierApplication: {
+            /** Format: uuid */
+            applicationId: string;
+            /** Format: uuid */
+            supplierId: string;
+            /** Format: uuid */
+            organizationId: string;
+            originalLocale: string;
+            status: components["schemas"]["SupplierApplicationStatus"];
+            operationalStatus: components["schemas"]["OperationalStatus"];
+            /** Format: date-time */
+            submittedAt?: string | null;
+            /** Format: date-time */
+            decidedAt?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** @description Optimistic-locking version for draft updates */
+            version: number;
+            callerCapabilities: components["schemas"]["SupplierCapability"][];
+        };
+        UpdateSupplierDraftRequest: {
+            legalName?: string;
+            registeredLegalNameTranslated?: string;
+            tradingName?: string;
+            registrationNumber?: string;
+            countryOfRegistration?: string;
+            registrationAuthority?: string;
+            /** Format: date */
+            registrationDate?: string;
+            companyTypeCode?: string;
+            yearEstablished?: number;
+            employeeRange?: string;
+            website?: string;
+            businessEmail?: string;
+            businessPhone?: string;
+            /** @description Supplier type codes (replace-all) */
+            types?: string[];
+            /** @description Declared capability codes (replace-all) */
+            capabilities?: string[];
+            /** @description Optimistic-locking version; mismatch → 409 */
+            version: number;
+        };
+        RespondChangeRequestRequest: {
+            response: string;
+            responseLocale?: string;
+        };
+        ReviewRequest: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            applicationId: string;
+            requestedItem: string;
+            reason: string;
+            /** @enum {string} */
+            status: "OPEN" | "RESPONDED" | "RESOLVED";
+            supplierResponse?: string | null;
+            responseLocale?: string | null;
+            /** Format: date-time */
+            requestedAt: string;
+            /** Format: date-time */
+            resolvedAt?: string | null;
+        };
+        CapabilityDeclaration: {
+            capabilityCode: string;
+            claimStatus: components["schemas"]["ClaimStatus"];
+        };
+        ProfileTranslation: {
+            locale: string;
+            /** @description The authoritative original-language row */
+            original: boolean;
+            translationStatus: components["schemas"]["TranslationStatus"];
+            translationSource: components["schemas"]["TranslationSource"];
+            sourceLocale: string;
+            sourceVersion: number;
+            /** @description Source content advanced past this translation */
+            stale: boolean;
+            tradingName?: string | null;
+            companyDescription?: string | null;
+            productionCapabilityDescription?: string | null;
+            oemDescription?: string | null;
+            odmDescription?: string | null;
+            privateLabelDescription?: string | null;
+            qualityControlDescription?: string | null;
+            exportMarketDescription?: string | null;
+        };
+        FacilityTranslation: {
+            locale: string;
+            original: boolean;
+            translationStatus: components["schemas"]["TranslationStatus"];
+            sourceVersion: number;
+            stale: boolean;
+            name?: string | null;
+            description?: string | null;
+        };
+        Facility: {
+            /** Format: uuid */
+            id: string;
+            facilityTypeCode: string;
+            country: string;
+            region?: string | null;
+            city?: string | null;
+            addressPrivacy: components["schemas"]["AddressPrivacy"];
+            ownership: components["schemas"]["FacilityOwnership"];
+            isPublic: boolean;
+            sourceVersion: number;
+            translations: components["schemas"]["FacilityTranslation"][];
+        };
+        SupplierProfile: {
+            /** Format: uuid */
+            supplierId: string;
+            originalLocale: string;
+            legalName: string;
+            registeredLegalNameTranslated?: string | null;
+            tradingName?: string | null;
+            registrationNumber?: string | null;
+            countryOfRegistration?: string | null;
+            registrationAuthority?: string | null;
+            /** Format: date */
+            registrationDate?: string | null;
+            companyTypeCode?: string | null;
+            yearEstablished?: number | null;
+            employeeRange?: string | null;
+            website?: string | null;
+            businessEmail?: string | null;
+            businessPhone?: string | null;
+            sourceVersion: number;
+            types: string[];
+            capabilities: components["schemas"]["CapabilityDeclaration"][];
+            facilities: components["schemas"]["Facility"][];
+            translations: components["schemas"]["ProfileTranslation"][];
+        };
+        UpsertTranslationRequest: {
+            source?: components["schemas"]["TranslationSource"];
+            tradingName?: string;
+            companyDescription?: string;
+            productionCapabilityDescription?: string;
+            oemDescription?: string;
+            odmDescription?: string;
+            privateLabelDescription?: string;
+            qualityControlDescription?: string;
+            exportMarketDescription?: string;
+        };
+        AddFacilityRequest: {
+            facilityTypeCode: string;
+            country: string;
+            region?: string;
+            city?: string;
+            addressPrivacy: components["schemas"]["AddressPrivacy"];
+            ownership: components["schemas"]["FacilityOwnership"];
+            isPublic?: boolean;
+            name?: string;
+            description?: string;
+        };
+        InitiateUploadRequest: {
+            evidenceTypeCode: string;
+            /** @description Stored as metadata only; the storage key is server-generated */
+            filename: string;
+            /** @description Must be one of application/pdf, image/jpeg, image/png, image/webp */
+            mediaType: string;
+            documentLocale?: string;
+        };
+        EvidenceUploadTicket: {
+            /** Format: uuid */
+            evidenceId: string;
+            /** @description Always PUT */
+            method: string;
+            /**
+             * Format: uri
+             * @description Short-lived presigned URL — a single-use secret
+             */
+            url: string;
+            /** Format: date-time */
+            expiresAt: string;
+            requiredHeaders: {
+                [key: string]: string;
+            };
+            /** Format: int64 */
+            maxBytes: number;
+        };
+        FinalizeUploadRequest: {
+            /** @description Optional; cross-checked against the server digest */
+            expectedSha256?: string;
+        };
+        Evidence: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            supplierId: string;
+            evidenceTypeCode: string;
+            originalFilename: string;
+            mediaType?: string | null;
+            /** Format: int64 */
+            byteSize?: number | null;
+            sha256?: string | null;
+            documentLocale?: string | null;
+            uploadState: components["schemas"]["EvidenceUploadState"];
+            scanStatus: components["schemas"]["ScanStatus"];
+            reviewStatus: components["schemas"]["EvidenceReviewStatus"];
+            retentionStatus: components["schemas"]["RetentionStatus"];
+            /** @description Fail-closed derived flag */
+            downloadable: boolean;
+            /** Format: date-time */
+            uploadedAt?: string | null;
+        };
+        VerificationScopeResult: {
+            scopeCode: string;
+            status: components["schemas"]["VerificationScopeStatus"];
+            /** Format: date-time */
+            decidedAt?: string | null;
+            /** Format: date-time */
+            validFrom?: string | null;
+            /** Format: date-time */
+            validUntil?: string | null;
+            reason?: string | null;
+            evidenceIds: string[];
+        };
+        VerificationStatus: {
+            /** Format: uuid */
+            supplierId: string;
+            caseStatus: components["schemas"]["VerificationScopeStatus"];
+            /** Format: date-time */
+            openedAt?: string | null;
+            scopes: components["schemas"]["VerificationScopeResult"][];
+        };
+        GrantScopeRequest: {
+            /** @description Evidence linkage is required for a grant */
+            evidenceIds: string[];
+            /** Format: date-time */
+            validUntil?: string;
+            reason?: string;
+        };
+        ReasonRequest: {
+            reason?: string;
+        };
+        RequestChangesRequest: {
+            requestedItem: string;
+            reason: string;
+        };
+        ReviewQueueItem: {
+            /** Format: uuid */
+            applicationId: string;
+            /** Format: uuid */
+            supplierId: string;
+            /** Format: uuid */
+            organizationId: string;
+            status: components["schemas"]["SupplierApplicationStatus"];
+            legalName?: string | null;
+            originalLocale: string;
+            /** Format: date-time */
+            submittedAt?: string | null;
+        };
+        ReviewQueuePage: {
+            items: components["schemas"]["ReviewQueueItem"][];
+            /** @description Opaque; null when exhausted */
+            nextCursor?: string | null;
+        };
+        ReviewDetail: {
+            /** Format: uuid */
+            applicationId: string;
+            /** Format: uuid */
+            supplierId: string;
+            /** Format: uuid */
+            organizationId: string;
+            status: components["schemas"]["SupplierApplicationStatus"];
+            operationalStatus: components["schemas"]["OperationalStatus"];
+            /** Format: date-time */
+            submittedAt?: string | null;
+            version: number;
+            profile: components["schemas"]["SupplierProfile"];
+            evidence: components["schemas"]["Evidence"][];
+            changeRequests: components["schemas"]["ReviewRequest"][];
+        };
+        PublicSupplierProfile: {
+            /** Format: uuid */
+            supplierId: string;
+            requestedLocale: string;
+            displayLocale: string;
+            fallbackApplied: boolean;
+            stale: boolean;
+            /** @description Class E — rendered as-is */
+            legalName: string;
+            tradingName?: string | null;
+            companyDescription?: string | null;
+            countryOfRegistration?: string | null;
+        };
         RegisterRequest: {
             /** Format: email */
             email: string;
@@ -559,6 +1457,827 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    listLocales: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The supported-locale registry. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocaleInfo"][];
+                };
+            };
+        };
+    };
+    getPublicSupplierProfileFoundation: {
+        parameters: {
+            query?: {
+                /** @description Requested display locale (BCP 47); unknown values fall back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The localized profile foundation with language-state metadata. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicSupplierProfile"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    createSupplierApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSupplierApplicationRequest"];
+            };
+        };
+        responses: {
+            /** @description Application created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierApplication"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    getSupplierApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The application. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierApplication"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    updateSupplierApplicationDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSupplierDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierApplication"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    submitSupplierApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Submitted. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierApplication"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    withdrawSupplierApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Withdrawn. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierApplication"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    listChangeRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Change requests. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewRequest"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    respondToChangeRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+                changeRequestId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RespondChangeRequestRequest"];
+            };
+        };
+        responses: {
+            /** @description Response recorded. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewRequest"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    getSupplierProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The profile. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierProfile"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    upsertProfileTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertTranslationRequest"];
+            };
+        };
+        responses: {
+            /** @description Translation saved. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileTranslation"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    approveProfileTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Approved. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileTranslation"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    rejectProfileTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Rejected. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileTranslation"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    addSupplierFacility: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddFacilityRequest"];
+            };
+        };
+        responses: {
+            /** @description Facility created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Facility"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    listEvidence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Evidence metadata (never bytes or keys). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Evidence"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    initiateEvidenceUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InitiateUploadRequest"];
+            };
+        };
+        responses: {
+            /** @description Upload ticket with a short-lived presigned PUT. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceUploadTicket"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    finalizeEvidenceUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                evidenceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["FinalizeUploadRequest"];
+            };
+        };
+        responses: {
+            /** @description Finalized. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Evidence"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    deleteEvidence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                evidenceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    downloadEvidence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                evidenceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The evidence bytes. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    getVerificationStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Verification status with per-scope results. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationStatus"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listReviewQueue: {
+        parameters: {
+            query?: {
+                /** @description Opaque cursor from the previous page's nextCursor. */
+                cursor?: string;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A page of the queue. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewQueuePage"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+        };
+    };
+    getReviewDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The review detail. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    claimReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Claimed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    requestSupplierChanges: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestChangesRequest"];
+            };
+        };
+        responses: {
+            /** @description Changes requested. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    approveSupplierApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Approved; supplier ACTIVE. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    rejectSupplierApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description Rejected. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    suspendSupplier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description Suspended. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    grantVerificationScope: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                scopeCode: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GrantScopeRequest"];
+            };
+        };
+        responses: {
+            /** @description Granted. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationStatus"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
+        };
+    };
+    suspendVerificationScope: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                scopeCode: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description Suspended. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationStatus"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    revokeVerificationScope: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+                scopeCode: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description Revoked. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationStatus"];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
     register: {
         parameters: {
             query?: never;

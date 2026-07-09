@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { NextIntlClientProvider } from 'next-intl';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { AcceptInvitation } from '@/features/organizations/AcceptInvitation';
-import { defaultLocale, getDictionary, isLocale, type Locale } from '@/lib/i18n';
+import { DEFAULT_LOCALE, isSupportedLocale, type SupportedLocale } from '@/i18n/locales';
+import { pickMessages } from '@/i18n/pick';
 import { getSession } from '@/lib/session';
 
 import styles from './page.module.css';
@@ -16,8 +19,9 @@ export async function generateMetadata({
   params,
 }: AcceptInvitationPageProps): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'organizations.acceptInvitation' });
   return {
-    title: getDictionary(locale).invitations.accept.metaTitle,
+    title: t('metaTitle'),
     robots: { index: false, follow: false },
   };
 }
@@ -27,9 +31,11 @@ export default async function AcceptInvitationPage({
   searchParams,
 }: AcceptInvitationPageProps) {
   const [{ locale: raw }, { token }] = await Promise.all([params, searchParams]);
-  const locale: Locale = isLocale(raw) ? raw : defaultLocale;
-  const dict = getDictionary(locale);
-  const copy = dict.invitations.accept;
+  const locale: SupportedLocale = isSupportedLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
+
+  const t = await getTranslations({ locale, namespace: 'organizations.acceptInvitation' });
+  const messages = await pickMessages(['organizations', 'common']);
   const tokenValue = Array.isArray(token) ? token[0] : token;
 
   // Server-side enforcement — the middleware cookie check is UX only. The
@@ -45,12 +51,13 @@ export default async function AcceptInvitationPage({
   return (
     <div className={styles.wrapper}>
       <section className={styles.card}>
-        <h1 className={styles.title}>{copy.title}</h1>
-        <AcceptInvitation
-          locale={locale}
-          token={tokenValue && tokenValue.length > 0 ? tokenValue : null}
-          copy={copy}
-        />
+        <h1 className={styles.title}>{t('title')}</h1>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <AcceptInvitation
+            locale={locale}
+            token={tokenValue && tokenValue.length > 0 ? tokenValue : null}
+          />
+        </NextIntlClientProvider>
       </section>
     </div>
   );

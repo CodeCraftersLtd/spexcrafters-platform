@@ -1,6 +1,25 @@
 import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const isDev = process.env.NODE_ENV !== 'production';
+
+/**
+ * Object-storage origin(s) the browser uploads evidence to directly (ADR-023:
+ * presigned direct-to-storage upload). `connect-src` MUST include the storage
+ * origin or the browser blocks the presigned PUT with a CSP violation. This is
+ * a deliberate, documented broadening of connect-src (the only broadening) —
+ * set NEXT_PUBLIC_STORAGE_ORIGIN to the S3/R2/MinIO public origin per env.
+ */
+const storageOrigin = process.env.NEXT_PUBLIC_STORAGE_ORIGIN?.trim();
+const connectSrc = [
+  "'self'",
+  isDev ? 'ws:' : null,
+  storageOrigin || null,
+]
+  .filter(Boolean)
+  .join(' ');
 
 /**
  * Content-Security-Policy — v1 posture (SEC-DEBT-1, see docs/validation):
@@ -20,7 +39,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
-  isDev ? "connect-src 'self' ws:" : "connect-src 'self'",
+  `connect-src ${connectSrc}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -56,4 +75,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

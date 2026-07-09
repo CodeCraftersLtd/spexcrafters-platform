@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { SkipLink } from '@/components/SkipLink';
 import { LogoutButton } from '@/features/auth/LogoutButton';
-import { defaultLocale, getDictionary, isLocale, type Locale } from '@/lib/i18n';
+import { DEFAULT_LOCALE, isSupportedLocale, type SupportedLocale } from '@/i18n/locales';
 import { getSession } from '@/lib/session';
 
 import styles from './layout.module.css';
@@ -25,8 +26,8 @@ export default async function OrganizationsLayout({
   params,
 }: OrganizationsLayoutProps) {
   const { locale: raw } = await params;
-  const locale: Locale = isLocale(raw) ? raw : defaultLocale;
-  const dict = getDictionary(locale);
+  const locale: SupportedLocale = isSupportedLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
 
   // Server-side enforcement — the middleware cookie check is UX only.
   const session = await getSession();
@@ -36,23 +37,29 @@ export default async function OrganizationsLayout({
     );
   }
 
+  const [common, nav, a11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'common' }),
+    getTranslations({ locale, namespace: 'navigation' }),
+    getTranslations({ locale, namespace: 'accessibility' }),
+  ]);
+
   return (
     <div className={styles.shell}>
-      <SkipLink label={dict.common.skipToContent} />
+      <SkipLink label={a11y('skipToContent')} />
       <aside className={styles.sidebar}>
         <Link className={styles.wordmark} href={`/${locale}`}>
-          {dict.common.appName}
+          {common('appName')}
         </Link>
-        <nav aria-label={dict.organizations.navigationLabel}>
+        <nav aria-label={nav('organizations.label')}>
           <ul className={styles.navList}>
             <li>
               <Link className={styles.navLink} href={`/${locale}/buyer`}>
-                {dict.organizations.nav.dashboard}
+                {nav('organizations.dashboard')}
               </Link>
             </li>
             <li>
               <Link className={styles.navLink} href={`/${locale}/organizations`}>
-                {dict.organizations.nav.organizations}
+                {nav('organizations.organizations')}
               </Link>
             </li>
           </ul>
@@ -60,11 +67,8 @@ export default async function OrganizationsLayout({
       </aside>
       <div className={styles.content}>
         <header className={styles.topbar}>
-          <LocaleSwitcher
-            currentLocale={locale}
-            label={dict.common.localeSwitcherLabel}
-          />
-          <LogoutButton locale={locale} label={dict.organizations.logout} />
+          <LocaleSwitcher currentLocale={locale} />
+          <LogoutButton locale={locale} label={nav('logout')} />
         </header>
         <main id="main-content" className={styles.main}>
           {children}

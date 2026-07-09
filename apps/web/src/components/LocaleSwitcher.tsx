@@ -1,58 +1,62 @@
 'use client';
 
-import type { Route } from 'next';
-import { usePathname, useRouter } from 'next/navigation';
-import { useId } from 'react';
+import { useTranslations } from 'next-intl';
+import { useId, useTransition } from 'react';
 
-import { isLocale, localeDisplayNames, locales, type Locale } from '@/lib/i18n';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import {
+  LOCALE_ENDONYMS,
+  LOCALES,
+  isSupportedLocale,
+  type SupportedLocale,
+} from '@/i18n/locales';
 
 import styles from './LocaleSwitcher.module.css';
 
 interface LocaleSwitcherProps {
-  currentLocale: Locale;
-  /** Localized "Language" label. */
-  label: string;
+  currentLocale: SupportedLocale;
 }
 
 /**
- * Native <select> language chooser. Options are rendered in their own
- * language with a matching lang attribute (design system §6.3 LocaleSwitcher).
+ * Native <select> language chooser listing all 20 locales by endonym (each
+ * option carries its own `lang`/`hreflang`, rendered in its own language,
+ * design system §6.3). Switching navigates to the same route in the chosen
+ * locale via next-intl's router, which persists the explicit choice in the
+ * `sc_locale` cookie (ADR-019 — no Accept-Language override afterwards).
  */
-export function LocaleSwitcher({ currentLocale, label }: LocaleSwitcherProps) {
+export function LocaleSwitcher({ currentLocale }: LocaleSwitcherProps) {
+  const t = useTranslations('navigation');
   const router = useRouter();
   const pathname = usePathname();
   const id = useId();
+  const [isPending, startTransition] = useTransition();
 
   function switchLocale(next: string) {
-    if (!isLocale(next) || next === currentLocale) {
+    if (!isSupportedLocale(next) || next === currentLocale) {
       return;
     }
-    const segments = pathname.split('/');
-    // segments[0] is '' (leading slash); segments[1] is the locale prefix.
-    if (segments.length > 1 && segments[1] !== undefined && isLocale(segments[1])) {
-      segments[1] = next;
-    } else {
-      segments.splice(1, 0, next);
-    }
-    // The rebuilt path targets the same route in another locale; the cast is
-    // required because a joined string cannot be statically typed as a Route.
-    router.replace(segments.join('/') as Route);
+    startTransition(() => {
+      // pathname is locale-stripped; router.replace re-applies the chosen
+      // locale prefix and writes the sc_locale cookie.
+      router.replace(pathname, { locale: next });
+    });
   }
 
   return (
     <span className={styles.wrapper}>
       <label className={styles.label} htmlFor={id}>
-        {label}
+        {t('language')}
       </label>
       <select
         className={styles.select}
         id={id}
         value={currentLocale}
+        disabled={isPending}
         onChange={(event) => switchLocale(event.target.value)}
       >
-        {locales.map((locale) => (
+        {LOCALES.map((locale) => (
           <option key={locale} value={locale} lang={locale}>
-            {localeDisplayNames[locale]}
+            {LOCALE_ENDONYMS[locale]}
           </option>
         ))}
       </select>

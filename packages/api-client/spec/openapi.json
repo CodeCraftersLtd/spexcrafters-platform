@@ -13,9 +13,519 @@
   "tags": [
     { "name": "auth", "description": "Registration, email verification, and session tokens" },
     { "name": "me", "description": "Current authenticated user" },
-    { "name": "organizations", "description": "Organization tenancy: creation, membership, roles, invitations. Non-members receive 404 for org resources (existence concealment); members lacking a capability receive 403. See docs/architecture/organizations-capability-model.md." }
+    { "name": "organizations", "description": "Organization tenancy: creation, membership, roles, invitations. Non-members receive 404 for org resources (existence concealment); members lacking a capability receive 403. See docs/architecture/organizations-capability-model.md." },
+    { "name": "supplier", "description": "Supplier onboarding: application lifecycle, profile + translations, evidence, org-scoped capabilities. Non-members receive 404 (existence concealment); members lacking a capability receive 403. See docs/architecture/supplier-domain-model.md." },
+    { "name": "verification", "description": "Scope-based supplier verification (no verified boolean). Reads are org-scoped; grant/suspend/revoke are platform-staff-only." },
+    { "name": "platform", "description": "Platform-staff moderation (reviewer workflow, supplier suspension, verification decisions). Authorized by platform capabilities, never by an organization role." },
+    { "name": "reference", "description": "Reference data and localization: supported locales." }
   ],
   "paths": {
+    "/locales": {
+      "get": {
+        "tags": ["reference"],
+        "operationId": "listLocales",
+        "summary": "List the supported locales (BCP 47 codes, direction, fallback)",
+        "security": [],
+        "responses": {
+          "200": { "description": "The supported-locale registry.", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/LocaleInfo" } } } } }
+        }
+      }
+    },
+    "/public/suppliers/{supplierId}/profile-foundation": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "locale", "in": "query", "required": false, "schema": { "type": "string" }, "description": "Requested display locale (BCP 47); unknown values fall back to en." }
+      ],
+      "get": {
+        "tags": ["supplier"],
+        "operationId": "getPublicSupplierProfileFoundation",
+        "summary": "Public localized supplier profile foundation (ACTIVE suppliers only)",
+        "security": [],
+        "responses": {
+          "200": { "description": "The localized profile foundation with language-state metadata.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublicSupplierProfile" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/suppliers/applications": {
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "createSupplierApplication",
+        "summary": "Create a supplier identity, its DRAFT application and profile (requires supplier.create; one active supplier per organization)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateSupplierApplicationRequest" } } } },
+        "responses": {
+          "201": { "description": "Application created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SupplierApplication" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/applications/{applicationId}": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "get": {
+        "tags": ["supplier"],
+        "operationId": "getSupplierApplication",
+        "summary": "Get a supplier application (requires supplier.read)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "The application.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SupplierApplication" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["supplier"],
+        "operationId": "updateSupplierApplicationDraft",
+        "summary": "Update draft content (requires supplier.update; DRAFT/CHANGES_REQUESTED only; optimistic version)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateSupplierDraftRequest" } } } },
+        "responses": {
+          "200": { "description": "Updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SupplierApplication" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/applications/{applicationId}/submit": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "submitSupplierApplication",
+        "summary": "Submit (or resubmit) the application for review (requires supplier.submit; enforces completeness)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Submitted.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SupplierApplication" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/applications/{applicationId}/withdraw": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "withdrawSupplierApplication",
+        "summary": "Withdraw the application (requires supplier.withdraw; frees the org's supplier slot)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Withdrawn.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SupplierApplication" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/suppliers/applications/{applicationId}/change-requests": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "get": {
+        "tags": ["supplier"],
+        "operationId": "listChangeRequests",
+        "summary": "List change requests raised against the application (requires supplier.read)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Change requests.", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ReviewRequest" } } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/suppliers/applications/{applicationId}/change-requests/{changeRequestId}/respond": {
+      "parameters": [
+        { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "changeRequestId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+      ],
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "respondToChangeRequest",
+        "summary": "Respond to a change request (requires supplier.update)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RespondChangeRequestRequest" } } } },
+        "responses": {
+          "200": { "description": "Response recorded.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReviewRequest" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/profile": {
+      "parameters": [ { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "get": {
+        "tags": ["supplier"],
+        "operationId": "getSupplierProfile",
+        "summary": "Get the full supplier profile with translations and facilities (requires supplier.read)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "The profile.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SupplierProfile" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/profile/translations/{locale}": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "locale", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "put": {
+        "tags": ["supplier"],
+        "operationId": "upsertProfileTranslation",
+        "summary": "Create or update a profile translation (requires supplier.update; original language preserved; edits mark other locales stale)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpsertTranslationRequest" } } } },
+        "responses": {
+          "200": { "description": "Translation saved.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProfileTranslation" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/profile/translations/{locale}/approve": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "locale", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "approveProfileTranslation",
+        "summary": "Approve a profile translation (requires supplier.update)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Approved.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProfileTranslation" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/profile/translations/{locale}/reject": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "locale", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "rejectProfileTranslation",
+        "summary": "Reject a profile translation (requires supplier.update)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Rejected.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProfileTranslation" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/facilities": {
+      "parameters": [ { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "addSupplierFacility",
+        "summary": "Add a facility with its original-language name/description (requires supplier.update)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddFacilityRequest" } } } },
+        "responses": {
+          "201": { "description": "Facility created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Facility" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/evidence": {
+      "parameters": [ { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "get": {
+        "tags": ["supplier"],
+        "operationId": "listEvidence",
+        "summary": "List finalized evidence (requires supplier.evidence.read)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Evidence metadata (never bytes or keys).", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Evidence" } } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/evidence/initiate-upload": {
+      "parameters": [ { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "initiateEvidenceUpload",
+        "summary": "Initiate a presigned direct-to-storage upload (requires supplier.evidence.upload)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/InitiateUploadRequest" } } } },
+        "responses": {
+          "201": { "description": "Upload ticket with a short-lived presigned PUT.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EvidenceUploadTicket" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/evidence/{evidenceId}/finalize": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "evidenceId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+      ],
+      "post": {
+        "tags": ["supplier"],
+        "operationId": "finalizeEvidenceUpload",
+        "summary": "Finalize an upload: verify presence, size, sha256 and magic bytes (idempotent; requires supplier.evidence.upload)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FinalizeUploadRequest" } } } },
+        "responses": {
+          "200": { "description": "Finalized.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Evidence" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/evidence/{evidenceId}": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "evidenceId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+      ],
+      "delete": {
+        "tags": ["supplier"],
+        "operationId": "deleteEvidence",
+        "summary": "Delete unreferenced, unretained evidence (requires supplier.evidence.delete)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "204": { "description": "Deleted." },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/evidence/{evidenceId}/download": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "evidenceId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+      ],
+      "get": {
+        "tags": ["supplier"],
+        "operationId": "downloadEvidence",
+        "summary": "Backend-streamed evidence download (org supplier.evidence.read for own org, or platform supplier.review.read; fail-closed to downloadable states)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "The evidence bytes.", "content": { "application/octet-stream": { "schema": { "type": "string", "format": "binary" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/suppliers/{supplierId}/verification": {
+      "parameters": [ { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "get": {
+        "tags": ["verification"],
+        "operationId": "getVerificationStatus",
+        "summary": "Get scope-based verification status (requires supplier.verification.read)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Verification status with per-scope results.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/VerificationStatus" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/platform/review/suppliers": {
+      "get": {
+        "tags": ["platform"],
+        "operationId": "listReviewQueue",
+        "summary": "Cursor page of the reviewer queue (requires supplier.review.read)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "cursor", "in": "query", "required": false, "schema": { "type": "string" }, "description": "Opaque cursor from the previous page's nextCursor." },
+          { "name": "size", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 50 } }
+        ],
+        "responses": {
+          "200": { "description": "A page of the queue.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReviewQueuePage" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/platform/review/suppliers/{applicationId}": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "get": {
+        "tags": ["platform"],
+        "operationId": "getReviewDetail",
+        "summary": "Reviewer detail: lifecycle, profile, evidence, change requests (requires supplier.review.read)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "The review detail.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReviewDetail" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/platform/review/suppliers/{applicationId}/claim": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["platform"],
+        "operationId": "claimReview",
+        "summary": "Claim a submitted application for review (requires supplier.review.claim)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Claimed.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReviewDetail" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/platform/review/suppliers/{applicationId}/request-changes": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["platform"],
+        "operationId": "requestSupplierChanges",
+        "summary": "Request changes with a reason (requires supplier.review.request_changes)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RequestChangesRequest" } } } },
+        "responses": {
+          "200": { "description": "Changes requested.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReviewDetail" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/platform/review/suppliers/{applicationId}/approve": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["platform"],
+        "operationId": "approveSupplierApplication",
+        "summary": "Approve the application, activating the supplier (requires supplier.review.approve)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Approved; supplier ACTIVE.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReviewDetail" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/platform/review/suppliers/{applicationId}/reject": {
+      "parameters": [ { "name": "applicationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["platform"],
+        "operationId": "rejectSupplierApplication",
+        "summary": "Reject the application (requires supplier.review.reject)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReasonRequest" } } } },
+        "responses": {
+          "200": { "description": "Rejected.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReviewDetail" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/platform/suppliers/{supplierId}/suspend": {
+      "parameters": [ { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } } ],
+      "post": {
+        "tags": ["platform"],
+        "operationId": "suspendSupplier",
+        "summary": "Suspend an operational supplier (requires supplier.suspend)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReasonRequest" } } } },
+        "responses": {
+          "204": { "description": "Suspended." },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/platform/suppliers/{supplierId}/verification/scopes/{scopeCode}/grant": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "scopeCode", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "post": {
+        "tags": ["platform"],
+        "operationId": "grantVerificationScope",
+        "summary": "Grant a verification scope with evidence linkage (requires supplier.verification.grant)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GrantScopeRequest" } } } },
+        "responses": {
+          "200": { "description": "Granted.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/VerificationStatus" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/platform/suppliers/{supplierId}/verification/scopes/{scopeCode}/suspend": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "scopeCode", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "post": {
+        "tags": ["platform"],
+        "operationId": "suspendVerificationScope",
+        "summary": "Suspend a granted verification scope (requires supplier.verification.suspend)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReasonRequest" } } } },
+        "responses": {
+          "200": { "description": "Suspended.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/VerificationStatus" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/platform/suppliers/{supplierId}/verification/scopes/{scopeCode}/revoke": {
+      "parameters": [
+        { "name": "supplierId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+        { "name": "scopeCode", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "post": {
+        "tags": ["platform"],
+        "operationId": "revokeVerificationScope",
+        "summary": "Revoke a verification scope (requires supplier.verification.revoke)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReasonRequest" } } } },
+        "responses": {
+          "200": { "description": "Revoked.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/VerificationStatus" } } } },
+          "401": { "$ref": "#/components/responses/AuthenticationFailed" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/auth/register": {
       "post": {
         "tags": ["auth"],
@@ -366,6 +876,399 @@
       "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
     },
     "schemas": {
+      "LocaleInfo": {
+        "type": "object",
+        "required": ["code", "dir"],
+        "properties": {
+          "code": { "type": "string", "description": "BCP 47 code" },
+          "dir": { "type": "string", "enum": ["ltr", "rtl"] },
+          "fallback": { "type": "string", "nullable": true, "description": "Deterministic fallback (en for all but en)" }
+        }
+      },
+      "SupplierApplicationStatus": {
+        "type": "string",
+        "enum": ["DRAFT", "SUBMITTED", "UNDER_REVIEW", "CHANGES_REQUESTED", "RESUBMITTED", "APPROVED", "REJECTED", "WITHDRAWN"],
+        "description": "Clients must tolerate unknown future values."
+      },
+      "OperationalStatus": {
+        "type": "string",
+        "enum": ["PENDING", "ACTIVE", "SUSPENDED", "DEACTIVATED"]
+      },
+      "ClaimStatus": {
+        "type": "string",
+        "enum": ["CLAIMED", "EVIDENCE_SUBMITTED", "VERIFIED", "REJECTED"]
+      },
+      "TranslationStatus": {
+        "type": "string",
+        "enum": ["MISSING", "DRAFT", "MACHINE_TRANSLATED", "HUMAN_REVIEWED", "APPROVED", "REJECTED"]
+      },
+      "TranslationSource": {
+        "type": "string",
+        "enum": ["HUMAN", "MACHINE", "IMPORT"]
+      },
+      "ScanStatus": {
+        "type": "string",
+        "enum": ["PENDING_SCAN", "SCANNING", "CLEAN", "REJECTED", "QUARANTINED"],
+        "description": "Phase 7 never marks evidence CLEAN (deferred scanner)."
+      },
+      "EvidenceUploadState": {
+        "type": "string",
+        "enum": ["INITIATED", "FINALIZED"]
+      },
+      "EvidenceReviewStatus": {
+        "type": "string",
+        "enum": ["UNREVIEWED", "ACCEPTED", "REJECTED"]
+      },
+      "RetentionStatus": {
+        "type": "string",
+        "enum": ["NONE", "RETAINED"]
+      },
+      "VerificationScopeStatus": {
+        "type": "string",
+        "enum": ["NOT_REQUESTED", "PENDING", "UNDER_REVIEW", "VERIFIED", "REJECTED", "CHANGES_REQUESTED", "EXPIRED", "SUSPENDED", "REVOKED"],
+        "description": "Scope-based; there is no verified boolean anywhere."
+      },
+      "AddressPrivacy": {
+        "type": "string",
+        "enum": ["PUBLIC_CITY", "PRIVATE"]
+      },
+      "FacilityOwnership": {
+        "type": "string",
+        "enum": ["OWNED", "LEASED", "PARTNER"]
+      },
+      "SupplierCapability": {
+        "type": "string",
+        "enum": ["supplier.create", "supplier.read", "supplier.update", "supplier.submit", "supplier.withdraw", "supplier.evidence.read", "supplier.evidence.upload", "supplier.evidence.delete", "supplier.verification.read"],
+        "description": "Org-scoped supplier capabilities; clients must tolerate unknown future values."
+      },
+      "CreateSupplierApplicationRequest": {
+        "type": "object",
+        "required": ["organizationId", "originalLocale", "legalName"],
+        "properties": {
+          "organizationId": { "type": "string", "format": "uuid" },
+          "originalLocale": { "type": "string", "description": "BCP 47 code of the authoring language" },
+          "legalName": { "type": "string", "maxLength": 300, "description": "Class E — never machine-translated" }
+        }
+      },
+      "SupplierApplication": {
+        "type": "object",
+        "required": ["applicationId", "supplierId", "organizationId", "originalLocale", "status", "operationalStatus", "createdAt", "version", "callerCapabilities"],
+        "properties": {
+          "applicationId": { "type": "string", "format": "uuid" },
+          "supplierId": { "type": "string", "format": "uuid" },
+          "organizationId": { "type": "string", "format": "uuid" },
+          "originalLocale": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/SupplierApplicationStatus" },
+          "operationalStatus": { "$ref": "#/components/schemas/OperationalStatus" },
+          "submittedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "decidedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "version": { "type": "integer", "description": "Optimistic-locking version for draft updates" },
+          "callerCapabilities": { "type": "array", "items": { "$ref": "#/components/schemas/SupplierCapability" } }
+        }
+      },
+      "UpdateSupplierDraftRequest": {
+        "type": "object",
+        "required": ["version"],
+        "properties": {
+          "legalName": { "type": "string", "maxLength": 300 },
+          "registeredLegalNameTranslated": { "type": "string", "maxLength": 300 },
+          "tradingName": { "type": "string", "maxLength": 300 },
+          "registrationNumber": { "type": "string", "maxLength": 120 },
+          "countryOfRegistration": { "type": "string", "minLength": 2, "maxLength": 2 },
+          "registrationAuthority": { "type": "string", "maxLength": 300 },
+          "registrationDate": { "type": "string", "format": "date" },
+          "companyTypeCode": { "type": "string" },
+          "yearEstablished": { "type": "integer" },
+          "employeeRange": { "type": "string" },
+          "website": { "type": "string" },
+          "businessEmail": { "type": "string" },
+          "businessPhone": { "type": "string" },
+          "types": { "type": "array", "items": { "type": "string" }, "description": "Supplier type codes (replace-all)" },
+          "capabilities": { "type": "array", "items": { "type": "string" }, "description": "Declared capability codes (replace-all)" },
+          "version": { "type": "integer", "description": "Optimistic-locking version; mismatch → 409" }
+        }
+      },
+      "RespondChangeRequestRequest": {
+        "type": "object",
+        "required": ["response"],
+        "properties": {
+          "response": { "type": "string", "maxLength": 4000 },
+          "responseLocale": { "type": "string" }
+        }
+      },
+      "ReviewRequest": {
+        "type": "object",
+        "required": ["id", "applicationId", "requestedItem", "reason", "status", "requestedAt"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "applicationId": { "type": "string", "format": "uuid" },
+          "requestedItem": { "type": "string" },
+          "reason": { "type": "string" },
+          "status": { "type": "string", "enum": ["OPEN", "RESPONDED", "RESOLVED"] },
+          "supplierResponse": { "type": "string", "nullable": true },
+          "responseLocale": { "type": "string", "nullable": true },
+          "requestedAt": { "type": "string", "format": "date-time" },
+          "resolvedAt": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "CapabilityDeclaration": {
+        "type": "object",
+        "required": ["capabilityCode", "claimStatus"],
+        "properties": {
+          "capabilityCode": { "type": "string" },
+          "claimStatus": { "$ref": "#/components/schemas/ClaimStatus" }
+        }
+      },
+      "ProfileTranslation": {
+        "type": "object",
+        "required": ["locale", "original", "translationStatus", "translationSource", "sourceLocale", "sourceVersion", "stale"],
+        "properties": {
+          "locale": { "type": "string" },
+          "original": { "type": "boolean", "description": "The authoritative original-language row" },
+          "translationStatus": { "$ref": "#/components/schemas/TranslationStatus" },
+          "translationSource": { "$ref": "#/components/schemas/TranslationSource" },
+          "sourceLocale": { "type": "string" },
+          "sourceVersion": { "type": "integer" },
+          "stale": { "type": "boolean", "description": "Source content advanced past this translation" },
+          "tradingName": { "type": "string", "nullable": true },
+          "companyDescription": { "type": "string", "nullable": true },
+          "productionCapabilityDescription": { "type": "string", "nullable": true },
+          "oemDescription": { "type": "string", "nullable": true },
+          "odmDescription": { "type": "string", "nullable": true },
+          "privateLabelDescription": { "type": "string", "nullable": true },
+          "qualityControlDescription": { "type": "string", "nullable": true },
+          "exportMarketDescription": { "type": "string", "nullable": true }
+        }
+      },
+      "FacilityTranslation": {
+        "type": "object",
+        "required": ["locale", "original", "translationStatus", "sourceVersion", "stale"],
+        "properties": {
+          "locale": { "type": "string" },
+          "original": { "type": "boolean" },
+          "translationStatus": { "$ref": "#/components/schemas/TranslationStatus" },
+          "sourceVersion": { "type": "integer" },
+          "stale": { "type": "boolean" },
+          "name": { "type": "string", "nullable": true },
+          "description": { "type": "string", "nullable": true }
+        }
+      },
+      "Facility": {
+        "type": "object",
+        "required": ["id", "facilityTypeCode", "country", "addressPrivacy", "ownership", "isPublic", "sourceVersion", "translations"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "facilityTypeCode": { "type": "string" },
+          "country": { "type": "string" },
+          "region": { "type": "string", "nullable": true },
+          "city": { "type": "string", "nullable": true },
+          "addressPrivacy": { "$ref": "#/components/schemas/AddressPrivacy" },
+          "ownership": { "$ref": "#/components/schemas/FacilityOwnership" },
+          "isPublic": { "type": "boolean" },
+          "sourceVersion": { "type": "integer" },
+          "translations": { "type": "array", "items": { "$ref": "#/components/schemas/FacilityTranslation" } }
+        }
+      },
+      "SupplierProfile": {
+        "type": "object",
+        "required": ["supplierId", "originalLocale", "legalName", "sourceVersion", "types", "capabilities", "facilities", "translations"],
+        "properties": {
+          "supplierId": { "type": "string", "format": "uuid" },
+          "originalLocale": { "type": "string" },
+          "legalName": { "type": "string" },
+          "registeredLegalNameTranslated": { "type": "string", "nullable": true },
+          "tradingName": { "type": "string", "nullable": true },
+          "registrationNumber": { "type": "string", "nullable": true },
+          "countryOfRegistration": { "type": "string", "nullable": true },
+          "registrationAuthority": { "type": "string", "nullable": true },
+          "registrationDate": { "type": "string", "format": "date", "nullable": true },
+          "companyTypeCode": { "type": "string", "nullable": true },
+          "yearEstablished": { "type": "integer", "nullable": true },
+          "employeeRange": { "type": "string", "nullable": true },
+          "website": { "type": "string", "nullable": true },
+          "businessEmail": { "type": "string", "nullable": true },
+          "businessPhone": { "type": "string", "nullable": true },
+          "sourceVersion": { "type": "integer" },
+          "types": { "type": "array", "items": { "type": "string" } },
+          "capabilities": { "type": "array", "items": { "$ref": "#/components/schemas/CapabilityDeclaration" } },
+          "facilities": { "type": "array", "items": { "$ref": "#/components/schemas/Facility" } },
+          "translations": { "type": "array", "items": { "$ref": "#/components/schemas/ProfileTranslation" } }
+        }
+      },
+      "UpsertTranslationRequest": {
+        "type": "object",
+        "properties": {
+          "source": { "$ref": "#/components/schemas/TranslationSource" },
+          "tradingName": { "type": "string", "maxLength": 300 },
+          "companyDescription": { "type": "string", "maxLength": 4000 },
+          "productionCapabilityDescription": { "type": "string", "maxLength": 4000 },
+          "oemDescription": { "type": "string", "maxLength": 4000 },
+          "odmDescription": { "type": "string", "maxLength": 4000 },
+          "privateLabelDescription": { "type": "string", "maxLength": 4000 },
+          "qualityControlDescription": { "type": "string", "maxLength": 4000 },
+          "exportMarketDescription": { "type": "string", "maxLength": 4000 }
+        }
+      },
+      "AddFacilityRequest": {
+        "type": "object",
+        "required": ["facilityTypeCode", "country", "addressPrivacy", "ownership"],
+        "properties": {
+          "facilityTypeCode": { "type": "string", "maxLength": 64 },
+          "country": { "type": "string", "minLength": 2, "maxLength": 2 },
+          "region": { "type": "string", "maxLength": 200 },
+          "city": { "type": "string", "maxLength": 200 },
+          "addressPrivacy": { "$ref": "#/components/schemas/AddressPrivacy" },
+          "ownership": { "$ref": "#/components/schemas/FacilityOwnership" },
+          "isPublic": { "type": "boolean" },
+          "name": { "type": "string", "maxLength": 300 },
+          "description": { "type": "string", "maxLength": 4000 }
+        }
+      },
+      "InitiateUploadRequest": {
+        "type": "object",
+        "required": ["evidenceTypeCode", "filename", "mediaType"],
+        "properties": {
+          "evidenceTypeCode": { "type": "string", "maxLength": 64 },
+          "filename": { "type": "string", "maxLength": 300, "description": "Stored as metadata only; the storage key is server-generated" },
+          "mediaType": { "type": "string", "description": "Must be one of application/pdf, image/jpeg, image/png, image/webp" },
+          "documentLocale": { "type": "string" }
+        }
+      },
+      "EvidenceUploadTicket": {
+        "type": "object",
+        "required": ["evidenceId", "method", "url", "expiresAt", "requiredHeaders", "maxBytes"],
+        "properties": {
+          "evidenceId": { "type": "string", "format": "uuid" },
+          "method": { "type": "string", "description": "Always PUT" },
+          "url": { "type": "string", "format": "uri", "description": "Short-lived presigned URL — a single-use secret" },
+          "expiresAt": { "type": "string", "format": "date-time" },
+          "requiredHeaders": { "type": "object", "additionalProperties": { "type": "string" } },
+          "maxBytes": { "type": "integer", "format": "int64" }
+        }
+      },
+      "FinalizeUploadRequest": {
+        "type": "object",
+        "properties": {
+          "expectedSha256": { "type": "string", "minLength": 64, "maxLength": 64, "description": "Optional; cross-checked against the server digest" }
+        }
+      },
+      "Evidence": {
+        "type": "object",
+        "required": ["id", "supplierId", "evidenceTypeCode", "originalFilename", "uploadState", "scanStatus", "reviewStatus", "retentionStatus", "downloadable"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "supplierId": { "type": "string", "format": "uuid" },
+          "evidenceTypeCode": { "type": "string" },
+          "originalFilename": { "type": "string" },
+          "mediaType": { "type": "string", "nullable": true },
+          "byteSize": { "type": "integer", "format": "int64", "nullable": true },
+          "sha256": { "type": "string", "nullable": true },
+          "documentLocale": { "type": "string", "nullable": true },
+          "uploadState": { "$ref": "#/components/schemas/EvidenceUploadState" },
+          "scanStatus": { "$ref": "#/components/schemas/ScanStatus" },
+          "reviewStatus": { "$ref": "#/components/schemas/EvidenceReviewStatus" },
+          "retentionStatus": { "$ref": "#/components/schemas/RetentionStatus" },
+          "downloadable": { "type": "boolean", "description": "Fail-closed derived flag" },
+          "uploadedAt": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "VerificationScopeResult": {
+        "type": "object",
+        "required": ["scopeCode", "status", "evidenceIds"],
+        "properties": {
+          "scopeCode": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/VerificationScopeStatus" },
+          "decidedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "validFrom": { "type": "string", "format": "date-time", "nullable": true },
+          "validUntil": { "type": "string", "format": "date-time", "nullable": true },
+          "reason": { "type": "string", "nullable": true },
+          "evidenceIds": { "type": "array", "items": { "type": "string", "format": "uuid" } }
+        }
+      },
+      "VerificationStatus": {
+        "type": "object",
+        "required": ["supplierId", "caseStatus", "scopes"],
+        "properties": {
+          "supplierId": { "type": "string", "format": "uuid" },
+          "caseStatus": { "$ref": "#/components/schemas/VerificationScopeStatus" },
+          "openedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "scopes": { "type": "array", "items": { "$ref": "#/components/schemas/VerificationScopeResult" } }
+        }
+      },
+      "GrantScopeRequest": {
+        "type": "object",
+        "required": ["evidenceIds"],
+        "properties": {
+          "evidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "format": "uuid" }, "description": "Evidence linkage is required for a grant" },
+          "validUntil": { "type": "string", "format": "date-time" },
+          "reason": { "type": "string", "maxLength": 4000 }
+        }
+      },
+      "ReasonRequest": {
+        "type": "object",
+        "properties": { "reason": { "type": "string", "maxLength": 4000 } }
+      },
+      "RequestChangesRequest": {
+        "type": "object",
+        "required": ["requestedItem", "reason"],
+        "properties": {
+          "requestedItem": { "type": "string", "maxLength": 200 },
+          "reason": { "type": "string", "maxLength": 4000 }
+        }
+      },
+      "ReviewQueueItem": {
+        "type": "object",
+        "required": ["applicationId", "supplierId", "organizationId", "status", "originalLocale"],
+        "properties": {
+          "applicationId": { "type": "string", "format": "uuid" },
+          "supplierId": { "type": "string", "format": "uuid" },
+          "organizationId": { "type": "string", "format": "uuid" },
+          "status": { "$ref": "#/components/schemas/SupplierApplicationStatus" },
+          "legalName": { "type": "string", "nullable": true },
+          "originalLocale": { "type": "string" },
+          "submittedAt": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "ReviewQueuePage": {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/ReviewQueueItem" } },
+          "nextCursor": { "type": "string", "nullable": true, "description": "Opaque; null when exhausted" }
+        }
+      },
+      "ReviewDetail": {
+        "type": "object",
+        "required": ["applicationId", "supplierId", "organizationId", "status", "operationalStatus", "version", "profile", "evidence", "changeRequests"],
+        "properties": {
+          "applicationId": { "type": "string", "format": "uuid" },
+          "supplierId": { "type": "string", "format": "uuid" },
+          "organizationId": { "type": "string", "format": "uuid" },
+          "status": { "$ref": "#/components/schemas/SupplierApplicationStatus" },
+          "operationalStatus": { "$ref": "#/components/schemas/OperationalStatus" },
+          "submittedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "version": { "type": "integer" },
+          "profile": { "$ref": "#/components/schemas/SupplierProfile" },
+          "evidence": { "type": "array", "items": { "$ref": "#/components/schemas/Evidence" } },
+          "changeRequests": { "type": "array", "items": { "$ref": "#/components/schemas/ReviewRequest" } }
+        }
+      },
+      "PublicSupplierProfile": {
+        "type": "object",
+        "required": ["supplierId", "requestedLocale", "displayLocale", "fallbackApplied", "stale", "legalName"],
+        "properties": {
+          "supplierId": { "type": "string", "format": "uuid" },
+          "requestedLocale": { "type": "string" },
+          "displayLocale": { "type": "string" },
+          "fallbackApplied": { "type": "boolean" },
+          "stale": { "type": "boolean" },
+          "legalName": { "type": "string", "description": "Class E — rendered as-is" },
+          "tradingName": { "type": "string", "nullable": true },
+          "companyDescription": { "type": "string", "nullable": true },
+          "countryOfRegistration": { "type": "string", "nullable": true }
+        }
+      },
       "RegisterRequest": {
         "type": "object",
         "required": ["email", "password", "displayName"],

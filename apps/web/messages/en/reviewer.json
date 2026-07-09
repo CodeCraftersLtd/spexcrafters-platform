@@ -1,0 +1,104 @@
+{
+  "nav": {
+    "label": "Reviewer navigation",
+    "queue": "Review queue"
+  },
+  "forbidden": {
+    "title": "Reviewer access only",
+    "body": "This area is for platform reviewers. Your account does not have reviewer access."
+  },
+  "unauthenticated": {
+    "title": "Sign in required",
+    "body": "Sign in with a reviewer account to continue."
+  },
+  "loadError": "We could not load the reviewer workspace. Please try again.",
+  "queue": {
+    "metaTitle": "Review queue",
+    "title": "Review queue",
+    "intro": "Supplier applications awaiting review, oldest first.",
+    "empty": "Nothing to review right now.",
+    "count": "{count, plural, =0 {Nothing to review} one {# item to review} other {# items to review}}",
+    "legalNameLabel": "Legal name",
+    "statusLabel": "Status",
+    "submittedLabel": "Submitted {date}",
+    "originalLocaleLabel": "Original language",
+    "open": "Open review for {name}",
+    "next": "Next page",
+    "previous": "Back"
+  },
+  "detail": {
+    "metaTitle": "Application review",
+    "title": "Application review",
+    "notFound": {
+      "title": "Application not found",
+      "body": "This application does not exist or is not available for review."
+    },
+    "companyInfo": "Company information",
+    "opticalProfile": "Optical profile",
+    "content": "Company content",
+    "originalContent": "Original language",
+    "translations": "Translations",
+    "evidence": "Evidence",
+    "verification": "Verification",
+    "changeRequests": "Change requests",
+    "noEvidence": "No evidence submitted.",
+    "originalLocaleLabel": "Original language",
+    "backToQueue": "Back to queue"
+  },
+  "actions": {
+    "claim": "Claim for review",
+    "claimed": "You claimed this application.",
+    "requestChanges": "Request changes",
+    "requestedChanges": "Changes requested.",
+    "approve": "Approve",
+    "approved": "Application approved.",
+    "reject": "Reject",
+    "rejected": "Application rejected.",
+    "suspendSupplier": "Suspend supplier",
+    "suspendedSupplier": "Supplier suspended.",
+    "grantScope": "Grant scope",
+    "grantedScope": "Scope granted.",
+    "suspendScope": "Suspend scope",
+    "suspendedScope": "Scope suspended.",
+    "revokeScope": "Revoke scope",
+    "revokedScope": "Scope revoked."
+  },
+  "requestChanges": {
+    "title": "Request changes",
+    "requestedItemLabel": "What needs changing",
+    "reasonLabel": "Reason",
+    "submit": "Send request"
+  },
+  "reject": {
+    "title": "Reject application",
+    "reasonLabel": "Reason (optional)",
+    "submit": "Reject"
+  },
+  "suspend": {
+    "title": "Suspend supplier",
+    "reasonLabel": "Reason (optional)",
+    "submit": "Suspend"
+  },
+  "grant": {
+    "title": "Grant verification scope",
+    "scopeLabel": "Scope",
+    "scopePlaceholder": "Select a scope",
+    "evidenceLabel": "Supporting evidence",
+    "evidenceHint": "Select at least one evidence file that supports this scope.",
+    "reasonLabel": "Note (optional)",
+    "submit": "Grant scope",
+    "noEvidence": "Add and finalize evidence before granting a scope."
+  },
+  "scope": {
+    "reasonLabel": "Reason (optional)",
+    "suspendSubmit": "Suspend scope",
+    "revokeSubmit": "Revoke scope"
+  },
+  "fallbackNotice": "Some content shown here is machine-translated. Review it against the original language before deciding.",
+  "validation": {
+    "requestedItemRequired": "Describe what needs changing.",
+    "reasonRequired": "Enter a reason.",
+    "evidenceRequired": "Select at least one evidence file.",
+    "tooLong": "This value is too long."
+  }
+}

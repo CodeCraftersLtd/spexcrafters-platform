@@ -43,6 +43,9 @@ jobs:
       - name: Unit tests
         run: pnpm -r test
 
+      - name: Validate locale message resources (Tier-3, all 20 locales)
+        run: node apps/web/scripts/validate-locales.mjs
+
       - name: Build web
         run: pnpm --filter @spexcrafters/web build
         env:

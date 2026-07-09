@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import en from '../../../messages/en.json';
+import auth from '../../../messages/en/auth.json';
 
 import {
   createLoginSchema,
@@ -8,10 +8,12 @@ import {
   createResendVerificationSchema,
 } from './schemas';
 
-const v = en.auth.validation;
+const v = auth.validation as Record<string, string>;
+/** Minimal `auth.validation` translator (next-intl `t` shape) for the schemas. */
+const t = (key: string) => v[key] ?? key;
 
 describe('createRegisterSchema', () => {
-  const schema = createRegisterSchema(v);
+  const schema = createRegisterSchema(t);
 
   it('accepts a valid registration', () => {
     const result = schema.safeParse({
@@ -104,7 +106,7 @@ describe('createRegisterSchema', () => {
 });
 
 describe('createLoginSchema', () => {
-  const schema = createLoginSchema(v);
+  const schema = createLoginSchema(t);
 
   it('accepts valid credentials', () => {
     expect(
@@ -128,7 +130,7 @@ describe('createLoginSchema', () => {
 });
 
 describe('createResendVerificationSchema', () => {
-  const schema = createResendVerificationSchema(v);
+  const schema = createResendVerificationSchema(t);
 
   it('accepts a valid email and rejects an empty one', () => {
     expect(schema.safeParse({ email: 'ada@example.com' }).success).toBe(true);

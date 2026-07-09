@@ -1,0 +1,23 @@
+{
+  "buyer": {
+    "dashboard": "Dashboard",
+    "label": "Buyer navigation",
+    "organizations": "Organizations"
+  },
+  "footer": {
+    "accessibility": "Accessibility",
+    "cookies": "Cookie Policy",
+    "imprint": "Imprint",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "language": "Language",
+  "legal": "Legal",
+  "logout": "Sign out",
+  "main": "Main navigation",
+  "organizations": {
+    "dashboard": "Dashboard",
+    "label": "Organization navigation",
+    "organizations": "Organizations"
+  }
+}

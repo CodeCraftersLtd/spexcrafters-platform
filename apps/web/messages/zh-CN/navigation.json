@@ -1,0 +1,23 @@
+{
+  "buyer": {
+    "dashboard": "工作台",
+    "label": "买家导航",
+    "organizations": "组织"
+  },
+  "footer": {
+    "accessibility": "无障碍",
+    "cookies": "Cookie 政策",
+    "imprint": "公司信息",
+    "privacy": "隐私政策",
+    "terms": "服务条款"
+  },
+  "language": "语言",
+  "legal": "法律",
+  "logout": "退出登录",
+  "main": "主导航",
+  "organizations": {
+    "dashboard": "工作台",
+    "label": "组织导航",
+    "organizations": "组织"
+  }
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import type {
@@ -10,9 +11,9 @@ import type {
 } from '@spexcrafters/api-client';
 import { Alert, Button } from '@spexcrafters/ui';
 
-import type { Dictionary, Locale } from '@/lib/i18n';
+import type { SupportedLocale } from '@/i18n/locales';
+import type { Translator } from '@/i18n/translator';
 import { sendJson } from '@/lib/csrf-client';
-import { interpolate } from '@/lib/interpolate';
 import { readBffError } from '@/features/auth/client-errors';
 import {
   canChangeRole,
@@ -23,15 +24,12 @@ import { translateOrgError } from '@/features/organizations/org-errors';
 import styles from './org-components.module.css';
 
 interface MembersSectionProps {
-  locale: Locale;
+  locale: SupportedLocale;
   organizationId: string;
   members: MemberResponse[];
   callerRole: OrganizationRole;
   callerCapabilities: Capability[];
   currentUserId: string;
-  copy: Dictionary['organizations']['workspace']['members'];
-  roles: Dictionary['organizations']['roles'];
-  serverErrors: Dictionary['organizations']['serverErrors'];
 }
 
 const ALL_ROLES: OrganizationRole[] = ['OWNER', 'ADMIN', 'MEMBER'];
@@ -48,10 +46,13 @@ export function MembersSection({
   callerRole,
   callerCapabilities,
   currentUserId,
-  copy,
-  roles,
-  serverErrors,
 }: MembersSectionProps) {
+  const t = useTranslations('organizations.workspace.members');
+  const roles = useTranslations('organizations.roles');
+  const serverErrors = useTranslations(
+    'organizations.serverErrors',
+  ) as unknown as Translator;
+
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [busyMembershipId, setBusyMembershipId] = useState<string | null>(null);
@@ -67,7 +68,7 @@ export function MembersSection({
           'DELETE',
         );
       } catch {
-        setError(serverErrors.unexpected);
+        setError(serverErrors('unexpected'));
         return;
       }
       if (response.ok) {
@@ -97,7 +98,7 @@ export function MembersSection({
           { role },
         );
       } catch {
-        setError(serverErrors.unexpected);
+        setError(serverErrors('unexpected'));
         return;
       }
       if (response.ok) {
@@ -111,13 +112,13 @@ export function MembersSection({
   }
 
   return (
-    <section className={styles.stack} aria-label={copy.title}>
-      <h2 className={styles.subheading}>{copy.title}</h2>
+    <section className={styles.stack} aria-label={t('title')}>
+      <h2 className={styles.subheading}>{t('title')}</h2>
       {error ? <Alert tone="danger">{error}</Alert> : null}
       {members.length === 0 ? (
-        <p className={styles.empty}>{copy.empty}</p>
+        <p className={styles.empty}>{t('empty')}</p>
       ) : (
-        <ul className={styles.list} aria-label={copy.listLabel}>
+        <ul className={styles.list} aria-label={t('listLabel')}>
           {members.map((member) => {
             const isSelf = member.userId === currentUserId;
             const busy = busyMembershipId === member.membershipId;
@@ -133,7 +134,7 @@ export function MembersSection({
                 <div className={styles.rowMain}>
                   <span className={styles.rowName}>
                     {member.displayName}
-                    {isSelf ? ` (${copy.youLabel})` : ''}
+                    {isSelf ? ` (${t('youLabel')})` : ''}
                   </span>
                   <span className={styles.rowMeta}>{member.email}</span>
                 </div>
@@ -144,9 +145,7 @@ export function MembersSection({
                         className="sc-visually-hidden"
                         htmlFor={`member-role-${member.membershipId}`}
                       >
-                        {interpolate(copy.roleSelectLabel, {
-                          name: member.displayName,
-                        })}
+                        {t('roleSelectLabel', { name: member.displayName })}
                       </label>
                       <select
                         id={`member-role-${member.membershipId}`}
@@ -162,7 +161,7 @@ export function MembersSection({
                       >
                         {ALL_ROLES.map((role) => (
                           <option key={role} value={role}>
-                            {roles[role]}
+                            {roles(role)}
                           </option>
                         ))}
                       </select>
@@ -171,7 +170,7 @@ export function MembersSection({
                     <span
                       className={`${styles.badge} ${member.role === 'OWNER' ? styles.badgeOwner : ''}`}
                     >
-                      {roles[member.role]}
+                      {roles(member.role)}
                     </span>
                   )}
                   {showRemove ? (
@@ -182,14 +181,12 @@ export function MembersSection({
                       loading={busy}
                       aria-label={
                         isSelf
-                          ? copy.leave
-                          : interpolate(copy.removeMemberLabel, {
-                              name: member.displayName,
-                            })
+                          ? t('leave')
+                          : t('removeMemberLabel', { name: member.displayName })
                       }
                       onClick={() => void removeMember(member, isSelf)}
                     >
-                      {isSelf ? copy.leave : copy.remove}
+                      {isSelf ? t('leave') : t('remove')}
                     </Button>
                   ) : null}
                 </div>

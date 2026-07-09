@@ -4,11 +4,11 @@ import { useState } from 'react';
 
 import { Button } from '@spexcrafters/ui';
 
-import type { Locale } from '@/lib/i18n';
+import type { SupportedLocale } from '@/i18n/locales';
 import { sendJson } from '@/lib/csrf-client';
 
 interface LogoutButtonProps {
-  locale: Locale;
+  locale: SupportedLocale;
   label: string;
 }
 

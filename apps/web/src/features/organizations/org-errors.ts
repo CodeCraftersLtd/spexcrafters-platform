@@ -1,27 +1,25 @@
-import type { Dictionary } from '@/lib/i18n';
+import type { Translator } from '@/i18n/translator';
 
 import type { BffError } from '@/features/auth/client-errors';
 
-export type OrgServerErrors = Dictionary['organizations']['serverErrors'];
-export type AcceptInvitationCopy = Dictionary['invitations']['accept'];
-
 /**
- * Resolve an org BFF error code to localized copy: known codes come from the
- * dictionary, unknown codes fall back to the server-provided (already
- * locale-resolved) message, then to the generic error.
+ * Resolve an org BFF error code to localized copy from the
+ * `organizations.serverErrors` namespace: known codes come from messages,
+ * unknown codes fall back to the server-provided (already locale-resolved)
+ * message, then to the generic error. `t` is scoped to
+ * `organizations.serverErrors`.
  */
 export function translateOrgError(
   error: Pick<BffError, 'code' | 'message'>,
-  serverErrors: OrgServerErrors,
+  t: Translator,
 ): string {
-  const known = (serverErrors as Record<string, string>)[error.code];
-  if (known) {
-    return known;
+  if (t.has(error.code)) {
+    return t(error.code);
   }
   if (error.message) {
     return error.message;
   }
-  return serverErrors.unexpected;
+  return t('unexpected');
 }
 
 export interface AcceptInvitationErrorState {
@@ -34,20 +32,21 @@ export interface AcceptInvitationErrorState {
  * Map an /api/invitations/accept failure to its designed error state:
  * 410 (expired/consumed/revoked token), 403 identity mismatch (sign in with
  * the invited email), 409 already-member (link to the organization list).
+ * `t` is a next-intl translator scoped to `organizations.acceptInvitation`.
  */
 export function mapAcceptInvitationError(
   status: number,
   error: Pick<BffError, 'code' | 'message'>,
-  copy: AcceptInvitationCopy,
+  t: Translator,
 ): AcceptInvitationErrorState {
   if (error.code === 'duplicate-membership' || status === 409) {
-    return { message: copy.alreadyMember, showOrganizationsLink: true };
+    return { message: t('alreadyMember'), showOrganizationsLink: true };
   }
   if (error.code === 'invitation-identity-mismatch' || status === 403) {
-    return { message: copy.identityMismatch, showOrganizationsLink: false };
+    return { message: t('identityMismatch'), showOrganizationsLink: false };
   }
   if (error.code === 'token-gone' || status === 410 || status === 404) {
-    return { message: copy.expired, showOrganizationsLink: false };
+    return { message: t('expired'), showOrganizationsLink: false };
   }
-  return { message: copy.genericError, showOrganizationsLink: false };
+  return { message: t('genericError'), showOrganizationsLink: false };
 }

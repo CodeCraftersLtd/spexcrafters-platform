@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { LoginForm } from '@/features/auth/LoginForm';
-import { defaultLocale, getDictionary, isLocale, type Locale } from '@/lib/i18n';
+import { DEFAULT_LOCALE, isSupportedLocale, type SupportedLocale } from '@/i18n/locales';
+import { pickMessages } from '@/i18n/pick';
 
 import styles from '../auth-page.module.css';
 
@@ -12,7 +15,8 @@ interface LoginPageProps {
 
 export async function generateMetadata({ params }: LoginPageProps): Promise<Metadata> {
   const { locale } = await params;
-  return { title: getDictionary(locale).auth.login.metaTitle };
+  const t = await getTranslations({ locale, namespace: 'auth' });
+  return { title: t('login.metaTitle') };
 }
 
 /** Only same-origin absolute paths are honored (prevents open redirects). */
@@ -26,21 +30,19 @@ function sanitizeReturnTo(value: string | string[] | undefined): string | undefi
 
 export default async function LoginPage({ params, searchParams }: LoginPageProps) {
   const [{ locale: raw }, { returnTo }] = await Promise.all([params, searchParams]);
-  const locale: Locale = isLocale(raw) ? raw : defaultLocale;
-  const dict = getDictionary(locale);
-  const copy = dict.auth.login;
+  const locale: SupportedLocale = isSupportedLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
+
+  const t = await getTranslations({ locale, namespace: 'auth.login' });
+  const messages = await pickMessages(['auth', 'common']);
 
   return (
     <>
-      <h1 className={styles.title}>{copy.title}</h1>
-      <p className={styles.subtitle}>{copy.subtitle}</p>
-      <LoginForm
-        locale={locale}
-        returnTo={sanitizeReturnTo(returnTo)}
-        copy={copy}
-        validation={dict.auth.validation}
-        serverErrors={dict.auth.serverErrors}
-      />
+      <h1 className={styles.title}>{t('title')}</h1>
+      <p className={styles.subtitle}>{t('subtitle')}</p>
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <LoginForm locale={locale} returnTo={sanitizeReturnTo(returnTo)} />
+      </NextIntlClientProvider>
     </>
   );
 }

@@ -1,13 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
-import type { Dictionary } from '@/lib/i18n';
+import type { TranslateFn, Translator } from '@/i18n/translator';
 import { sendJson } from '@/lib/csrf-client';
 import { readBffError } from '@/features/auth/client-errors';
 import { translateOrgError } from '@/features/organizations/org-errors';
@@ -24,27 +25,27 @@ interface OrgProfileFormProps {
   country: string | undefined;
   /** Optimistic-locking version from the last read; mismatch → 409. */
   version: number;
-  copy: Dictionary['organizations']['workspace']['profile'];
-  validation: Dictionary['organizations']['validation'];
-  serverErrors: Dictionary['organizations']['serverErrors'];
 }
 
 /**
  * Organization profile editor — rendered only for callers holding
  * organization.update. A 409 (concurrent edit) surfaces the version-conflict
- * dictionary message; router.refresh() re-reads the current version.
+ * message; router.refresh() re-reads the current version.
  */
 export function OrgProfileForm({
   organizationId,
   name,
   country,
   version,
-  copy,
-  validation,
-  serverErrors,
 }: OrgProfileFormProps) {
+  const t = useTranslations('organizations.workspace.profile');
+  const validate = useTranslations('organizations.validation') as unknown as TranslateFn;
+  const serverErrors = useTranslations(
+    'organizations.serverErrors',
+  ) as unknown as Translator;
+
   const router = useRouter();
-  const schema = useMemo(() => updateOrganizationSchema(validation), [validation]);
+  const schema = useMemo(() => updateOrganizationSchema(validate), [validate]);
   const {
     register,
     handleSubmit,
@@ -75,7 +76,7 @@ export function OrgProfileForm({
         },
       );
     } catch {
-      setFormError(serverErrors.unexpected);
+      setFormError(serverErrors('unexpected'));
       return;
     }
 
@@ -114,14 +115,14 @@ export function OrgProfileForm({
       method="post"
       onSubmit={onSubmit}
       noValidate
-      aria-label={copy.title}
+      aria-label={t('title')}
     >
-      <h2 className={styles.subheading}>{copy.title}</h2>
+      <h2 className={styles.subheading}>{t('title')}</h2>
       {formError ? <Alert tone="danger">{formError}</Alert> : null}
-      {saved ? <Alert tone="success">{copy.saved}</Alert> : null}
+      {saved ? <Alert tone="success">{t('saved')}</Alert> : null}
 
       <FormField
-        label={copy.nameLabel}
+        label={t('nameLabel')}
         htmlFor="org-profile-name"
         error={errors.name?.message}
       >
@@ -134,9 +135,9 @@ export function OrgProfileForm({
       </FormField>
 
       <FormField
-        label={copy.countryLabel}
+        label={t('countryLabel')}
         htmlFor="org-profile-country"
-        hint={copy.countryHint}
+        hint={t('countryHint')}
         error={errors.country?.message}
       >
         <Input
@@ -150,7 +151,7 @@ export function OrgProfileForm({
 
       <div className={styles.actions}>
         <Button variant="secondary" size="md" type="submit" loading={isSubmitting}>
-          {copy.submit}
+          {t('submit')}
         </Button>
       </div>
     </form>

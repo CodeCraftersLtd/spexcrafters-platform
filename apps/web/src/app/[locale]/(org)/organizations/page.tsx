@@ -1,17 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { ApiProblemError, type MyMembership } from '@spexcrafters/api-client';
 import { Alert } from '@spexcrafters/ui';
 
-import {
-  defaultLocale,
-  getDictionary,
-  interpolate,
-  isLocale,
-  type Locale,
-} from '@/lib/i18n';
+import { DEFAULT_LOCALE, isSupportedLocale, type SupportedLocale } from '@/i18n/locales';
 import { createServerApiClient } from '@/lib/server-api';
 import { getSession } from '@/lib/session';
 
@@ -25,14 +20,14 @@ export async function generateMetadata({
   params,
 }: OrganizationsPageProps): Promise<Metadata> {
   const { locale } = await params;
-  return { title: getDictionary(locale).organizations.metaTitle };
+  const t = await getTranslations({ locale, namespace: 'organizations' });
+  return { title: t('metaTitle') };
 }
 
 export default async function OrganizationsPage({ params }: OrganizationsPageProps) {
   const { locale: raw } = await params;
-  const locale: Locale = isLocale(raw) ? raw : defaultLocale;
-  const dict = getDictionary(locale);
-  const copy = dict.organizations.list;
+  const locale: SupportedLocale = isSupportedLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
 
   const session = await getSession();
   if (!session) {
@@ -40,6 +35,12 @@ export default async function OrganizationsPage({ params }: OrganizationsPagePro
       `/${locale}/auth/login?returnTo=${encodeURIComponent(`/${locale}/organizations`)}`,
     );
   }
+
+  const [copy, types, roles] = await Promise.all([
+    getTranslations({ locale, namespace: 'organizations.list' }),
+    getTranslations({ locale, namespace: 'organizations.types' }),
+    getTranslations({ locale, namespace: 'organizations.roles' }),
+  ]);
 
   let memberships: MyMembership[] | null = null;
   try {
@@ -60,22 +61,22 @@ export default async function OrganizationsPage({ params }: OrganizationsPagePro
     <section className={styles.page}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>{copy.title}</h1>
-          <p className={styles.intro}>{copy.intro}</p>
+          <h1 className={styles.title}>{copy('title')}</h1>
+          <p className={styles.intro}>{copy('intro')}</p>
         </div>
         <Link className={styles.createLink} href={`/${locale}/organizations/new`}>
-          {copy.createCta}
+          {copy('createCta')}
         </Link>
       </div>
 
       {memberships === null ? (
-        <Alert tone="danger">{copy.loadError}</Alert>
+        <Alert tone="danger">{copy('loadError')}</Alert>
       ) : memberships.length === 0 ? (
         <div className={styles.empty}>
-          <h2 className={styles.emptyTitle}>{copy.empty.title}</h2>
-          <p className={styles.emptyBody}>{copy.empty.body}</p>
+          <h2 className={styles.emptyTitle}>{copy('empty.title')}</h2>
+          <p className={styles.emptyBody}>{copy('empty.body')}</p>
           <Link className={styles.createLink} href={`/${locale}/organizations/new`}>
-            {copy.empty.cta}
+            {copy('empty.cta')}
           </Link>
         </div>
       ) : (
@@ -85,22 +86,18 @@ export default async function OrganizationsPage({ params }: OrganizationsPagePro
               <h2 className={styles.cardName}>
                 <Link
                   href={`/${locale}/organizations/${membership.organizationId}`}
-                  aria-label={interpolate(copy.open, {
-                    name: membership.organizationName,
-                  })}
+                  aria-label={copy('open', { name: membership.organizationName })}
                 >
                   {membership.organizationName}
                 </Link>
               </h2>
               <p className={styles.cardMeta}>
                 <span className={styles.badge}>
-                  {dict.organizations.types[membership.organizationType]}
+                  {types(membership.organizationType)}
                 </span>
-                <span className={styles.badge}>
-                  {dict.organizations.roles[membership.role]}
-                </span>
+                <span className={styles.badge}>{roles(membership.role)}</span>
                 <span>
-                  {interpolate(copy.joined, {
+                  {copy('joined', {
                     date: dateFormatter.format(new Date(membership.joinedAt)),
                   })}
                 </span>

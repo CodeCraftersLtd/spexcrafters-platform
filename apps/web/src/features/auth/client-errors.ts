@@ -1,4 +1,4 @@
-import type { Dictionary } from '@/lib/i18n';
+import type { Translator } from '@/i18n/translator';
 
 /** Mirror of the BFF error envelope (src/lib/bff.ts), as seen by the browser. */
 export interface BffFieldError {
@@ -34,20 +34,20 @@ export async function readBffError(response: Response): Promise<BffError> {
 }
 
 /**
- * Resolve an error code to localized copy: known codes come from the
- * dictionary, unknown codes fall back to the server-provided (already
- * locale-resolved) message, then to the generic error.
+ * Resolve an error code to localized copy from the `auth.serverErrors`
+ * namespace: known codes come from messages, unknown codes fall back to the
+ * server-provided (already locale-resolved) message, then to the generic error.
+ * `t` is a next-intl translator scoped to `auth.serverErrors`.
  */
 export function translateError(
   error: Pick<BffError, 'code' | 'message'>,
-  serverErrors: Dictionary['auth']['serverErrors'],
+  t: Translator,
 ): string {
-  const known = (serverErrors as Record<string, string>)[error.code];
-  if (known) {
-    return known;
+  if (t.has(error.code)) {
+    return t(error.code);
   }
   if (error.message) {
     return error.message;
   }
-  return serverErrors.unexpected;
+  return t('unexpected');
 }

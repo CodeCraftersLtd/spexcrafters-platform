@@ -24,6 +24,10 @@ class ModuleArchitectureTest {
             "com.spexcrafters.identity..",
             "com.spexcrafters.audit..",
             "com.spexcrafters.organizations..",
+            "com.spexcrafters.media..",
+            "com.spexcrafters.platformaccess..",
+            "com.spexcrafters.supplier..",
+            "com.spexcrafters.verification..",
     };
 
     // ------------------------------------------------- cross-module access only via ..api..
@@ -51,6 +55,58 @@ class ModuleArchitectureTest {
                     "com.spexcrafters.organizations.domain..",
                     "com.spexcrafters.organizations.infrastructure..",
                     "com.spexcrafters.organizations.web..");
+
+    @ArchTest
+    static final ArchRule media_internals_are_module_private = noClasses()
+            .that().resideOutsideOfPackage("com.spexcrafters.media..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.media.infrastructure..");
+
+    @ArchTest
+    static final ArchRule platform_access_internals_are_module_private = noClasses()
+            .that().resideOutsideOfPackage("com.spexcrafters.platformaccess..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.platformaccess.domain..",
+                    "com.spexcrafters.platformaccess.infrastructure..");
+
+    @ArchTest
+    static final ArchRule supplier_internals_are_module_private = noClasses()
+            .that().resideOutsideOfPackage("com.spexcrafters.supplier..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.supplier.domain..",
+                    "com.spexcrafters.supplier.infrastructure..",
+                    "com.spexcrafters.supplier.web..");
+
+    @ArchTest
+    static final ArchRule verification_internals_are_module_private = noClasses()
+            .that().resideOutsideOfPackage("com.spexcrafters.verification..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.verification.domain..",
+                    "com.spexcrafters.verification.infrastructure..",
+                    "com.spexcrafters.verification.web..");
+
+    /** The supplier context consumes other modules strictly through their {@code api} packages. */
+    @ArchTest
+    static final ArchRule supplier_uses_other_modules_only_via_their_api = noClasses()
+            .that().resideInAPackage("com.spexcrafters.supplier..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.identity.domain..", "com.spexcrafters.identity.infrastructure..",
+                    "com.spexcrafters.identity.web..",
+                    "com.spexcrafters.organizations.domain..", "com.spexcrafters.organizations.infrastructure..",
+                    "com.spexcrafters.organizations.web..",
+                    "com.spexcrafters.platformaccess.domain..",
+                    "com.spexcrafters.platformaccess.infrastructure..",
+                    "com.spexcrafters.media.infrastructure..");
+
+    /** The verification context consumes the supplier and platform-access modules via their api only. */
+    @ArchTest
+    static final ArchRule verification_uses_other_modules_only_via_their_api = noClasses()
+            .that().resideInAPackage("com.spexcrafters.verification..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "com.spexcrafters.supplier.domain..", "com.spexcrafters.supplier.infrastructure..",
+                    "com.spexcrafters.supplier.web..",
+                    "com.spexcrafters.platformaccess.domain..",
+                    "com.spexcrafters.platformaccess.infrastructure..");
 
     // ---------------------------------------------- identity ↔ organizations interaction
 

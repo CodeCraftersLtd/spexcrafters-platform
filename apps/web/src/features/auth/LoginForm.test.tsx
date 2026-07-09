@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import en from '../../../messages/en.json';
+import auth from '../../../messages/en/auth.json';
 
 // Lightweight stand-ins for the workspace UI package so the form's behavior
 // (labels, validation wiring, error surfacing) is tested in isolation.
@@ -78,18 +79,15 @@ vi.mock('next/link', () => ({
 
 import { LoginForm } from './LoginForm';
 
-const copy = en.auth.login;
-const validation = en.auth.validation;
-const serverErrors = en.auth.serverErrors;
+const copy = auth.login;
+const validation = auth.validation;
+const serverErrors = auth.serverErrors;
 
 function renderLoginForm() {
   return render(
-    <LoginForm
-      locale="en"
-      copy={copy}
-      validation={validation}
-      serverErrors={serverErrors}
-    />,
+    <NextIntlClientProvider locale="en" messages={{ auth }}>
+      <LoginForm locale="en" />
+    </NextIntlClientProvider>,
   );
 }
 

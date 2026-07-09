@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import en from '../messages/en.json';
+import { en } from './messages';
 
 import { registerVerifyLogin, uniqueSmokeUser } from './helpers';
 

@@ -1,0 +1,244 @@
+{
+  "nav": {
+    "label": "Supplier navigation",
+    "home": "Supplier onboarding",
+    "dashboard": "Dashboard"
+  },
+  "home": {
+    "metaTitle": "Become a supplier",
+    "title": "Become a verified supplier",
+    "intro": "Start a supplier application for one of your organizations. Your application is saved as a draft until you submit it for review.",
+    "orgLabel": "Organization",
+    "orgPlaceholder": "Select an organization",
+    "noOrgs": "You do not belong to any organization yet. Create one first, then return here to apply.",
+    "createOrg": "Go to organizations",
+    "originalLocaleLabel": "Content language",
+    "originalLocaleHint": "The language you will author your company details in. This original language is always preserved and never machine-translated.",
+    "legalNameLabel": "Registered legal name",
+    "legalNameHint": "Exactly as it appears on your business registration.",
+    "start": "Start application",
+    "starting": "Creating application…"
+  },
+  "application": {
+    "metaTitle": "Supplier application",
+    "title": "Supplier application",
+    "loadError": "We could not load this application. Please try again.",
+    "notFound": {
+      "title": "Application not found",
+      "body": "This application does not exist, or you do not have access to it."
+    },
+    "forbidden": {
+      "title": "No access",
+      "body": "You do not have permission to view this supplier application."
+    }
+  },
+  "status": {
+    "title": "Application status",
+    "statusLabel": "Status",
+    "submittedLabel": "Submitted {date}",
+    "decidedLabel": "Decided {date}",
+    "operationalLabel": "Operational status",
+    "unknown": "Unknown",
+    "state": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Submitted",
+      "UNDER_REVIEW": "Under review",
+      "CHANGES_REQUESTED": "Changes requested",
+      "RESUBMITTED": "Resubmitted",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "WITHDRAWN": "Withdrawn"
+    },
+    "operational": {
+      "PENDING": "Pending",
+      "ACTIVE": "Active",
+      "SUSPENDED": "Suspended",
+      "DEACTIVATED": "Deactivated"
+    }
+  },
+  "companyInfo": {
+    "title": "Company information",
+    "intro": "Tell us about your business. Registration details are verified against the evidence you provide.",
+    "legalNameLabel": "Registered legal name",
+    "legalNameHint": "Class-E: shown left-to-right and never translated.",
+    "registeredLegalNameTranslatedLabel": "Legal name (translated)",
+    "tradingNameLabel": "Trading name",
+    "registrationNumberLabel": "Registration number",
+    "countryLabel": "Country of registration",
+    "countryHint": "Two-letter ISO country code.",
+    "registrationAuthorityLabel": "Registration authority",
+    "registrationDateLabel": "Registration date",
+    "companyTypeLabel": "Company type",
+    "companyTypePlaceholder": "Select a company type",
+    "yearEstablishedLabel": "Year established",
+    "employeeRangeLabel": "Number of employees",
+    "employeeRangePlaceholder": "Select a range",
+    "websiteLabel": "Website",
+    "businessEmailLabel": "Business email",
+    "businessPhoneLabel": "Business phone",
+    "save": "Save company information",
+    "saved": "Company information saved."
+  },
+  "opticalProfile": {
+    "title": "Optical profile",
+    "intro": "Select the supplier types and manufacturing capabilities that describe your business. These are provisional until verified.",
+    "typesLabel": "Supplier types",
+    "typesHint": "Select all that apply.",
+    "capabilitiesLabel": "Declared capabilities",
+    "capabilitiesHint": "The manufacturing processes you perform in-house.",
+    "facilitiesNote": "Factory ownership and count are captured per facility in the Facilities section below.",
+    "save": "Save optical profile",
+    "saved": "Optical profile saved."
+  },
+  "content": {
+    "title": "Company content",
+    "intro": "Describe your business in your original language. This content is preserved as authored and used as the source for every translation.",
+    "originalBadge": "Original language",
+    "originalLocaleNote": "You are editing the original-language content ({language}).",
+    "tradingNameLabel": "Trading name",
+    "companyDescriptionLabel": "Company description",
+    "productionCapabilityDescriptionLabel": "Production capabilities",
+    "oemDescriptionLabel": "OEM services",
+    "odmDescriptionLabel": "ODM services",
+    "privateLabelDescriptionLabel": "Private-label services",
+    "qualityControlDescriptionLabel": "Quality control",
+    "exportMarketDescriptionLabel": "Export markets",
+    "save": "Save content",
+    "saved": "Content saved."
+  },
+  "translations": {
+    "title": "Translations",
+    "intro": "Add translations of your company content. The original language is authoritative; edits to it mark translations as stale.",
+    "empty": "No translations yet.",
+    "addTitle": "Add or edit a translation",
+    "localeLabel": "Language",
+    "localePlaceholder": "Select a language",
+    "statusLabel": "Translation status",
+    "sourceLabel": "Source",
+    "staleWarning": "The original content changed after this translation was saved — it may be out of date.",
+    "edit": "Edit",
+    "save": "Save translation",
+    "saved": "Translation saved.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "indicator": {
+      "original": "Original",
+      "stale": "Stale",
+      "current": "Up to date"
+    },
+    "state": {
+      "MISSING": "Missing",
+      "DRAFT": "Draft",
+      "MACHINE_TRANSLATED": "Machine translated",
+      "HUMAN_REVIEWED": "Human reviewed",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    }
+  },
+  "facilities": {
+    "title": "Facilities",
+    "intro": "Add the factories, warehouses, and offices behind your business.",
+    "empty": "No facilities added yet.",
+    "addTitle": "Add a facility",
+    "facilityTypeLabel": "Facility type",
+    "facilityTypePlaceholder": "Select a facility type",
+    "countryLabel": "Country",
+    "regionLabel": "Region or state",
+    "cityLabel": "City",
+    "addressPrivacyLabel": "Address visibility",
+    "ownershipLabel": "Ownership",
+    "isPublicLabel": "Show this facility on the public profile",
+    "nameLabel": "Facility name",
+    "descriptionLabel": "Description",
+    "add": "Add facility",
+    "added": "Facility added.",
+    "privacy": {
+      "PUBLIC_CITY": "Show city only",
+      "PRIVATE": "Keep private"
+    },
+    "ownership": {
+      "OWNED": "Owned",
+      "LEASED": "Leased",
+      "PARTNER": "Partner"
+    },
+    "publicBadge": "Public",
+    "privateBadge": "Private"
+  },
+  "evidence": {
+    "note": "Upload supporting documents. Files are uploaded directly to secure storage; only PDF, JPEG, PNG, and WebP up to 15 MiB are accepted."
+  },
+  "public": {
+    "metaTitle": "{name} — supplier profile",
+    "metaDescription": "Public profile for {name} on SpexCrafters.",
+    "notFound": {
+      "title": "Supplier not found",
+      "body": "This supplier profile is not available."
+    },
+    "aboutTitle": "About",
+    "countryLabel": "Country",
+    "fallbackNotice": "This profile is shown in {language} because it is not yet available in your language.",
+    "staleNotice": "This information may be out of date."
+  },
+  "completeness": {
+    "title": "Completeness",
+    "intro": "Complete every item before submitting for review.",
+    "ratio": "{done} of {total} complete",
+    "complete": "Complete",
+    "incomplete": "Incomplete",
+    "item": {
+      "legalName": "Legal name",
+      "registration": "Registration number",
+      "country": "Country of registration",
+      "companyType": "Company type",
+      "types": "Supplier types",
+      "capabilities": "Declared capabilities",
+      "description": "Company description",
+      "facilities": "At least one facility",
+      "evidence": "At least one evidence file"
+    }
+  },
+  "review": {
+    "title": "Review and submit",
+    "intro": "When your application is complete, submit it for review. You can withdraw it at any time before a decision.",
+    "submit": "Submit for review",
+    "submitting": "Submitting…",
+    "submitted": "Application submitted for review.",
+    "resubmit": "Resubmit for review",
+    "withdraw": "Withdraw application",
+    "withdrawing": "Withdrawing…",
+    "withdrawn": "Application withdrawn.",
+    "incompleteWarning": "Some required items are still incomplete. You can submit, but review may return it for changes."
+  },
+  "changeRequests": {
+    "title": "Change requests",
+    "intro": "Reviewers may ask for changes before approving. Respond to each item, then resubmit.",
+    "empty": "No change requests.",
+    "itemLabel": "Requested item",
+    "reasonLabel": "Reason",
+    "requestedAt": "Requested {date}",
+    "responseLabel": "Your response",
+    "respond": "Send response",
+    "responded": "Response sent.",
+    "yourResponse": "Your response",
+    "state": {
+      "OPEN": "Open",
+      "RESPONDED": "Responded",
+      "RESOLVED": "Resolved"
+    }
+  },
+  "validation": {
+    "legalNameRequired": "Enter the registered legal name.",
+    "legalNameTooLong": "Legal name is too long.",
+    "tooLong": "This value is too long.",
+    "countryInvalid": "Enter a two-letter country code.",
+    "dateInvalid": "Enter a date as YYYY-MM-DD.",
+    "yearInvalid": "Enter a four-digit year.",
+    "websiteInvalid": "Enter a valid URL.",
+    "emailInvalid": "Enter a valid email address.",
+    "originalLocaleRequired": "Choose a content language.",
+    "facilityTypeRequired": "Select a facility type.",
+    "addressPrivacyRequired": "Choose an address visibility.",
+    "ownershipRequired": "Choose an ownership type.",
+    "responseRequired": "Enter a response."
+  }
+}
