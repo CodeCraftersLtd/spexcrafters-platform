@@ -34,6 +34,9 @@ services:
     environment:
       MINIO_ROOT_USER: spexcrafters
       MINIO_ROOT_PASSWORD: spexcrafters_dev
+      # Allow the browser's direct-to-storage evidence PUT (ADR-023). Dev/CI only —
+      # production storage sets an explicit per-origin CORS policy on the bucket.
+      MINIO_API_CORS_ALLOW_ORIGIN: "*"
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -54,6 +57,7 @@ services:
       /bin/sh -c "
       mc alias set local http://minio:9000 spexcrafters spexcrafters_dev &&
       mc mb --ignore-existing local/spexcrafters-media &&
+      mc mb --ignore-existing local/spexcrafters-evidence &&
       exit 0"
 
   mailpit:
