@@ -32,6 +32,10 @@ This directory records the significant architectural decisions for SpexCrafters.
 | 021 | [RTL strategy & global typography](ADR-021-rtl-typography.md) | Accepted | 2026-07-09 | Root `dir`; CSS logical properties only; bidi isolation for LTR technical runs; script-grouped Noto font loading |
 | 022 | [International SEO & machine-translation policy](ADR-022-international-seo-mt-policy.md) | Accepted | 2026-07-09 | Self-canonicalizing localized URLs; hreflang only for available translations; noindex empty/MT; MT dev-only, never authoritative |
 | 023 | [Object storage & evidence upload](ADR-023-object-storage-evidence.md) | Accepted | 2026-07-09 | `ObjectStorage` port; MinIO local/CI, S3 prod; presigned staged upload + server finalize (sha256/magic-byte); deferred malware scanner, fail-closed, never fake CLEAN |
+| 024 | [Optical Taxonomy module & schema architecture](ADR-024-taxonomy-architecture.md) | Accepted | 2026-07-09 | One `taxonomy` module owning one `taxonomy` schema; classification + attributes + enums + units + countries + certifications + brands + templates; extraction seams preserved |
+| 025 | [Attribute registry, data types, specification templates & validation engine](ADR-025-attribute-specification-model.md) | Accepted | 2026-07-09 | Master attribute registry; closed engine-coded data-type set; category-inherited templates; pure validation engine; search/comparison metadata only |
+| 026 | [Taxonomy localization & stable-identifier policy](ADR-026-taxonomy-localization-identifiers.md) | Accepted | 2026-07-09 | Codes/uuids are the only comparison key; DB `_translation` tables for admin-managed content (not message files); `en` canonical; MT never authoritative |
+| 027 | [Taxonomy SEO slugs & alias resolution](ADR-027-taxonomy-seo-slugs.md) | Accepted | 2026-07-09 | Per-locale slug table, DB-enforced uniqueness, alias/redirect history; slugs are never identity; foundation only (no landing pages/routing) |
 
 ## ADR template
 
