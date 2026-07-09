@@ -36,6 +36,10 @@ This is **not the permanent policy**. Remediation milestone: the Phase-4 public-
 | Hash-based (`sha256-…`) | Deferred: no framework-emitted hash manifest; manual maintenance fragile; re-evaluate with Next.js CSP tooling |
 | Fully dynamic rendering to enable nonces | Rejected: forfeits SSG/CDN performance architecture for a header improvement; may be selectively applied to auth-only routes later (hybrid) |
 
+## Amendment (Phase 7, 2026-07-09) — `connect-src` includes the object-storage origin
+
+Evidence upload uses presigned **direct-to-storage** PUTs (ADR-023): the browser connects to the S3/R2/MinIO origin, not to `self`. `connect-src 'self'` blocks that with a CSP violation (verified: the browser reports `csp` on the evidence PUT). `connect-src` is therefore broadened to `'self' <storage-origin>`, where the storage origin comes from `NEXT_PUBLIC_STORAGE_ORIGIN` (per environment; empty ⇒ no broadening). This is the **only** broadening, it is **documented and justified** (the direct-upload architecture requires it), and no other directive changes. The storage bucket must also carry a CORS policy allowing PUT from the web origin (see [evidence-storage-architecture.md](../security/evidence-storage-architecture.md)). `script-src`/`object-src`/`base-uri`/`form-action`/`frame-ancestors` remain strict; SEC-DEBT-1 (`script-src 'unsafe-inline'`) is unchanged.
+
 ## Remediation path (bound milestone)
 
 Phase-4 public-web design must decide between: (a) **hybrid** — dynamic rendering + nonce CSP on authenticated/auth routes, hardened-static policy on public pages; (b) hash-manifest generation if framework support matures; (c) full dynamic + nonce if CWV budgets prove tolerant. Until then `'unsafe-inline'` is tracked as open security debt (SEC-DEBT-1) in every security review — it must not be silently normalized.

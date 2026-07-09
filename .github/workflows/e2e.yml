@@ -21,7 +21,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Start infrastructure (PostgreSQL, Redis, MinIO, Mailpit)
-        run: docker compose -f infrastructure/docker/compose.yaml up -d --wait postgres redis mailpit
+        run: |
+          docker compose -f infrastructure/docker/compose.yaml up -d --wait postgres redis mailpit minio
+          docker compose -f infrastructure/docker/compose.yaml up minio-init
 
       - uses: actions/setup-java@v4
         with:
@@ -48,6 +50,11 @@ jobs:
           SPRING_MAIL_HOST: localhost
           SPRING_MAIL_PORT: "1025"
           SPEXCRAFTERS_WEB_BASE_URL: http://localhost:3000
+          # Evidence object storage (MinIO from the compose stack, non-prod creds).
+          S3_ENDPOINT: http://localhost:9000
+          S3_ACCESS_KEY: spexcrafters
+          S3_SECRET_KEY: spexcrafters_dev
+          S3_BUCKET_MEDIA: spexcrafters-evidence
 
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -73,14 +80,20 @@ jobs:
           SESSION_SECRET: ZTJlLWNpLW9ubHktc2Vzc2lvbi1zZWNyZXQtMzJiISE=
           API_BASE_URL: http://localhost:8080/api/v1
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          # CSP connect-src must include the object-storage origin for the browser's
+          # direct-to-storage evidence upload (ADR-023). Baked into the build.
+          NEXT_PUBLIC_STORAGE_ORIGIN: http://localhost:9000
 
       - name: Install Playwright browsers
         run: pnpm --filter @spexcrafters/web exec playwright install --with-deps chromium
 
-      - name: Run smoke E2E (register → verify → login → dashboard)
+      - name: Run smoke E2E (auth, organizations, CSRF, supplier + reviewer, RTL, CJK)
         run: pnpm --filter @spexcrafters/web e2e
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:3000
+          MAILPIT_URL: http://localhost:8025
+          # The reviewer staff-bootstrap fixture inserts a platform_staff row.
+          DATABASE_URL: postgresql://spexcrafters:spexcrafters_dev@localhost:5432/spexcrafters
 
       - name: Upload logs and report on failure
         if: failure()
