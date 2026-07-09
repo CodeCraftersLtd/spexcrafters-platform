@@ -1,0 +1,23 @@
+{
+  "buyer": {
+    "dashboard": "لوحة التحكم",
+    "label": "تنقّل المشتري",
+    "organizations": "المؤسسات"
+  },
+  "footer": {
+    "accessibility": "إمكانية الوصول",
+    "cookies": "سياسة ملفات تعريف الارتباط",
+    "imprint": "بيانات الناشر",
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة"
+  },
+  "language": "اللغة",
+  "legal": "قانوني",
+  "logout": "تسجيل الخروج",
+  "main": "التنقل الرئيسي",
+  "organizations": {
+    "dashboard": "لوحة التحكم",
+    "label": "تنقّل المؤسسة",
+    "organizations": "المؤسسات"
+  }
+}

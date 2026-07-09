@@ -1,24 +1,24 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 import type { MyMembership } from '@spexcrafters/api-client';
 import { Alert } from '@spexcrafters/ui';
 
-import type { Dictionary, Locale } from '@/lib/i18n';
+import type { SupportedLocale } from '@/i18n/locales';
+import type { Translator } from '@/i18n/translator';
 import { sendJson } from '@/lib/csrf-client';
-import { interpolate } from '@/lib/interpolate';
 import { readBffError } from '@/features/auth/client-errors';
 import { mapAcceptInvitationError } from '@/features/organizations/org-errors';
 
 import styles from './org-components.module.css';
 
 interface AcceptInvitationProps {
-  locale: Locale;
+  locale: SupportedLocale;
   /** Token from the emailed link (?token=…); null when absent. */
   token: string | null;
-  copy: Dictionary['invitations']['accept'];
 }
 
 type AcceptState =
@@ -30,11 +30,14 @@ type AcceptState =
  * Posts the invitation token to the BFF on mount (same pattern as the
  * verify-email page) and renders the designed success / error states.
  */
-export function AcceptInvitation({ locale, token, copy }: AcceptInvitationProps) {
+export function AcceptInvitation({ locale, token }: AcceptInvitationProps) {
+  const t = useTranslations('organizations.acceptInvitation');
+  const tr = t as unknown as Translator;
+
   const [state, setState] = useState<AcceptState>(
     token
       ? { status: 'accepting' }
-      : { status: 'error', message: copy.missingToken, showOrganizationsLink: false },
+      : { status: 'error', message: t('missingToken'), showOrganizationsLink: false },
   );
   // Guards against React Strict Mode double-invocation so the single-use
   // token is posted exactly once per page view.
@@ -55,7 +58,7 @@ export function AcceptInvitation({ locale, token, copy }: AcceptInvitationProps)
         if (!cancelled) {
           setState({
             status: 'error',
-            message: copy.genericError,
+            message: t('genericError'),
             showOrganizationsLink: false,
           });
         }
@@ -72,19 +75,20 @@ export function AcceptInvitation({ locale, token, copy }: AcceptInvitationProps)
       const error = await readBffError(response);
       setState({
         status: 'error',
-        ...mapAcceptInvitationError(response.status, error, copy),
+        ...mapAcceptInvitationError(response.status, error, tr),
       });
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [token, copy]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   if (state.status === 'accepting') {
     return (
       <p role="status" aria-live="polite">
-        {copy.accepting}
+        {t('accepting')}
       </p>
     );
   }
@@ -93,14 +97,14 @@ export function AcceptInvitation({ locale, token, copy }: AcceptInvitationProps)
     const orgName = state.membership.organizationName;
     return (
       <div className={styles.stack}>
-        <Alert tone="success" title={copy.successTitle}>
-          {interpolate(copy.successBody, { org: orgName })}
+        <Alert tone="success" title={t('successTitle')}>
+          {t('successBody', { org: orgName })}
         </Alert>
         <p>
           <Link
             href={`/${locale}/organizations/${state.membership.organizationId}`}
           >
-            {interpolate(copy.goToOrganization, { org: orgName })}
+            {t('goToOrganization', { org: orgName })}
           </Link>
         </p>
       </div>
@@ -109,12 +113,12 @@ export function AcceptInvitation({ locale, token, copy }: AcceptInvitationProps)
 
   return (
     <div className={styles.stack}>
-      <Alert tone="danger" title={copy.errorTitle}>
+      <Alert tone="danger" title={t('errorTitle')}>
         {state.message}
       </Alert>
       {state.showOrganizationsLink ? (
         <p>
-          <Link href={`/${locale}/organizations`}>{copy.goToOrganizations}</Link>
+          <Link href={`/${locale}/organizations`}>{t('goToOrganizations')}</Link>
         </p>
       ) : null}
     </div>

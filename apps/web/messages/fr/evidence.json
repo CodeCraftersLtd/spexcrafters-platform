@@ -1,0 +1,50 @@
+{
+  "title": "Evidence",
+  "intro": "Documents that support your application and verification. Files are uploaded directly to secure storage.",
+  "empty": "No evidence submitted yet.",
+  "count": "{count, plural, =0 {No files} one {# file} other {# files}}",
+  "typeLabel": "Document type",
+  "typePlaceholder": "Select a document type",
+  "documentLocaleLabel": "Document language",
+  "fileLabel": "File",
+  "dropzone": "Drag a file here, or choose a file",
+  "dropzoneHint": "PDF, JPEG, PNG, or WebP up to 15 MiB.",
+  "choose": "Choose file",
+  "upload": "Upload evidence",
+  "uploading": "Uploading… {percent}%",
+  "uploaded": "Evidence uploaded.",
+  "retry": "Retry upload",
+  "remove": "Remove",
+  "removed": "Evidence removed.",
+  "download": "Download",
+  "filenameLabel": "File",
+  "sizeLabel": "Size",
+  "uploadStateLabel": "Upload",
+  "scanLabel": "Scan",
+  "reviewLabel": "Review",
+  "scanBanner": "This file has not been malware-scanned. Open downloads only in a safe environment.",
+  "uploadState": {
+    "INITIATED": "Not finalized",
+    "FINALIZED": "Uploaded"
+  },
+  "scan": {
+    "PENDING_SCAN": "Not scanned",
+    "SCANNING": "Scanning",
+    "CLEAN": "Clean",
+    "REJECTED": "Rejected",
+    "QUARANTINED": "Quarantined"
+  },
+  "review": {
+    "UNREVIEWED": "Not reviewed",
+    "ACCEPTED": "Accepted",
+    "REJECTED": "Rejected"
+  },
+  "error": {
+    "type": "That file type is not accepted. Use PDF, JPEG, PNG, or WebP.",
+    "size": "That file is {actualMiB} MiB. The maximum is {maxMiB} MiB.",
+    "empty": "That file is empty.",
+    "uploadFailed": "The upload failed. You can retry.",
+    "initiateFailed": "We could not start the upload. Please try again.",
+    "finalizeFailed": "The upload could not be finalized. You can retry."
+  }
+}

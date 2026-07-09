@@ -1,0 +1,64 @@
+{
+  "capability": {
+    "EXPORT_LOGISTICS": "Export logistics",
+    "FRAME_ASSEMBLY": "Frame assembly",
+    "INJECTION_MOLDING": "Injection molding",
+    "LENS_COATING": "Lens coating",
+    "LENS_EDGING": "Lens edging",
+    "ODM": "ODM",
+    "OEM": "OEM",
+    "PRIVATE_LABEL": "Private label",
+    "QUALITY_CONTROL_LAB": "Quality-control laboratory"
+  },
+  "companyType": {
+    "JOINT_STOCK": "Joint-stock company",
+    "LIMITED_LIABILITY": "Limited liability company",
+    "PARTNERSHIP": "Partnership",
+    "SOLE_PROPRIETORSHIP": "Sole proprietorship",
+    "STATE_OWNED": "State-owned enterprise"
+  },
+  "employeeRange": {
+    "R_1000_PLUS": "1000+ employees",
+    "R_1_10": "1–10 employees",
+    "R_11_50": "11–50 employees",
+    "R_201_500": "201–500 employees",
+    "R_501_1000": "501–1000 employees",
+    "R_51_200": "51–200 employees"
+  },
+  "evidenceType": {
+    "BUSINESS_LICENSE": "Business license",
+    "BUSINESS_REGISTRATION_DOCUMENT": "Business registration document",
+    "EXPORT_LICENSE": "Export license",
+    "FACTORY_PHOTO": "Factory photograph",
+    "ISO_CERTIFICATE": "ISO certificate",
+    "OTHER": "Other supporting document",
+    "QUALITY_CERTIFICATE": "Quality certificate",
+    "TAX_CERTIFICATE": "Tax registration certificate"
+  },
+  "facilityType": {
+    "FACTORY": "Factory",
+    "HEADQUARTERS": "Headquarters",
+    "RESEARCH_CENTER": "Research center",
+    "SHOWROOM": "Showroom",
+    "WAREHOUSE": "Warehouse"
+  },
+  "supplierType": {
+    "COMPONENT_SUPPLIER": "Component supplier",
+    "CONTACT_LENS_MANUFACTURER": "Contact lens manufacturer",
+    "DISTRIBUTOR": "Distributor",
+    "EQUIPMENT_MANUFACTURER": "Equipment manufacturer",
+    "FRAME_MANUFACTURER": "Frame manufacturer",
+    "LENS_MANUFACTURER": "Lens manufacturer",
+    "ODM_MANUFACTURER": "ODM manufacturer",
+    "OEM_MANUFACTURER": "OEM manufacturer",
+    "PRIVATE_LABEL_MANUFACTURER": "Private-label manufacturer",
+    "TRADING_COMPANY": "Trading company"
+  },
+  "verificationScope": {
+    "BUSINESS_REGISTRATION": "Business registration",
+    "FACTORY_EXISTENCE": "Factory existence",
+    "LEGAL_ENTITY": "Legal entity",
+    "MANUFACTURER_STATUS": "Manufacturer status",
+    "OPTICAL_INDUSTRY_ACTIVITY": "Optical-industry activity"
+  }
+}

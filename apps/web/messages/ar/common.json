@@ -1,0 +1,62 @@
+{
+  "actions": {
+    "back": "رجوع",
+    "cancel": "إلغاء",
+    "loading": "جارٍ التحميل…",
+    "retry": "أعد المحاولة",
+    "save": "حفظ التغييرات"
+  },
+  "appName": "SpexCrafters",
+  "buyer": {
+    "dashboardIntro": "ستظهر هنا طلبات عروض الأسعار وعروض الأسعار والرسائل الخاصة بك.",
+    "metaTitle": "لوحة التحكم",
+    "organizationsCard": {
+      "body": "أنشئ مؤسسة أو أدر الفرق التي تنتمي إليها.",
+      "cta": "الانتقال إلى المؤسسات",
+      "title": "المؤسسات"
+    },
+    "welcome": "مرحبًا، {name}"
+  },
+  "comingSoon": "قريبًا",
+  "copyright": "© {year} SpexCrafters. جميع الحقوق محفوظة.",
+  "fallback": {
+    "machineTranslated": "ترجمة آلية",
+    "showingLanguage": "عرض بلغة {language}",
+    "stale": "قد تكون هذه الترجمة قديمة",
+    "untranslated": "لم تُترجم بعد — يتم عرض الإنجليزية"
+  },
+  "home": {
+    "cta": {
+      "createAccount": "إنشاء حساب",
+      "findSuppliers": "البحث عن موردين"
+    },
+    "hero": {
+      "subtitle": "احصل على العدسات والإطارات والآلات والخدمات من مصنّعين موثوقين حول العالم — بمواصفات يمكنك الوثوق بها.",
+      "title": "صناعة البصريات، بدقة مُعايَرة."
+    }
+  },
+  "itemCount": "{count, plural, =0 {لا عناصر} one {# عنصر} other {# عناصر}}",
+  "localeName": {
+    "ar": "العربية",
+    "bn": "বাংলা",
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fa": "فارسی",
+    "fil": "Filipino",
+    "fr": "Français",
+    "hi": "हिन्दी",
+    "id": "Bahasa Indonesia",
+    "ja": "日本語",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "pt": "Português",
+    "ru": "Русский",
+    "th": "ไทย",
+    "tr": "Türkçe",
+    "ur": "اردو",
+    "vi": "Tiếng Việt",
+    "zh-CN": "简体中文"
+  },
+  "tagline": "منصة عالمية للبصريات بين الشركات"
+}

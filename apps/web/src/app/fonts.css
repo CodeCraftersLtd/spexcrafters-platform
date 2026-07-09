@@ -1,0 +1,87 @@
+/*
+ * Phase-7 script-grouped typography (ADR-021).
+ *
+ * Strategy: the Latin MERIDIAN UI face (--sc-font-ui) is ALWAYS loaded because
+ * every locale mixes in LTR technical runs (model codes, SKUs, Rx, ISO codes).
+ * The active locale's script group is layered ON TOP via a per-[lang] custom
+ * property, so a locale only ever pays for its own script — never one global
+ * multi-megabyte Noto payload.
+ *
+ * Offline-safe: this ships NO network font import. Named Noto families are
+ * honored when present on the host (or once self-hosted woff2 subsets land) and
+ * otherwise fall through to the platform's system script font. No broken import
+ * can fail the build.
+ *
+ * TODO(fonts): self-host subset woff2 for each Noto family below via @font-face
+ *   with `font-display: swap` + metric-adjusted fallbacks (CLS ≈ 0). Tracked
+ *   with the design-tokens font pipeline. Until then the system fallback renders
+ *   every script correctly.
+ */
+
+:root {
+  /* Latin default: the existing UI stack. */
+  --sc-font-script: var(--sc-font-ui);
+}
+
+/* CJK — each keeps the Latin UI face as a trailing fallback for mixed content. */
+[lang='zh-CN'] {
+  --sc-font-script: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', var(--sc-font-ui);
+  --sc-leading-body: 1.7;
+}
+[lang='ko'] {
+  --sc-font-script: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', var(--sc-font-ui);
+  --sc-leading-body: 1.7;
+}
+[lang='ja'] {
+  --sc-font-script: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', var(--sc-font-ui);
+  --sc-leading-body: 1.7;
+}
+
+/* Thai / Devanagari / Bengali need extra leading for stacked marks. */
+[lang='th'] {
+  --sc-font-script: 'Noto Sans Thai', 'Leelawadee UI', var(--sc-font-ui);
+  --sc-leading-body: 1.75;
+}
+[lang='hi'] {
+  --sc-font-script: 'Noto Sans Devanagari', 'Nirmala UI', var(--sc-font-ui);
+  --sc-leading-body: 1.75;
+}
+[lang='bn'] {
+  --sc-font-script: 'Noto Sans Bengali', 'Vrinda', var(--sc-font-ui);
+  --sc-leading-body: 1.75;
+}
+
+/* Cyrillic is covered by the Latin UI subset; name Noto as a safety net. */
+[lang='ru'] {
+  --sc-font-script: var(--sc-font-ui), 'Noto Sans';
+}
+
+/* Arabic script (ar, fa) — Naskh. Urdu prefers Nastaliq for display. */
+[lang='ar'],
+[lang='fa'] {
+  --sc-font-script: 'Noto Sans Arabic', 'Segoe UI', 'Tahoma', var(--sc-font-ui);
+  --sc-leading-body: 1.8;
+}
+[lang='ur'] {
+  --sc-font-script: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Segoe UI', var(--sc-font-ui);
+  --sc-leading-body: 2;
+}
+
+body {
+  font-family: var(--sc-font-script);
+}
+
+/*
+ * Bidi isolation for LTR technical runs inside RTL prose (ADR-021). The
+ * <TechnicalText> primitive renders <bdi dir="ltr">; this guarantees isolation
+ * even where a bare <bdi> is used.
+ */
+bdi {
+  unicode-bidi: isolate;
+}
+
+/* Directional affordances flip under RTL via logical transforms, never mirrored
+ * brand/technical marks. Components opt in with the data attribute. */
+[dir='rtl'] [data-directional-icon] {
+  transform: scaleX(-1);
+}

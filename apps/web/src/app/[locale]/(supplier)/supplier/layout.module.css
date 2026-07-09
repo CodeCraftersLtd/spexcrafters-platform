@@ -1,0 +1,59 @@
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+  min-block-size: 100vh;
+}
+
+@media (max-width: 48rem) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-4, 1rem);
+  padding: var(--sc-space-5, 1.25rem);
+  border-inline-end: 1px solid var(--sc-color-border, #ddd);
+  background: var(--sc-color-surface-muted, #f7f7f8);
+}
+
+.wordmark {
+  font-weight: 700;
+  font-size: var(--sc-font-size-lg, 1.25rem);
+  text-decoration: none;
+  color: inherit;
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-2, 0.5rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.navLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  gap: var(--sc-space-3, 0.75rem);
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--sc-space-4, 1rem);
+  border-block-end: 1px solid var(--sc-color-border, #eee);
+}
+
+.main {
+  padding: var(--sc-space-6, 1.5rem);
+}

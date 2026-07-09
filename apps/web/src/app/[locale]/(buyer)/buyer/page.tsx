@@ -1,14 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import {
-  defaultLocale,
-  getDictionary,
-  interpolate,
-  isLocale,
-  type Locale,
-} from '@/lib/i18n';
+import { DEFAULT_LOCALE, isSupportedLocale, type SupportedLocale } from '@/i18n/locales';
 import { getSession } from '@/lib/session';
 
 import styles from './page.module.css';
@@ -21,13 +16,14 @@ export async function generateMetadata({
   params,
 }: BuyerDashboardPageProps): Promise<Metadata> {
   const { locale } = await params;
-  return { title: getDictionary(locale).buyer.metaTitle };
+  const t = await getTranslations({ locale, namespace: 'common' });
+  return { title: t('buyer.metaTitle') };
 }
 
 export default async function BuyerDashboardPage({ params }: BuyerDashboardPageProps) {
   const { locale: raw } = await params;
-  const locale: Locale = isLocale(raw) ? raw : defaultLocale;
-  const dict = getDictionary(locale);
+  const locale: SupportedLocale = isSupportedLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
 
   const session = await getSession();
   if (!session) {
@@ -38,17 +34,19 @@ export default async function BuyerDashboardPage({ params }: BuyerDashboardPageP
     );
   }
 
+  const t = await getTranslations({ locale, namespace: 'common' });
+
   return (
     <section className={styles.dashboard}>
       <h1 className={styles.title}>
-        {interpolate(dict.buyer.welcome, { name: session.user.displayName })}
+        {t('buyer.welcome', { name: session.user.displayName })}
       </h1>
-      <p className={styles.intro}>{dict.buyer.dashboardIntro}</p>
+      <p className={styles.intro}>{t('buyer.dashboardIntro')}</p>
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>{dict.buyer.organizationsCard.title}</h2>
-        <p className={styles.intro}>{dict.buyer.organizationsCard.body}</p>
+        <h2 className={styles.cardTitle}>{t('buyer.organizationsCard.title')}</h2>
+        <p className={styles.intro}>{t('buyer.organizationsCard.body')}</p>
         <Link className={styles.cardLink} href={`/${locale}/organizations`}>
-          {dict.buyer.organizationsCard.cta}
+          {t('buyer.organizationsCard.cta')}
         </Link>
       </div>
     </section>

@@ -1,0 +1,104 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-5, 1.25rem);
+  max-inline-size: 56rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sc-space-3, 0.75rem);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--sc-font-size-2xl, 1.75rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+.subTitle {
+  font-size: var(--sc-font-size-md, 1.05rem);
+  font-weight: 600;
+  margin: 0;
+}
+
+.intro {
+  color: var(--sc-color-text-muted, #555);
+  margin: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-3, 0.75rem);
+  padding: var(--sc-space-5, 1.25rem);
+  border: 1px solid var(--sc-color-border, #ddd);
+  border-radius: var(--sc-radius-md, 0.5rem);
+  background: var(--sc-color-surface, #fff);
+}
+
+.sectionTitle {
+  font-size: var(--sc-font-size-lg, 1.25rem);
+  font-weight: 600;
+  margin: 0;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--sc-space-3, 0.75rem);
+  margin: 0;
+}
+
+.summaryItem { display: flex; flex-direction: column; gap: var(--sc-space-1, 0.2rem); }
+.summaryLabel { font-size: var(--sc-font-size-sm, 0.8rem); color: var(--sc-color-text-muted, #666); }
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-3, 0.75rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.translationRow,
+.evidenceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sc-space-2, 0.5rem);
+  align-items: center;
+  padding: var(--sc-space-3, 0.75rem);
+  border: 1px solid var(--sc-color-border, #eee);
+  border-radius: var(--sc-radius-sm, 0.25rem);
+}
+
+.badge {
+  display: inline-block;
+  padding-block: var(--sc-space-1, 0.2rem);
+  padding-inline: var(--sc-space-2, 0.5rem);
+  border-radius: var(--sc-radius-sm, 0.25rem);
+  font-size: var(--sc-font-size-sm, 0.8rem);
+  background: var(--sc-color-surface-muted, #eef);
+}
+
+.rowMeta {
+  color: var(--sc-color-text-muted, #666);
+  font-size: var(--sc-font-size-sm, 0.875rem);
+  margin: 0;
+}
+
+.stale {
+  color: var(--sc-color-warning-text, #8a5a00);
+  font-size: var(--sc-font-size-sm, 0.875rem);
+}
+
+.forbidden {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-3, 0.75rem);
+  max-inline-size: 32rem;
+}

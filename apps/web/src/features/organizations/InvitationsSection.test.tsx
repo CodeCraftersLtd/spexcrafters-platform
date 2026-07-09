@@ -1,10 +1,11 @@
 import { render, screen } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
 import { forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Capability, InvitationResponse } from '@spexcrafters/api-client';
 
-import en from '../../../messages/en.json';
+import organizations from '../../../messages/en/organizations.json';
 
 // Lightweight stand-ins for the workspace UI package so capability gating is
 // tested in isolation (same approach as LoginForm.test).
@@ -77,10 +78,7 @@ vi.mock('next/navigation', () => ({
 
 import { InvitationsSection } from './InvitationsSection';
 
-const copy = en.organizations.workspace.invitations;
-const roles = en.organizations.roles;
-const validation = en.organizations.validation;
-const serverErrors = en.organizations.serverErrors;
+const copy = organizations.workspace.invitations;
 
 const READ_ONLY: Capability[] = ['organization.read', 'organization.members.read'];
 const ADMIN_CAPS: Capability[] = [
@@ -105,16 +103,14 @@ function renderSection(
   invitations: InvitationResponse[] = [],
 ) {
   return render(
-    <InvitationsSection
-      locale="en"
-      organizationId="018f63f1-0000-7000-8000-00000000000a"
-      invitations={invitations}
-      callerCapabilities={callerCapabilities}
-      copy={copy}
-      roles={roles}
-      validation={validation}
-      serverErrors={serverErrors}
-    />,
+    <NextIntlClientProvider locale="en" messages={{ organizations }}>
+      <InvitationsSection
+        locale="en"
+        organizationId="018f63f1-0000-7000-8000-00000000000a"
+        invitations={invitations}
+        callerCapabilities={callerCapabilities}
+      />
+    </NextIntlClientProvider>,
   );
 }
 

@@ -1,0 +1,17 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-5, 1.25rem);
+  max-inline-size: 42rem;
+}
+
+.title {
+  font-size: var(--sc-font-size-2xl, 1.75rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+.intro {
+  color: var(--sc-color-text-muted, #555);
+  margin: 0;
+}

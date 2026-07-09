@@ -1,0 +1,52 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-5, 1.25rem);
+  max-inline-size: 48rem;
+  margin-inline: auto;
+  padding-block: var(--sc-space-6, 1.5rem);
+}
+
+.title {
+  font-size: var(--sc-font-size-2xl, 1.75rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+.trading {
+  color: var(--sc-color-text-muted, #555);
+  margin: 0;
+}
+
+.notice {
+  padding: var(--sc-space-3, 0.75rem);
+  border-radius: var(--sc-radius-sm, 0.25rem);
+  background: var(--sc-color-info-surface, #eef4fb);
+  font-size: var(--sc-font-size-sm, 0.9rem);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-2, 0.5rem);
+}
+
+.sectionTitle {
+  font-size: var(--sc-font-size-lg, 1.25rem);
+  font-weight: 600;
+  margin: 0;
+}
+
+.meta {
+  color: var(--sc-color-text-muted, #666);
+  font-size: var(--sc-font-size-sm, 0.875rem);
+}
+
+.notFound {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-3, 0.75rem);
+  max-inline-size: 32rem;
+  margin-inline: auto;
+  padding-block: var(--sc-space-6, 1.5rem);
+}

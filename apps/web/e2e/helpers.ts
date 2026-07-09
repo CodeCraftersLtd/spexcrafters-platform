@@ -1,6 +1,6 @@
 import { expect, type APIRequestContext, type Page } from '@playwright/test';
 
-import en from '../messages/en.json';
+import { en } from './messages';
 
 /**
  * Shared smoke-test helpers: Mailpit polling and the register → verify →
@@ -156,7 +156,11 @@ export async function registerVerifyLogin(
   await page.getByLabel(en.auth.register.passwordLabel).fill(user.password);
   await page.getByRole('button', { name: en.auth.register.submit }).click();
 
-  await expect(page.getByText(en.auth.register.checkEmail.title)).toBeVisible();
+  // Argon2id makes registration the slowest step; allow generous headroom under
+  // concurrent load so the success state isn't missed by an over-eager timeout.
+  await expect(page.getByText(en.auth.register.checkEmail.title)).toBeVisible({
+    timeout: 30_000,
+  });
 
   // 2. Pull the verification link from Mailpit and follow it.
   const token = await findVerificationToken(request, user.email);

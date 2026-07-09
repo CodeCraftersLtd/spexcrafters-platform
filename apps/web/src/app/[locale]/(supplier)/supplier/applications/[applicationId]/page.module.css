@@ -1,0 +1,63 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-6, 1.5rem);
+  max-inline-size: 60rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sc-space-3, 0.75rem);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--sc-font-size-2xl, 1.75rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-4, 1rem);
+  padding: var(--sc-space-5, 1.25rem);
+  border: 1px solid var(--sc-color-border, #ddd);
+  border-radius: var(--sc-radius-md, 0.5rem);
+  background: var(--sc-color-surface, #fff);
+}
+
+.sectionTitle {
+  font-size: var(--sc-font-size-lg, 1.25rem);
+  font-weight: 600;
+  margin: 0;
+}
+
+.intro {
+  color: var(--sc-color-text-muted, #555);
+  margin: 0;
+}
+
+.notFound {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sc-space-3, 0.75rem);
+  max-inline-size: 32rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding-block: var(--sc-space-1, 0.25rem);
+  padding-inline: var(--sc-space-3, 0.75rem);
+  border-radius: var(--sc-radius-pill, 999px);
+  font-weight: 600;
+  font-size: var(--sc-font-size-sm, 0.875rem);
+  background: var(--sc-color-surface-muted, #eee);
+}
+
+.statusBadge[data-tone='success'] { background: var(--sc-color-success-surface, #e4f6e8); }
+.statusBadge[data-tone='danger'] { background: var(--sc-color-danger-surface, #fbe4e4); }
+.statusBadge[data-tone='warning'] { background: var(--sc-color-warning-surface, #fbf1d9); }
+.statusBadge[data-tone='info'] { background: var(--sc-color-info-surface, #e3f0fb); }

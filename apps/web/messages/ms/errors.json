@@ -1,0 +1,25 @@
+{
+  "server": {
+    "unexpected": "Something went wrong. Please try again.",
+    "forbidden": "You do not have permission to do that.",
+    "authorization": "You do not have permission to do that.",
+    "not-found": "That item could not be found.",
+    "conflict": "That action conflicts with the current state. Refresh and try again.",
+    "version-conflict": "Someone else changed this. Refresh and try again.",
+    "validation-failed": "Some details are invalid. Please review and try again.",
+    "unauthenticated": "Your session has expired. Please sign in again.",
+    "rate-limited": "Too many requests. Please wait and try again.",
+    "token-gone": "That link or token is no longer valid."
+  },
+  "notFound": {
+    "backHome": "Back to homepage",
+    "body": "The page you are looking for does not exist or has moved.",
+    "metaTitle": "Page not found",
+    "title": "Page not found"
+  },
+  "unexpected": {
+    "body": "An unexpected error occurred. You can try again.",
+    "retry": "Try again",
+    "title": "Something went wrong"
+  }
+}

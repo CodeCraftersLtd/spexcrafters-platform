@@ -1,0 +1,131 @@
+{
+  "acceptInvitation": {
+    "accepting": "Accepting your invitation…",
+    "alreadyMember": "You are already a member of this organization.",
+    "errorTitle": "We could not accept this invitation",
+    "expired": "This invitation has expired or was already used. Ask your organization to send a new one.",
+    "genericError": "Something went wrong on our side. Try again shortly.",
+    "goToOrganization": "Open {org}",
+    "goToOrganizations": "Go to your organizations",
+    "identityMismatch": "This invitation was sent to a different email address. Sign in with the invited email, then open the link again.",
+    "metaTitle": "Accept invitation",
+    "missingToken": "This invitation link is missing its token. Ask your organization to send a new invitation.",
+    "successBody": "You are now a member of {org}.",
+    "successTitle": "Invitation accepted",
+    "title": "Organization invitation"
+  },
+  "create": {
+    "cancel": "Back to organizations",
+    "countryHint": "Two-letter country code, like DE or CN.",
+    "countryLabel": "Country (optional)",
+    "metaTitle": "New organization",
+    "nameHint": "The legal or trading name your partners will see.",
+    "nameLabel": "Organization name",
+    "submit": "Create organization",
+    "subtitle": "Set up a shared workspace for your company. You become its first owner.",
+    "title": "Create an organization",
+    "typeLabel": "Organization type"
+  },
+  "list": {
+    "createCta": "Create organization",
+    "empty": {
+      "body": "Create an organization to work with your team on RFQs, quotations, and supplier relationships.",
+      "cta": "Create organization",
+      "title": "No organizations yet"
+    },
+    "intro": "Organizations you belong to on SpexCrafters.",
+    "joined": "Joined {date}",
+    "loadError": "We could not load your organizations. Try again shortly.",
+    "open": "Open {name}",
+    "roleLabel": "Your role",
+    "title": "Your organizations"
+  },
+  "metaTitle": "Organizations",
+  "roles": {
+    "ADMIN": "Admin",
+    "MEMBER": "Member",
+    "OWNER": "Owner"
+  },
+  "serverErrors": {
+    "authorization": "You do not have permission to do that.",
+    "conflict": "This organization changed while you were editing. Reload the page and try again.",
+    "duplicate-invitation": "A pending invitation for this email already exists.",
+    "duplicate-membership": "This person is already a member of the organization.",
+    "forbidden": "You do not have permission to do that.",
+    "last-owner": "An organization must keep at least one owner. Promote another member to owner first.",
+    "not-found": "This organization does not exist, or you do not have access to it.",
+    "rate-limited": "Too many attempts. Wait a moment, then try again.",
+    "token-gone": "This invitation is no longer valid.",
+    "unauthenticated": "Your session has expired. Sign in again.",
+    "unexpected": "Something went wrong on our side. Try again shortly.",
+    "validation-failed": "Some fields need attention. Review the messages below.",
+    "version-conflict": "This organization changed while you were editing. Reload the page and try again."
+  },
+  "types": {
+    "BUYER": "Buyer",
+    "HYBRID": "Buyer & supplier",
+    "SUPPLIER": "Supplier"
+  },
+  "validation": {
+    "countryInvalid": "Enter a two-letter country code, like DE.",
+    "emailInvalid": "Enter a valid email address, like name@company.com.",
+    "emailRequired": "Enter an email address.",
+    "emailTooLong": "Email addresses can be at most 254 characters.",
+    "nameRequired": "Enter an organization name.",
+    "nameTooLong": "Organization names can be at most 120 characters.",
+    "nameTooShort": "Organization names must be at least 2 characters.",
+    "roleRequired": "Choose a role.",
+    "typeRequired": "Choose an organization type."
+  },
+  "workspace": {
+    "countryLabel": "Country",
+    "createdLabel": "Created",
+    "invitations": {
+      "emailLabel": "Email",
+      "empty": "No invitations yet.",
+      "expires": "Expires {date}",
+      "inviteTitle": "Invite a member",
+      "listLabel": "Pending and past invitations",
+      "revoke": "Revoke",
+      "revokeInvitationLabel": "Revoke the invitation for {email}",
+      "roleLabel": "Role",
+      "sent": "Invitation sent.",
+      "status": {
+        "ACCEPTED": "Accepted",
+        "EXPIRED": "Expired",
+        "PENDING": "Pending",
+        "REVOKED": "Revoked"
+      },
+      "submit": "Send invitation",
+      "title": "Invitations"
+    },
+    "loadError": "We could not load this organization. Try again shortly.",
+    "members": {
+      "empty": "No members yet.",
+      "leave": "Leave organization",
+      "listLabel": "Organization members",
+      "remove": "Remove",
+      "removeMemberLabel": "Remove {name}",
+      "roleSelectLabel": "Role for {name}",
+      "title": "Members",
+      "youLabel": "You"
+    },
+    "metaTitle": "Organization",
+    "notFound": {
+      "backToList": "Back to organizations",
+      "body": "This organization does not exist, or you do not have access to it.",
+      "title": "Organization not found"
+    },
+    "profile": {
+      "countryHint": "Two-letter country code, like DE or CN.",
+      "countryLabel": "Country (optional)",
+      "nameLabel": "Organization name",
+      "saved": "Organization updated.",
+      "submit": "Save changes",
+      "title": "Organization settings"
+    },
+    "summaryLabel": "Organization details",
+    "typeLabel": "Type",
+    "yourRoleLabel": "Your role"
+  }
+}

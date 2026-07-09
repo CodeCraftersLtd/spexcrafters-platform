@@ -1,0 +1,23 @@
+{
+  "buyer": {
+    "dashboard": "Übersicht",
+    "label": "Käufer-Navigation",
+    "organizations": "Organisationen"
+  },
+  "footer": {
+    "accessibility": "Barrierefreiheit",
+    "cookies": "Cookie-Richtlinie",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen"
+  },
+  "language": "Sprache",
+  "legal": "Rechtliches",
+  "logout": "Abmelden",
+  "main": "Hauptnavigation",
+  "organizations": {
+    "dashboard": "Übersicht",
+    "label": "Organisations-Navigation",
+    "organizations": "Organisationen"
+  }
+}

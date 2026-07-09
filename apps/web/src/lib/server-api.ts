@@ -13,3 +13,11 @@ export function createServerApiClient(accessToken: string): ApiClient {
     getAccessToken: () => accessToken,
   });
 }
+
+/**
+ * Unauthenticated API client for public endpoints (e.g. listLocales,
+ * getPublicSupplierProfileFoundation). No bearer token is ever attached.
+ */
+export function createPublicApiClient(): ApiClient {
+  return createApiClient({ baseUrl: API_BASE_URL });
+}

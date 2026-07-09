@@ -1,0 +1,62 @@
+{
+  "actions": {
+    "back": "Zurück",
+    "cancel": "Abbrechen",
+    "loading": "Wird geladen…",
+    "retry": "Erneut versuchen",
+    "save": "Änderungen speichern"
+  },
+  "appName": "SpexCrafters",
+  "buyer": {
+    "dashboardIntro": "Ihre Anfragen, Angebote und Nachrichten erscheinen hier.",
+    "metaTitle": "Übersicht",
+    "organizationsCard": {
+      "body": "Erstellen Sie eine Organisation oder verwalten Sie Ihre Teams.",
+      "cta": "Zu den Organisationen",
+      "title": "Organisationen"
+    },
+    "welcome": "Willkommen, {name}"
+  },
+  "comingSoon": "Demnächst verfügbar",
+  "copyright": "© {year} SpexCrafters. Alle Rechte vorbehalten.",
+  "fallback": {
+    "machineTranslated": "Maschinell übersetzt",
+    "showingLanguage": "Anzeige in {language}",
+    "stale": "Diese Übersetzung ist möglicherweise veraltet",
+    "untranslated": "Noch nicht übersetzt – Englisch wird angezeigt"
+  },
+  "home": {
+    "cta": {
+      "createAccount": "Konto erstellen",
+      "findSuppliers": "Lieferanten finden"
+    },
+    "hero": {
+      "subtitle": "Beziehen Sie Gläser, Fassungen, Maschinen und Dienstleistungen von geprüften Herstellern weltweit – mit Spezifikationen, auf die Sie sich verlassen können.",
+      "title": "Die Optikbranche, präzise kalibriert."
+    }
+  },
+  "itemCount": "{count, plural, =0 {Keine Einträge} one {# Eintrag} other {# Einträge}}",
+  "localeName": {
+    "ar": "العربية",
+    "bn": "বাংলা",
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fa": "فارسی",
+    "fil": "Filipino",
+    "fr": "Français",
+    "hi": "हिन्दी",
+    "id": "Bahasa Indonesia",
+    "ja": "日本語",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "pt": "Português",
+    "ru": "Русский",
+    "th": "ไทย",
+    "tr": "Türkçe",
+    "ur": "اردو",
+    "vi": "Tiếng Việt",
+    "zh-CN": "简体中文"
+  },
+  "tagline": "Globaler B2B-Marktplatz für Optik"
+}

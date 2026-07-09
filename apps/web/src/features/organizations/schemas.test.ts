@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import en from '../../../messages/en.json';
+import organizations from '../../../messages/en/organizations.json';
 
 import { createOrganizationSchema, inviteMemberSchema } from './schemas';
 
-const validation = en.organizations.validation;
+const validation = organizations.validation as Record<string, string>;
+/** Minimal `organizations.validation` translator (next-intl `t` shape). */
+const t = (key: string) => validation[key] ?? key;
 
 describe('createOrganizationSchema', () => {
-  const schema = createOrganizationSchema(validation);
+  const schema = createOrganizationSchema(t);
 
   it('accepts a valid organization and trims the name', () => {
     const result = schema.parse({
@@ -73,7 +75,7 @@ describe('createOrganizationSchema', () => {
 });
 
 describe('inviteMemberSchema', () => {
-  const schema = inviteMemberSchema(validation);
+  const schema = inviteMemberSchema(t);
 
   it('accepts a valid MEMBER invitation', () => {
     expect(schema.parse({ email: 'ada@example.com', role: 'MEMBER' })).toEqual({

@@ -1,95 +1,55 @@
+import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 
+import { LOCALE_ALIASES, isSupportedLocale } from '@/i18n/locales';
+import { routing } from '@/i18n/routing';
 import { SESSION_COOKIE_NAME } from '@/lib/cookies';
-import { defaultLocale, isLocale, locales, type Locale } from '@/lib/i18n';
 
-interface LanguageRange {
-  tag: string;
-  quality: number;
-}
-
-function parseAcceptLanguage(header: string): LanguageRange[] {
-  return header
-    .split(',')
-    .map((part): LanguageRange | null => {
-      const [rawTag, ...params] = part.trim().split(';');
-      const tag = rawTag?.trim();
-      if (!tag) {
-        return null;
-      }
-      let quality = 1;
-      for (const param of params) {
-        const [key, value] = param.trim().split('=');
-        if (key === 'q' && value !== undefined) {
-          const parsed = Number.parseFloat(value);
-          if (!Number.isNaN(parsed)) {
-            quality = parsed;
-          }
-        }
-      }
-      return { tag, quality };
-    })
-    .filter((range): range is LanguageRange => range !== null && range.quality > 0)
-    .sort((a, b) => b.quality - a.quality);
-}
-
-function matchLocale(tag: string): Locale | null {
-  const lower = tag.toLowerCase();
-  // Exact match first (case-insensitive), e.g. "zh-hans" → "zh-Hans".
-  for (const locale of locales) {
-    if (locale.toLowerCase() === lower) {
-      return locale;
-    }
-  }
-  // Base-language match: "en-GB" → "en", "zh-CN"/"zh" → "zh-Hans", "fr-CA" → "fr".
-  const base = lower.split('-')[0];
-  if (base === 'zh') {
-    return 'zh-Hans';
-  }
-  for (const locale of locales) {
-    if (locale.toLowerCase().split('-')[0] === base) {
-      return locale;
-    }
-  }
-  return null;
-}
-
-function negotiateLocale(request: NextRequest): Locale {
-  const header = request.headers.get('accept-language');
-  if (!header) {
-    return defaultLocale;
-  }
-  for (const range of parseAcceptLanguage(header)) {
-    if (range.tag === '*') {
-      return defaultLocale;
-    }
-    const match = matchLocale(range.tag);
-    if (match) {
-      return match;
-    }
-  }
-  return defaultLocale;
-}
+/**
+ * Composed middleware (ADR-019): next-intl owns locale routing and negotiation
+ * (URL → sc_locale cookie → Accept-Language → en, persisting explicit choices);
+ * the Phase-1..6 session guard is preserved on top of it.
+ *
+ * Order matters — locale is resolved first, then the auth guard runs against the
+ * already-localized path. CSRF/session integrity is a BFF-route concern (the
+ * /api/* handlers) and is unaffected here.
+ */
+const handleI18n = createMiddleware(routing);
 
 /** Second path segments (after the locale) that require a session cookie. */
-const GUARDED_SEGMENTS = new Set(['buyer', 'organizations', 'invitations']);
+const GUARDED_SEGMENTS = new Set([
+  'buyer',
+  'organizations',
+  'invitations',
+  'supplier',
+  'reviewer',
+]);
 
 export function middleware(request: NextRequest): NextResponse {
   const { pathname, search } = request.nextUrl;
-  const [, firstSegment = '', secondSegment = ''] = pathname.split('/');
+  const segments = pathname.split('/');
+  const firstSegment = segments[1] ?? '';
+  const secondSegment = segments[2] ?? '';
 
-  // No valid locale prefix: redirect to the negotiated locale, keeping path + query.
-  if (!isLocale(firstSegment)) {
-    const locale = negotiateLocale(request);
+  // 1. Documented alias redirect at the edge: /zh or /zh-Hans → /zh-CN,
+  //    preserving the remainder of the path and query (keeps live links working).
+  const alias = LOCALE_ALIASES[firstSegment.toLowerCase()];
+  if (alias && firstSegment !== alias) {
     const url = request.nextUrl.clone();
-    url.pathname = `/${locale}${pathname === '/' ? '' : pathname}`;
+    segments[1] = alias;
+    url.pathname = segments.join('/');
     return NextResponse.redirect(url);
   }
 
-  // UX auth guard for the signed-in areas. Presence-only check — the layouts
-  // and pages enforce the session server-side; this just short-circuits the
-  // round trip for signed-out visitors.
-  if (GUARDED_SEGMENTS.has(secondSegment) && !request.cookies.has(SESSION_COOKIE_NAME)) {
+  // 2. UX auth guard for signed-in areas. Presence-only check — layouts/pages
+  //    enforce the session server-side; this short-circuits the round trip for
+  //    signed-out visitors. Runs only on already-localized paths so the redirect
+  //    target keeps the active locale (locale-first, per ADR-019).
+  if (
+    isSupportedLocale(firstSegment) &&
+    GUARDED_SEGMENTS.has(secondSegment) &&
+    !request.cookies.has(SESSION_COOKIE_NAME)
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = `/${firstSegment}/auth/login`;
     url.search = '';
@@ -97,10 +57,12 @@ export function middleware(request: NextRequest): NextResponse {
     return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  // 3. Locale negotiation / routing (adds the prefix on unprefixed requests and
+  //    sets the sc_locale cookie on explicit selection).
+  return handleI18n(request);
 }
 
 export const config = {
   // Skip API routes, Next internals, and any path with a file extension.
-  matcher: ['/((?!api|_next|.*\\..*).*)'],
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 };

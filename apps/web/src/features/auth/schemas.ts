@@ -1,51 +1,53 @@
 import { z } from 'zod';
 
-import type { Dictionary } from '@/lib/i18n';
-
-/** Localized validation messages, taken from the active dictionary. */
-export type AuthValidationMessages = Dictionary['auth']['validation'];
+import type { TranslateFn } from '@/i18n/translator';
 
 /**
+ * Localized validation messages come from the `auth.validation` namespace via
+ * next-intl. The builders take a translate function `(key) => string` so the
+ * same schema works in Client Components (`useTranslations('auth.validation')`)
+ * and in tests.
+ *
  * Constraints mirror the OpenAPI contract (packages/api-client/spec):
  * email ≤ 254 (format: email), password 12..128, displayName 1..120.
  */
-export function createRegisterSchema(v: AuthValidationMessages) {
+export function createRegisterSchema(t: TranslateFn) {
   return z.object({
     displayName: z
       .string()
       .trim()
-      .min(1, v.displayNameRequired)
-      .max(120, v.displayNameTooLong),
+      .min(1, t('displayNameRequired'))
+      .max(120, t('displayNameTooLong')),
     email: z
       .string()
       .trim()
-      .min(1, v.emailRequired)
-      .max(254, v.emailTooLong)
-      .email(v.emailInvalid),
-    password: z.string().min(12, v.passwordTooShort).max(128, v.passwordTooLong),
+      .min(1, t('emailRequired'))
+      .max(254, t('emailTooLong'))
+      .email(t('emailInvalid')),
+    password: z.string().min(12, t('passwordTooShort')).max(128, t('passwordTooLong')),
   });
 }
 
-export function createLoginSchema(v: AuthValidationMessages) {
+export function createLoginSchema(t: TranslateFn) {
   return z.object({
     email: z
       .string()
       .trim()
-      .min(1, v.emailRequired)
-      .max(254, v.emailTooLong)
-      .email(v.emailInvalid),
-    password: z.string().min(1, v.passwordRequired).max(128, v.passwordTooLong),
+      .min(1, t('emailRequired'))
+      .max(254, t('emailTooLong'))
+      .email(t('emailInvalid')),
+    password: z.string().min(1, t('passwordRequired')).max(128, t('passwordTooLong')),
   });
 }
 
-export function createResendVerificationSchema(v: AuthValidationMessages) {
+export function createResendVerificationSchema(t: TranslateFn) {
   return z.object({
     email: z
       .string()
       .trim()
-      .min(1, v.emailRequired)
-      .max(254, v.emailTooLong)
-      .email(v.emailInvalid),
+      .min(1, t('emailRequired'))
+      .max(254, t('emailTooLong'))
+      .email(t('emailInvalid')),
   });
 }
 

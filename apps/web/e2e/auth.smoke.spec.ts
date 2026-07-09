@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import en from '../messages/en.json';
+import { en } from './messages';
 
 import { findVerificationToken, uniqueSmokeUser } from './helpers';
 
@@ -82,7 +82,7 @@ test.describe('auth vertical slice', () => {
 
   test('root path negotiates a locale prefix @smoke', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveURL(/\/(en|zh-Hans|fr|de)(\/|$)/);
+    await expect(page).toHaveURL(/\/(en|zh-CN|fr|de|ar)(\/|$)/);
     await expect(
       page.getByRole('heading', { name: en.home.hero.title }),
     ).toBeVisible();

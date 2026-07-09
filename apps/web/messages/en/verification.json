@@ -1,0 +1,28 @@
+{
+  "status": {
+    "title": "Verification status",
+    "intro": "Verification is scope-based: each area is assessed independently. There is no single \"verified\" badge.",
+    "disclaimer": "A supplier is never simply \"verified\". Each scope below reflects an independent assessment against submitted evidence.",
+    "caseStatusLabel": "Overall case",
+    "openedLabel": "Opened {date}",
+    "empty": "No verification scopes have been requested yet.",
+    "scopeLabel": "Scope",
+    "stateLabel": "State",
+    "decidedLabel": "Decided {date}",
+    "validFromLabel": "Valid from {date}",
+    "validUntilLabel": "Valid until {date}",
+    "reasonLabel": "Reason",
+    "evidenceCount": "{count, plural, =0 {No linked evidence} one {# linked file} other {# linked files}}",
+    "state": {
+      "NOT_REQUESTED": "Not requested",
+      "PENDING": "Pending",
+      "UNDER_REVIEW": "Under review",
+      "VERIFIED": "Verified",
+      "REJECTED": "Not verified",
+      "CHANGES_REQUESTED": "Changes requested",
+      "EXPIRED": "Expired",
+      "SUSPENDED": "Suspended",
+      "REVOKED": "Revoked"
+    }
+  }
+}

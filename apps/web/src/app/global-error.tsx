@@ -1,11 +1,11 @@
 'use client';
 
-import en from '../../messages/en.json';
+import errors from '../../messages/en/errors.json';
 
 /**
  * Last-resort error boundary: replaces the root layout entirely, so it must
- * render its own <html>/<body>. Dictionaries cannot be negotiated at this
- * point — the default-locale copy is used. Styles are inline because the
+ * render its own <html>/<body>. Messages cannot be negotiated at this point —
+ * the default-locale (en) copy is used directly. Styles are inline because the
  * token stylesheet may not have loaded when this boundary renders.
  */
 interface GlobalErrorProps {
@@ -14,7 +14,7 @@ interface GlobalErrorProps {
 }
 
 export default function GlobalError({ reset }: GlobalErrorProps) {
-  const copy = en.errors.unexpected;
+  const copy = errors.unexpected;
 
   return (
     <html lang="en">

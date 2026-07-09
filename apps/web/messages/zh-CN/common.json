@@ -1,0 +1,62 @@
+{
+  "actions": {
+    "back": "返回",
+    "cancel": "取消",
+    "loading": "加载中…",
+    "retry": "重试",
+    "save": "保存更改"
+  },
+  "appName": "SpexCrafters",
+  "buyer": {
+    "dashboardIntro": "您的询价、报价和消息将显示在此处。",
+    "metaTitle": "工作台",
+    "organizationsCard": {
+      "body": "创建组织或管理您所属的团队。",
+      "cta": "前往组织",
+      "title": "组织"
+    },
+    "welcome": "欢迎，{name}"
+  },
+  "comingSoon": "敬请期待",
+  "copyright": "© {year} SpexCrafters。保留所有权利。",
+  "fallback": {
+    "machineTranslated": "机器翻译",
+    "showingLanguage": "正在显示{language}",
+    "stale": "此翻译可能已过时",
+    "untranslated": "尚未翻译——显示英文"
+  },
+  "home": {
+    "cta": {
+      "createAccount": "创建账户",
+      "findSuppliers": "查找供应商"
+    },
+    "hero": {
+      "subtitle": "从全球经过验证的制造商采购镜片、镜架、机械和服务——规格值得信赖。",
+      "title": "校准光学行业。"
+    }
+  },
+  "itemCount": "{count, plural, =0 {没有条目} one {# 项} other {# 项}}",
+  "localeName": {
+    "ar": "العربية",
+    "bn": "বাংলা",
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fa": "فارسی",
+    "fil": "Filipino",
+    "fr": "Français",
+    "hi": "हिन्दी",
+    "id": "Bahasa Indonesia",
+    "ja": "日本語",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "pt": "Português",
+    "ru": "Русский",
+    "th": "ไทย",
+    "tr": "Türkçe",
+    "ur": "اردو",
+    "vi": "Tiếng Việt",
+    "zh-CN": "简体中文"
+  },
+  "tagline": "全球光学 B2B 采购平台"
+}

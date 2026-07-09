@@ -1,0 +1,62 @@
+{
+  "actions": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "save": "Save changes"
+  },
+  "appName": "SpexCrafters",
+  "buyer": {
+    "dashboardIntro": "Your RFQs, quotations, and messages will appear here.",
+    "metaTitle": "Dashboard",
+    "organizationsCard": {
+      "body": "Create an organization or manage the teams you belong to.",
+      "cta": "Go to organizations",
+      "title": "Organizations"
+    },
+    "welcome": "Welcome, {name}"
+  },
+  "comingSoon": "Coming soon",
+  "copyright": "© {year} SpexCrafters. All rights reserved.",
+  "fallback": {
+    "machineTranslated": "Machine translated",
+    "showingLanguage": "Showing {language}",
+    "stale": "This translation may be out of date",
+    "untranslated": "Not yet translated — showing English"
+  },
+  "home": {
+    "cta": {
+      "createAccount": "Create account",
+      "findSuppliers": "Find suppliers"
+    },
+    "hero": {
+      "subtitle": "Source lenses, frames, machinery, and services from verified manufacturers worldwide — with specifications you can trust.",
+      "title": "The optical industry, calibrated."
+    }
+  },
+  "itemCount": "{count, plural, =0 {No items} one {# item} other {# items}}",
+  "localeName": {
+    "ar": "العربية",
+    "bn": "বাংলা",
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fa": "فارسی",
+    "fil": "Filipino",
+    "fr": "Français",
+    "hi": "हिन्दी",
+    "id": "Bahasa Indonesia",
+    "ja": "日本語",
+    "ko": "한국어",
+    "ms": "Bahasa Melayu",
+    "pt": "Português",
+    "ru": "Русский",
+    "th": "ไทย",
+    "tr": "Türkçe",
+    "ur": "اردو",
+    "vi": "Tiếng Việt",
+    "zh-CN": "简体中文"
+  },
+  "tagline": "Global B2B optical marketplace"
+}

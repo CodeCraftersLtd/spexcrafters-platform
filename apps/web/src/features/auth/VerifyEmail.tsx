@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Alert, Button, FormField, Input } from '@spexcrafters/ui';
 
-import type { Dictionary, Locale } from '@/lib/i18n';
+import type { SupportedLocale } from '@/i18n/locales';
+import type { TranslateFn, Translator } from '@/i18n/translator';
 import { sendJson } from '@/lib/csrf-client';
 import { readBffError, translateError } from '@/features/auth/client-errors';
 import {
@@ -18,12 +20,9 @@ import {
 import styles from './auth-forms.module.css';
 
 interface VerifyEmailProps {
-  locale: Locale;
+  locale: SupportedLocale;
   /** Token from the emailed link (?token=…); null when absent. */
   token: string | null;
-  copy: Dictionary['auth']['verifyEmail'];
-  validation: Dictionary['auth']['validation'];
-  serverErrors: Dictionary['auth']['serverErrors'];
 }
 
 type VerificationState =
@@ -31,17 +30,12 @@ type VerificationState =
   | { status: 'success' }
   | { status: 'error'; message: string };
 
-export function VerifyEmail({
-  locale,
-  token,
-  copy,
-  validation,
-  serverErrors,
-}: VerifyEmailProps) {
+export function VerifyEmail({ locale, token }: VerifyEmailProps) {
+  const t = useTranslations('auth.verifyEmail');
+  const serverErrors = useTranslations('auth.serverErrors') as unknown as Translator;
+
   const [state, setState] = useState<VerificationState>(
-    token
-      ? { status: 'verifying' }
-      : { status: 'error', message: copy.missingToken },
+    token ? { status: 'verifying' } : { status: 'error', message: t('missingToken') },
   );
   // Guards the effect against React Strict Mode double-invocation so the
   // single-use token is posted exactly once per page view (the endpoint is
@@ -61,7 +55,7 @@ export function VerifyEmail({
         response = await sendJson('/api/auth/verify-email', 'POST', { token });
       } catch {
         if (!cancelled) {
-          setState({ status: 'error', message: serverErrors.unexpected });
+          setState({ status: 'error', message: serverErrors('unexpected') });
         }
         return;
       }
@@ -79,12 +73,13 @@ export function VerifyEmail({
     return () => {
       cancelled = true;
     };
-  }, [token, serverErrors]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   if (state.status === 'verifying') {
     return (
       <p role="status" aria-live="polite">
-        {copy.verifying}
+        {t('verifying')}
       </p>
     );
   }
@@ -92,11 +87,11 @@ export function VerifyEmail({
   if (state.status === 'success') {
     return (
       <div className={styles.stack}>
-        <Alert tone="success" title={copy.successTitle}>
-          {copy.successBody}
+        <Alert tone="success" title={t('successTitle')}>
+          {t('successBody')}
         </Alert>
         <p>
-          <Link href={`/${locale}/auth/login`}>{copy.goToLogin}</Link>
+          <Link href={`/${locale}/auth/login`}>{t('goToLogin')}</Link>
         </p>
       </div>
     );
@@ -104,25 +99,20 @@ export function VerifyEmail({
 
   return (
     <div className={styles.stack}>
-      <Alert tone="danger" title={copy.errorTitle}>
+      <Alert tone="danger" title={t('errorTitle')}>
         {state.message}
       </Alert>
-      <ResendForm copy={copy} validation={validation} serverErrors={serverErrors} />
+      <ResendForm />
     </div>
   );
 }
 
-interface ResendFormProps {
-  copy: Dictionary['auth']['verifyEmail'];
-  validation: Dictionary['auth']['validation'];
-  serverErrors: Dictionary['auth']['serverErrors'];
-}
+function ResendForm() {
+  const t = useTranslations('auth.verifyEmail');
+  const validate = useTranslations('auth.validation') as unknown as TranslateFn;
+  const serverErrors = useTranslations('auth.serverErrors') as unknown as Translator;
 
-function ResendForm({ copy, validation, serverErrors }: ResendFormProps) {
-  const schema = useMemo(
-    () => createResendVerificationSchema(validation),
-    [validation],
-  );
+  const schema = useMemo(() => createResendVerificationSchema(validate), [validate]);
   const {
     register,
     handleSubmit,
@@ -145,15 +135,21 @@ function ResendForm({ copy, validation, serverErrors }: ResendFormProps) {
   });
 
   if (outcome === 'accepted') {
-    return <Alert tone="info">{copy.resendAccepted}</Alert>;
+    return <Alert tone="info">{t('resendAccepted')}</Alert>;
   }
 
   return (
-    <form className={styles.form} method="post" onSubmit={onSubmit} noValidate aria-label={copy.resendTitle}>
-      <h2>{copy.resendTitle}</h2>
-      {outcome === 'failed' ? <Alert tone="danger">{serverErrors.unexpected}</Alert> : null}
+    <form
+      className={styles.form}
+      method="post"
+      onSubmit={onSubmit}
+      noValidate
+      aria-label={t('resendTitle')}
+    >
+      <h2>{t('resendTitle')}</h2>
+      {outcome === 'failed' ? <Alert tone="danger">{serverErrors('unexpected')}</Alert> : null}
       <FormField
-        label={copy.resendEmailLabel}
+        label={t('resendEmailLabel')}
         htmlFor="resend-email"
         error={errors.email?.message}
       >
@@ -168,7 +164,7 @@ function ResendForm({ copy, validation, serverErrors }: ResendFormProps) {
       </FormField>
       <div className={styles.actions}>
         <Button variant="secondary" size="md" type="submit" loading={isSubmitting}>
-          {copy.resendSubmit}
+          {t('resendSubmit')}
         </Button>
       </div>
     </form>
