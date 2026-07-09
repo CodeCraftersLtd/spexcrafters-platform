@@ -1,0 +1,311 @@
+{
+  "nav": {
+    "label": "Taxonomy administration",
+    "dashboard": "Overview",
+    "categories": "Categories",
+    "attributes": "Attributes",
+    "enumerations": "Enumerations",
+    "brands": "Brands",
+    "certifications": "Certifications",
+    "units": "Units"
+  },
+  "forbidden": {
+    "title": "Taxonomy administration only",
+    "body": "This area is for platform staff who manage the optical taxonomy registry. Your account does not have taxonomy access."
+  },
+  "unauthenticated": {
+    "title": "Sign in required",
+    "body": "Sign in with a platform-staff account to continue."
+  },
+  "loadError": "We could not load the taxonomy workspace. Please try again.",
+  "dashboard": {
+    "metaTitle": "Taxonomy administration",
+    "title": "Optical taxonomy registry",
+    "intro": "Manage categories, attributes, enumerations, brands, certifications and units for the optical catalog.",
+    "codeNotice": "Codes are permanent identifiers and cannot be changed after creation. Display names are translated per locale."
+  },
+  "common": {
+    "codeLabel": "Code",
+    "nameLabel": "Name",
+    "descriptionLabel": "Description",
+    "originalLocaleLabel": "Authoring language",
+    "sortOrderLabel": "Sort order",
+    "localeLabel": "Language",
+    "create": "Create",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add",
+    "creating": "Creating…",
+    "saving": "Saving…",
+    "empty": "Nothing here yet.",
+    "active": "Active",
+    "inactive": "Inactive",
+    "deprecated": "Deprecated",
+    "yes": "Yes",
+    "no": "No",
+    "slugPreview": "Slug preview: {slug}"
+  },
+  "categories": {
+    "title": "Categories",
+    "intro": "The optical category hierarchy. Each category has a permanent code and a classification.",
+    "treeLabel": "Category tree",
+    "empty": "No categories yet. Create the first one below.",
+    "childOf": "Child of {parent}",
+    "rootLabel": "Top level (no parent)",
+    "create": {
+      "title": "Create category",
+      "codeLabel": "Category code",
+      "codeHint": "Uppercase letters, numbers and underscores, e.g. FRAME_METAL.",
+      "parentLabel": "Parent category",
+      "classificationLabel": "Classification",
+      "nameLabel": "Display name",
+      "sortOrderLabel": "Sort order",
+      "originalLocaleLabel": "Authoring language",
+      "submit": "Create category",
+      "created": "Category created."
+    },
+    "activation": {
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "activated": "Category activated.",
+      "deactivated": "Category deactivated."
+    }
+  },
+  "classification": {
+    "LENS": "Lens",
+    "FRAME": "Frame",
+    "SUNGLASSES": "Sunglasses",
+    "CONTACT_LENS": "Contact lens",
+    "MACHINERY": "Machinery",
+    "LAB_EQUIPMENT": "Lab equipment",
+    "ACCESSORY": "Accessory",
+    "PACKAGING": "Packaging",
+    "COMPONENT": "Component",
+    "OTHER": "Other"
+  },
+  "attributes": {
+    "title": "Attributes",
+    "intro": "Specification attributes that categories can require in their templates.",
+    "empty": "No attributes yet. Create the first one below.",
+    "dataTypeLabel": "Data type",
+    "unitLabel": "Unit",
+    "enumerationLabel": "Enumeration",
+    "flagsLabel": "Flags",
+    "create": {
+      "title": "Create attribute",
+      "codeLabel": "Attribute code",
+      "codeHint": "Uppercase letters, numbers and underscores, e.g. LENS_INDEX.",
+      "dataTypeLabel": "Data type",
+      "unitLabel": "Unit code (optional)",
+      "enumerationLabel": "Enumeration code (optional)",
+      "nameLabel": "Display name",
+      "descriptionLabel": "Description (optional)",
+      "searchableLabel": "Searchable",
+      "filterableLabel": "Filterable",
+      "visibleLabel": "Visible",
+      "submit": "Create attribute",
+      "created": "Attribute created."
+    }
+  },
+  "dataType": {
+    "STRING": "Text",
+    "INTEGER": "Integer",
+    "DECIMAL": "Decimal",
+    "BOOLEAN": "Boolean",
+    "DATE": "Date",
+    "ENUMERATION": "Enumeration",
+    "MEASUREMENT": "Measurement",
+    "RANGE": "Range",
+    "JSON": "JSON",
+    "REFERENCE": "Reference",
+    "MULTI_SELECT": "Multi-select",
+    "SINGLE_SELECT": "Single-select",
+    "FILE_REFERENCE": "File reference",
+    "COLOR": "Color",
+    "COUNTRY": "Country",
+    "LANGUAGE": "Language",
+    "BRAND": "Brand",
+    "CERTIFICATION": "Certification"
+  },
+  "enumerations": {
+    "title": "Enumerations",
+    "intro": "Controlled value sets referenced by enumeration attributes.",
+    "empty": "No enumerations yet. Create the first one below.",
+    "valueCount": "{count, plural, =0 {No values} one {# value} other {# values}}",
+    "create": {
+      "title": "Create enumeration",
+      "codeLabel": "Enumeration code",
+      "codeHint": "Uppercase letters, numbers and underscores, e.g. LENS_MATERIAL.",
+      "submit": "Create enumeration",
+      "created": "Enumeration created."
+    },
+    "addValue": {
+      "title": "Add value",
+      "codeLabel": "Value code",
+      "labelLabel": "Label",
+      "sortOrderLabel": "Sort order",
+      "submit": "Add value",
+      "added": "Value added."
+    }
+  },
+  "brands": {
+    "title": "Brands",
+    "intro": "Manufacturer and product brands. New brands start as pending until approved.",
+    "empty": "No brands yet. Create the first one below.",
+    "canonicalNameLabel": "Canonical name",
+    "brandTypeLabel": "Brand type",
+    "countryLabel": "Country",
+    "approvalStatusLabel": "Approval status",
+    "create": {
+      "title": "Create brand",
+      "codeLabel": "Brand code",
+      "codeHint": "Uppercase letters, numbers and underscores, e.g. ACME_OPTICS.",
+      "brandTypeLabel": "Brand type",
+      "canonicalNameLabel": "Canonical name",
+      "displayNameLabel": "Display name (optional)",
+      "ownerCompanyLabel": "Owner company (optional)",
+      "manufacturerLabel": "Manufacturer (optional)",
+      "countryLabel": "Country (optional)",
+      "websiteLabel": "Website (optional)",
+      "submit": "Create brand",
+      "created": "Brand created."
+    },
+    "approval": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "approved": "Brand approved.",
+      "rejected": "Brand rejected."
+    }
+  },
+  "brandType": {
+    "LENS": "Lens",
+    "FRAME": "Frame",
+    "SUNGLASSES": "Sunglasses",
+    "CONTACT_LENS": "Contact lens",
+    "MACHINE": "Machine",
+    "ACCESSORY": "Accessory",
+    "GENERAL": "General"
+  },
+  "brandApprovalStatus": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected",
+    "DEPRECATED": "Deprecated"
+  },
+  "certifications": {
+    "title": "Certifications",
+    "intro": "Certification schemes suppliers can hold.",
+    "empty": "No certifications yet. Create the first one below.",
+    "categoryLabel": "Category",
+    "countryScopeLabel": "Country scope",
+    "create": {
+      "title": "Create certification",
+      "codeLabel": "Certification code",
+      "codeHint": "Uppercase letters, numbers and underscores, e.g. ISO_9001.",
+      "categoryLabel": "Category (optional)",
+      "countryScopeLabel": "Country scope (optional)",
+      "validityMonthsLabel": "Validity months (optional)",
+      "nameLabel": "Display name",
+      "descriptionLabel": "Description (optional)",
+      "submit": "Create certification",
+      "created": "Certification created."
+    }
+  },
+  "certificationCategory": {
+    "QUALITY": "Quality",
+    "SAFETY": "Safety",
+    "ENVIRONMENTAL": "Environmental",
+    "MEDICAL": "Medical",
+    "REGULATORY": "Regulatory"
+  },
+  "units": {
+    "title": "Units",
+    "intro": "Units of measurement referenced by measurement attributes.",
+    "empty": "No units yet. Create the first one below.",
+    "familyLabel": "Family",
+    "displayNameLabel": "Display name",
+    "create": {
+      "title": "Create unit",
+      "codeLabel": "Unit code",
+      "codeHint": "Short symbol or code, e.g. MM or D.",
+      "familyLabel": "Family",
+      "baseUnitLabel": "Base unit code (optional)",
+      "factorToBaseLabel": "Factor to base (optional)",
+      "displayNameLabel": "Display name",
+      "submit": "Create unit",
+      "created": "Unit created."
+    }
+  },
+  "unitFamily": {
+    "LENGTH": "Length",
+    "MASS": "Mass",
+    "POWER_DIOPTER": "Optical power (diopter)",
+    "ANGLE": "Angle",
+    "COUNT": "Count"
+  },
+  "specificationTemplate": {
+    "title": "Specification template",
+    "intro": "Attach attributes to a category to define the specifications suppliers must provide.",
+    "categoryLabel": "Category",
+    "templateCodeLabel": "Template code",
+    "attributesLabel": "Template attributes",
+    "addRow": "Add attribute",
+    "removeRow": "Remove",
+    "attributeLabel": "Attribute",
+    "requiredLabel": "Required",
+    "sortOrderLabel": "Sort order",
+    "empty": "No attributes attached. Add at least one before saving.",
+    "submit": "Save template",
+    "saved": "Specification template saved.",
+    "noAttributes": "Create an attribute first, then attach it here.",
+    "noCategories": "Create a category first, then define its template."
+  },
+  "translations": {
+    "title": "Translations",
+    "intro": "Manage per-locale display names. The authoring language is the source of truth.",
+    "localeLabel": "Language",
+    "nameLabel": "Translated name",
+    "descriptionLabel": "Translated description (optional)",
+    "sourceLabel": "Translation source",
+    "submit": "Save translation",
+    "saved": "Translation saved.",
+    "approve": "Approve translation",
+    "approved": "Translation approved.",
+    "statusLabel": "Status",
+    "originalBadge": "Original",
+    "staleBadge": "Needs review"
+  },
+  "translationSource": {
+    "HUMAN": "Human",
+    "MACHINE": "Machine",
+    "IMPORT": "Import"
+  },
+  "translationStatus": {
+    "DRAFT": "Draft",
+    "MACHINE": "Machine",
+    "HUMAN_REVIEWED": "Human reviewed",
+    "APPROVED": "Approved"
+  },
+  "validation": {
+    "codeRequired": "Enter a code.",
+    "codeInvalid": "Use uppercase letters, numbers and underscores only.",
+    "unitCodeInvalid": "Use letters, numbers and underscores only.",
+    "nameRequired": "Enter a display name.",
+    "classificationRequired": "Choose a classification.",
+    "dataTypeRequired": "Choose a data type.",
+    "brandTypeRequired": "Choose a brand type.",
+    "familyRequired": "Choose a family.",
+    "canonicalNameRequired": "Enter a canonical name.",
+    "displayNameRequired": "Enter a display name.",
+    "localeRequired": "Choose a language.",
+    "labelRequired": "Enter a label.",
+    "originalLocaleRequired": "Choose an authoring language.",
+    "attributeRequired": "Choose an attribute.",
+    "atLeastOneAttribute": "Add at least one attribute.",
+    "countryInvalid": "Use a two-letter country code.",
+    "websiteInvalid": "Enter a valid URL.",
+    "sortOrderInvalid": "Enter a whole number.",
+    "numberInvalid": "Enter a number.",
+    "tooLong": "This value is too long."
+  }
+}

@@ -14,6 +14,7 @@ import organizations from '../messages/en/organizations.json';
 import reviewer from '../messages/en/reviewer.json';
 import suppliers from '../messages/en/suppliers.json';
 import taxonomy from '../messages/en/taxonomy.json';
+import taxonomyAdmin from '../messages/en/taxonomyAdmin.json';
 import verification from '../messages/en/verification.json';
 
 export const en = {
@@ -27,4 +28,5 @@ export const en = {
   evidence,
   verification,
   taxonomy,
+  taxonomyAdmin,
 };

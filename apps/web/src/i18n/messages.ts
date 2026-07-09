@@ -7,7 +7,7 @@
  */
 import { DEFAULT_LOCALE, type SupportedLocale } from './locales';
 
-/** The twelve message namespaces. Order is irrelevant; CI enforces the set. */
+/** The message namespaces. Order is irrelevant; CI enforces the set. */
 export const NAMESPACES = [
   'common',
   'navigation',
@@ -21,6 +21,7 @@ export const NAMESPACES = [
   'accessibility',
   'seo',
   'taxonomy',
+  'taxonomyAdmin',
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
