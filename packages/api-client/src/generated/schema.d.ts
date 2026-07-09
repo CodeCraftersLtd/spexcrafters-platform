@@ -1388,7 +1388,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Platform-staff list of all brands in every approval status (for review and approval). */
+        get: operations["listAdminBrands"];
         put?: never;
         /** Create a brand (requires TAXONOMY_WRITE; starts PENDING) */
         post: operations["createBrand"];
@@ -4428,6 +4429,31 @@ export interface operations {
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
             422: components["responses"]["ValidationError"];
+        };
+    };
+    listAdminBrands: {
+        parameters: {
+            query?: {
+                /** @description BCP-47 locale; server falls back to en. */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Brands in every approval status. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BrandSummary"][];
+                };
+            };
+            401: components["responses"]["AuthenticationFailed"];
+            403: components["responses"]["Forbidden"];
         };
     };
     createBrand: {

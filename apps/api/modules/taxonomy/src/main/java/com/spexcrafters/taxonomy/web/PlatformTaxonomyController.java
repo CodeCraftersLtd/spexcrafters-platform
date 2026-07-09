@@ -4,6 +4,7 @@ import com.spexcrafters.taxonomy.api.AttributeDetail;
 import com.spexcrafters.taxonomy.api.AttributeService;
 import com.spexcrafters.taxonomy.api.BrandDetail;
 import com.spexcrafters.taxonomy.api.BrandService;
+import com.spexcrafters.taxonomy.api.BrandSummary;
 import com.spexcrafters.taxonomy.api.CategoryDetail;
 import com.spexcrafters.taxonomy.api.CategoryService;
 import com.spexcrafters.taxonomy.api.Certification;
@@ -16,16 +17,19 @@ import com.spexcrafters.taxonomy.api.TranslationView;
 import com.spexcrafters.taxonomy.api.Unit;
 import com.spexcrafters.taxonomy.api.UnitService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -54,6 +58,17 @@ public class PlatformTaxonomyController {
         this.unitService = unitService;
         this.certificationService = certificationService;
         this.brandService = brandService;
+    }
+
+    /**
+     * operationId: listAdminBrands — platform-staff view of ALL brands (every approval status),
+     * so staff can see and approve PENDING brands the public read hides. Also the dashboard's
+     * read-time staff gate (public taxonomy reads never surface a 403).
+     */
+    @GetMapping("/brands")
+    public List<BrandSummary> listAdminBrands(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String locale) {
+        return brandService.listForAdmin(AuthenticatedUser.id(jwt), locale);
     }
 
     // ------------------------------------------------------------------ categories

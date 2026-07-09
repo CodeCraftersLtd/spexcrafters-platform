@@ -3749,6 +3749,50 @@
       }
     },
     "/platform/taxonomy/brands": {
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "operationId": "listAdminBrands",
+        "summary": "Platform-staff list of all brands in every approval status (for review and approval).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "BCP-47 locale; server falls back to en."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Brands in every approval status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BrandSummary"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
       "post": {
         "tags": [
           "taxonomy"

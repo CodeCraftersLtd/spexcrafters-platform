@@ -75,6 +75,26 @@ public class BrandService {
 
     // ------------------------------------------------------------------ administration
 
+    /**
+     * Administration brand list: platform-staff-only, returns brands of EVERY approval status
+     * (including PENDING/REJECTED/DEPRECATED) so staff can review and approve them. Doubles as the
+     * read-time staff gate for the admin dashboard (public reads never surface a 403).
+     */
+    @Transactional(readOnly = true)
+    public List<BrandSummary> listForAdmin(UUID userId, String locale) {
+        platformAccess.require(userId, PlatformCapability.TAXONOMY_READ);
+        List<Brand> all = brands.findAllByOrderByCanonicalNameAsc();
+        List<UUID> ids = all.stream().map(Brand::getId).toList();
+        Map<UUID, List<BrandTranslation>> byBrand = ids.isEmpty() ? Map.of()
+                : translations.findByBrandIdIn(ids).stream()
+                        .collect(Collectors.groupingBy(BrandTranslation::getBrandId));
+        return all.stream()
+                .map(b -> new BrandSummary(b.getId(), b.getCode(), b.getBrandType(), b.getCanonicalName(),
+                        resolveDisplayName(b, byBrand.getOrDefault(b.getId(), List.of()), locale),
+                        b.getCountryCode(), b.getApprovalStatus()))
+                .toList();
+    }
+
     @Transactional
     public BrandDetail create(UUID userId, String code, BrandType brandType, String canonicalName,
             String ownerCompany, String manufacturer, String countryCode, String website,

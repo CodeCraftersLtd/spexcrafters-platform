@@ -63,11 +63,15 @@ export default async function TaxonomyDashboardPage({ params }: TaxonomyPageProp
   let certifications: Certification[];
   let units: Unit[];
   try {
+    // listAdminBrands is authenticated + platform-staff-only: it both returns brands of every
+    // approval status (so PENDING brands can be reviewed/approved) AND acts as the read-time
+    // staff gate — a non-staff caller gets a 403 here, which renders the forbidden state below.
+    // The other reads are public (active content only).
     [tree, attributes, enumerations, brands, certifications, units] = await Promise.all([
       api.getCategoryTree(locale),
       api.listAttributes(locale),
       api.listEnumerations(locale),
-      api.listBrands({ locale }),
+      api.listAdminBrands({ locale }),
       api.listCertifications(locale),
       api.listUnits(locale),
     ]);

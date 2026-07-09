@@ -550,6 +550,12 @@ export function createApiClient(options: ApiClientOptions) {
         'GET',
         `/taxonomy/brands/${enc(code)}${locale ? `?locale=${enc(locale)}` : ''}`,
       ),
+    /** Platform-staff: all brands in every approval status (review/approval + admin gate). */
+    listAdminBrands: (params?: { locale?: string }) =>
+      request<BrandSummary[]>(
+        'GET',
+        `/platform/taxonomy/brands${params?.locale ? `?locale=${enc(params.locale)}` : ''}`,
+      ),
     validateSpecification: (req: SpecificationValidationRequest, locale?: string) =>
       request<SpecificationValidationResult>(
         'POST',
